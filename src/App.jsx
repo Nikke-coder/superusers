@@ -1201,6 +1201,7 @@ function SuperDashboard({userEmail, onSignOut}) {
         </span>}
       </div>
       </div>
+    </div>
   );
 }
 
