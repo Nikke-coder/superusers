@@ -58,11 +58,12 @@ const STYLE = `
   .open-btn:hover{border-color:#60a5fa;color:#bde0ff;background:rgba(30,70,160,0.4);}
 
   /* ── Login inputs ── */
-  .login-input{width:100%;background:rgba(4,8,22,0.5);border:1px solid rgba(140,190,255,0.15);border-radius:10px;
-    padding:14px 18px;color:#ffffff;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;
-    transition:border-color 0.3s,box-shadow 0.3s;backdrop-filter:blur(12px);}
-  .login-input:focus{border-color:rgba(160,210,255,0.5);box-shadow:0 0 0 3px rgba(80,160,255,0.08);}
-  .login-input::placeholder{color:rgba(120,160,220,0.25);}
+  .login-input{width:100%;background:rgba(8,15,40,0.7);border:1px solid rgba(140,190,255,0.25);border-radius:10px;
+    padding:14px 18px;color:#ffffff;font-size:15px;font-weight:400;outline:none;font-family:'DM Sans',sans-serif;
+    transition:border-color 0.3s,box-shadow 0.3s,background 0.3s;backdrop-filter:blur(16px);}
+  .login-input:focus{border-color:rgba(140,200,255,0.65);background:rgba(12,22,55,0.8);
+    box-shadow:0 0 0 3px rgba(80,160,255,0.1),0 0 20px rgba(80,160,255,0.06);}
+  .login-input::placeholder{color:rgba(140,180,240,0.35);}
   .login-btn{width:100%;padding:14px;border-radius:10px;
     background:linear-gradient(135deg,rgba(30,70,200,0.9),rgba(14,130,220,0.9));
     border:1px solid rgba(160,210,255,0.3);color:#fff;font-size:11px;font-weight:600;
@@ -98,6 +99,97 @@ const STYLE = `
     85% {opacity:0.5}
     100%{opacity:0;transform:translateY(-200px) translateX(var(--dx,15px)) scale(0.8)}
   }
+
+  /* ── God Mode button lightning ── */
+  @keyframes btnPulse{
+    0%,100%{box-shadow:0 0 20px rgba(80,160,255,0.4),0 0 60px rgba(40,100,255,0.2),inset 0 0 20px rgba(255,255,255,0.04)}
+    50%    {box-shadow:0 0 35px rgba(100,180,255,0.7),0 0 90px rgba(60,140,255,0.4),inset 0 0 30px rgba(255,255,255,0.08)}
+  }
+  @keyframes lightningFlash{
+    0%,89%,100%{opacity:0}
+    90%{opacity:1}
+    92%{opacity:0}
+    94%{opacity:0.8}
+    96%{opacity:0}
+    98%{opacity:0.4}
+  }
+  @keyframes boltDrop{
+    0%  {transform:translateY(-100%) scaleY(0);opacity:0}
+    30% {opacity:1}
+    70% {opacity:0.8}
+    100%{transform:translateY(100%) scaleY(1);opacity:0}
+  }
+  @keyframes shimmerSlide{
+    0%  {transform:translateX(-100%) skewX(-15deg)}
+    100%{transform:translateX(250%) skewX(-15deg)}
+  }
+  @keyframes labelFloat{
+    0%,100%{letter-spacing:0.2em;opacity:1}
+    50%{letter-spacing:0.28em;opacity:0.85}
+  }
+
+  /* ── God Mode button ── */
+  .god-btn{
+    position:relative;overflow:hidden;
+    width:100%;padding:16px 24px;border-radius:12px;
+    background:linear-gradient(135deg,#0d1f6e 0%,#0a3d8f 40%,#0d6efd 70%,#0ea5e9 100%);
+    border:1px solid rgba(120,200,255,0.45);
+    color:#ffffff;font-size:11px;font-weight:700;
+    cursor:pointer;font-family:'DM Mono',monospace;
+    letter-spacing:0.2em;text-transform:uppercase;
+    transition:transform 0.15s,filter 0.15s;
+    animation:btnPulse 3s ease-in-out infinite;
+    filter:brightness(1);
+  }
+  .god-btn:hover:not(:disabled){
+    transform:translateY(-2px) scale(1.01);
+    filter:brightness(1.2);
+    animation:btnPulse 1.5s ease-in-out infinite;
+  }
+  .god-btn:active:not(:disabled){transform:translateY(1px) scale(0.99);filter:brightness(1.4);}
+  .god-btn:disabled{
+    background:rgba(8,14,32,0.8);border:1px solid rgba(100,140,200,0.08);
+    color:#1e3055;cursor:not-allowed;box-shadow:none;animation:none;
+  }
+  /* Shimmer sweep on hover */
+  .god-btn::before{
+    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+    background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.12) 50%,transparent 100%);
+    transform:translateX(-100%) skewX(-15deg);
+    transition:none;
+  }
+  .god-btn:hover::before{animation:shimmerSlide 0.7s ease forwards;}
+  /* Top edge highlight */
+  .god-btn::after{
+    content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
+    border-radius:1px;
+  }
+  /* Lightning bolt overlay */
+  .god-btn .bolt{
+    position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:2px;height:100%;
+    background:linear-gradient(to bottom,rgba(255,255,255,0.9),rgba(150,220,255,0.6),transparent);
+    animation:lightningFlash 4s ease-in-out infinite;
+    pointer-events:none;border-radius:1px;
+    filter:blur(0.5px);
+  }
+  .god-btn .bolt2{
+    left:30%;animation:lightningFlash 4s ease-in-out infinite 2.1s;
+    background:linear-gradient(to bottom,transparent,rgba(180,230,255,0.7),transparent);
+    width:1px;
+  }
+  .god-btn .bolt3{
+    left:70%;animation:lightningFlash 4s ease-in-out infinite 3.3s;
+    background:linear-gradient(to bottom,transparent,rgba(200,240,255,0.5),transparent);
+    width:1px;
+  }
+  .god-btn .btn-text{
+    position:relative;z-index:2;
+    animation:labelFloat 3s ease-in-out infinite;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+  }
+  .god-btn .btn-icon{font-size:14px;filter:drop-shadow(0 0 4px rgba(255,220,100,0.8));}
 
   /* Logo glow */
   @keyframes divineGlow{
@@ -170,12 +262,11 @@ const STYLE = `
 
   /* Right panel — form */
   .login-right{
-    width:420px;display:flex;flex-direction:column;justify-content:center;
-    padding:60px 56px;position:relative;z-index:2;
-    background:rgba(3,6,18,0.75);
-    border-left:1px solid rgba(100,160,255,0.08);
+    width:400px;display:flex;flex-direction:column;justify-content:center;
+    padding:56px 48px;
+    position:fixed;top:0;right:0;bottom:0;z-index:10;
+    background:rgba(3,6,18,0.82);
     backdrop-filter:blur(40px) saturate(1.8);
-    min-height:100vh;
     animation:slideRight 0.9s cubic-bezier(0.16,1,0.3,1) both 0.1s;
   }
   .login-right::before{
@@ -528,7 +619,7 @@ function LoginScreen({onLogin}) {
       {/* ── Login form — right panel ── */}
       <div className="login-right">
         <div style={{marginBottom:36}}>
-          <div style={{fontSize:8,color:"rgba(200,225,255,0.45)",fontFamily:"'DM Mono',monospace",
+          <div style={{fontSize:8,color:"rgba(200,225,255,0.7)",fontFamily:"'DM Mono',monospace",
             letterSpacing:"0.35em",textTransform:"uppercase",marginBottom:18}}>
             Restricted access
           </div>
@@ -537,14 +628,14 @@ function LoginScreen({onLogin}) {
 
         <div style={{display:"flex",flexDirection:"column",gap:18,marginBottom:10}}>
           <div>
-            <div style={{fontSize:9,color:"rgba(230,245,255,0.8)",fontFamily:"'DM Mono',monospace",
+            <div style={{fontSize:9,color:"#e0f0ff",fontFamily:"'DM Mono',monospace",
               letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Email</div>
             <input className="login-input" type="email" placeholder="your@email.com"
               value={email} onChange={e=>setEmail(e.target.value)}
               onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
           </div>
           <div>
-            <div style={{fontSize:9,color:"rgba(230,245,255,0.8)",fontFamily:"'DM Mono',monospace",
+            <div style={{fontSize:9,color:"#e0f0ff",fontFamily:"'DM Mono',monospace",
               letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Password</div>
             <input className="login-input" type="password" placeholder="••••••••••"
               value={pw} onChange={e=>setPw(e.target.value)}
@@ -560,15 +651,26 @@ function LoginScreen({onLogin}) {
           </div>
         )}
 
-        <button className="login-btn" onClick={login} disabled={loading||!email||!pw}
+        <button className="god-btn" onClick={login} disabled={loading||!email||!pw}
           style={{marginBottom:28,marginTop:6}}>
-          {loading ? (
-            <span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
-              <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.2)",borderTopColor:"#fff",
-                borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
-              Verifying…
-            </span>
-          ) : "Enter God Mode →"}
+          <div className="bolt"/>
+          <div className="bolt bolt2"/>
+          <div className="bolt bolt3"/>
+          <div className="btn-text">
+            {loading ? (
+              <>
+                <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.2)",borderTopColor:"#fff",
+                  borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
+                <span>Verifying…</span>
+              </>
+            ) : (
+              <>
+                <span className="btn-icon">⚡</span>
+                <span>Enter God Mode</span>
+                <span className="btn-icon">⚡</span>
+              </>
+            )}
+          </div>
         </button>
 
         <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(100,160,255,0.12),transparent)",marginBottom:22}}/>
