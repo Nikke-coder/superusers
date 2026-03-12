@@ -59,7 +59,7 @@ const STYLE = `
 
   /* ── Login inputs ── */
   .login-input{width:100%;background:rgba(4,8,22,0.5);border:1px solid rgba(140,190,255,0.15);border-radius:10px;
-    padding:14px 18px;color:#e8f2ff;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;
+    padding:14px 18px;color:#ffffff;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;
     transition:border-color 0.3s,box-shadow 0.3s;backdrop-filter:blur(12px);}
   .login-input:focus{border-color:rgba(160,210,255,0.5);box-shadow:0 0 0 3px rgba(80,160,255,0.08);}
   .login-input::placeholder{color:rgba(120,160,220,0.25);}
@@ -452,25 +452,27 @@ function LoginScreen({onLogin}) {
     {cls:"tw3",w:1,  h:1,  top:"25%",left:"22%",dur:"5.5s",delay:"1.3s"},
     {cls:"tw1",w:1.5,h:1.5,top:"45%",left:"95%",dur:"3.9s",delay:"3.5s"},
     {cls:"tw2",w:2.5,h:2.5,top:"72%",left:"28%",dur:"4.6s",delay:"0.7s"},
+    {cls:"tw3",w:1,  h:1,  top:"55%",left:"2%", dur:"4.2s",delay:"2.8s"},
+    {cls:"tw1",w:2,  h:2,  top:"33%",left:"48%",dur:"3.8s",delay:"1.6s"},
+    {cls:"tw2",w:1,  h:1,  top:"85%",left:"18%",dur:"5.1s",delay:"0.4s"},
   ];
   const PARTICLES = [
-    {bottom:"4%", left:"18%",size:"2px",  dur:"10s",delay:"0s", dx:"18px"},
-    {bottom:"8%", left:"42%",size:"1.5px",dur:"12s",delay:"2s", dx:"-12px"},
-    {bottom:"6%", left:"65%",size:"2px",  dur:"9s", delay:"4s", dx:"22px"},
-    {bottom:"2%", left:"30%",size:"1px",  dur:"14s",delay:"1s", dx:"-20px"},
-    {bottom:"5%", left:"78%",size:"2.5px",dur:"11s",delay:"5s", dx:"14px"},
-    {bottom:"10%",left:"6%", size:"1.5px",dur:"8s", delay:"3s", dx:"10px"},
-    {bottom:"3%", left:"55%",size:"1px",  dur:"13s",delay:"6s", dx:"-8px"},
+    {bottom:"4%", left:"18%",size:"2px",  dur:"10s",delay:"0s",  dx:"18px"},
+    {bottom:"8%", left:"42%",size:"1.5px",dur:"12s",delay:"2s",  dx:"-12px"},
+    {bottom:"6%", left:"65%",size:"2px",  dur:"9s", delay:"4s",  dx:"22px"},
+    {bottom:"2%", left:"30%",size:"1px",  dur:"14s",delay:"1s",  dx:"-20px"},
+    {bottom:"5%", left:"78%",size:"2.5px",dur:"11s",delay:"5s",  dx:"14px"},
+    {bottom:"10%",left:"6%", size:"1.5px",dur:"8s", delay:"3s",  dx:"10px"},
+    {bottom:"3%", left:"55%",size:"1px",  dur:"13s",delay:"6s",  dx:"-8px"},
     {bottom:"7%", left:"88%",size:"2px",  dur:"10s",delay:"1.5s",dx:"16px"},
+    {bottom:"1%", left:"70%",size:"1.5px",dur:"15s",delay:"7s",  dx:"-14px"},
+    {bottom:"9%", left:"35%",size:"1px",  dur:"11s",delay:"4.5s",dx:"10px"},
   ];
 
-  // Tagline words for staggered reveal
-  const TAGLINE = ["Portfolio", "Intelligence", "Command", "Center"];
-
   return (
-    <div style={{minHeight:"100vh",display:"flex",overflow:"hidden",background:"#020510",position:"relative"}}>
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#010208",position:"relative"}}>
 
-      {/* ── Animated background (behind everything) ── */}
+      {/* ── Scene ── */}
       <div className="login-scene">
         <div className="l-orb1"/><div className="l-orb2"/>
         <div className="l-orb3"/><div className="l-orb4"/>
@@ -485,118 +487,65 @@ function LoginScreen({onLogin}) {
         ))}
       </div>
 
-      {/* ══════════════════════════════════════
-          LEFT — Branding panel
-      ══════════════════════════════════════ */}
-      <div className="login-left">
-
+      {/* ── Centered logo — fixed behind everything ── */}
+      <div style={{
+        position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
+        display:"flex",flexDirection:"column",alignItems:"center",
+        pointerEvents:"none",zIndex:1,
+      }}>
+        {/* Bloom */}
+        <div style={{
+          position:"absolute",width:700,height:350,borderRadius:"50%",
+          background:"radial-gradient(ellipse,rgba(80,140,255,0.14) 0%,transparent 70%)",
+          filter:"blur(50px)",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
+        }}/>
+        <div style={{
+          position:"absolute",width:400,height:200,borderRadius:"50%",
+          background:"radial-gradient(ellipse,rgba(180,220,255,0.07) 0%,transparent 70%)",
+          filter:"blur(20px)",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
+        }}/>
+        {/* Spinning rings */}
+        <div style={{position:"absolute",top:"50%",left:"50%",
+          width:380,height:380,borderRadius:"50%",
+          border:"1px solid rgba(140,200,255,0.07)",
+          animation:"aureoleSpin 45s linear infinite",
+          transform:"translate(-50%,-50%)"}}/>
+        <div style={{position:"absolute",top:"50%",left:"50%",
+          width:300,height:300,borderRadius:"50%",
+          border:"1px dashed rgba(100,160,255,0.05)",
+          animation:"aureoleSpinRev 30s linear infinite",
+          transform:"translate(-50%,-50%)"}}/>
+        <div style={{position:"absolute",top:"50%",left:"50%",
+          width:490,height:490,borderRadius:"50%",
+          border:"1px solid rgba(80,130,255,0.03)",
+          animation:"aureoleSpin 70s linear infinite",
+          transform:"translate(-50%,-50%)"}}/>
         {/* Logo */}
-        <div style={{marginBottom:56,animation:"fadeUp 1s ease both 0.4s"}}>
-          <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow"
-            style={{width:200,height:"auto",display:"block"}}/>
-        </div>
-
-        {/* Main headline */}
-        <div style={{marginBottom:20,animation:"fadeUp 1s ease both 0.6s"}}>
-          <div style={{
-            fontFamily:"'Cormorant Garamond',serif",
-            fontSize:"clamp(52px,6vw,88px)",
-            fontWeight:300,
-            lineHeight:1.05,
-            letterSpacing:"-0.02em",
-            color:"#ffffff",
-          }}>
-  <div style={{
-              display:"block",fontStyle:"italic",fontWeight:300,
-              background:"linear-gradient(135deg,#a8d0ff 0%,#ffffff 40%,#c8e8ff 100%)",
-              WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
-            }}>Mode.</div>
-          </div>
-        </div>
-
-        {/* Tagline — staggered word reveal */}
-        <div style={{display:"flex",gap:10,marginBottom:48,flexWrap:"wrap",animation:"fadeIn 1s ease both 0.9s"}}>
-          {TAGLINE.map((word,i)=>(
-            <span key={i} style={{
-              fontSize:11,letterSpacing:"0.2em",textTransform:"uppercase",
-              color:"rgba(160,210,255,0.55)",fontFamily:"'DM Mono',monospace",
-              animation:`letterReveal 0.6s ease both ${0.9+i*0.12}s`,
-            }}>
-              {word}{i<TAGLINE.length-1&&<span style={{color:"rgba(100,150,220,0.25)",marginLeft:10}}>·</span>}
-            </span>
-          ))}
-        </div>
-
-        {/* Aureole + stat orbs */}
-        <div style={{position:"relative",width:220,height:220,marginBottom:56,animation:"fadeIn 1.5s ease both 1.2s"}}>
-          {/* Spinning rings */}
-          <div className="aureole aureole-1" style={{position:"absolute",top:"50%",left:"50%"}}/>
-          <div className="aureole aureole-2" style={{position:"absolute",top:"50%",left:"50%"}}/>
-          <div className="aureole aureole-3" style={{position:"absolute",top:"50%",left:"50%"}}/>
-          {/* Center */}
-          <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
-            width:100,height:100,borderRadius:"50%",
-            background:"radial-gradient(circle,rgba(80,140,255,0.18),rgba(40,90,200,0.08),transparent)",
-            border:"1px solid rgba(140,200,255,0.2)",
-            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
-            boxShadow:"0 0 40px rgba(60,120,255,0.15)"}}>
-            <div style={{fontSize:24,fontWeight:700,color:"#c8e8ff",fontFamily:"'DM Mono',monospace",lineHeight:1}}>8</div>
-            <div style={{fontSize:8,color:"rgba(140,200,255,0.5)",letterSpacing:"0.15em",textTransform:"uppercase",marginTop:3}}>Clients</div>
-          </div>
-          {/* Orbit dots */}
-          {[0,1,2,3,4,5,6,7].map((i)=>{
-            const angle = (i/8)*360;
-            const rad = angle*(Math.PI/180);
-            const r = 108;
-            const x = 110 + r*Math.cos(rad);
-            const y = 110 + r*Math.sin(rad);
-            const colors=["#818cf8","#38bdf8","#86efac","#38bdf8","#4ade80","#60a5fa","#60a5fa","#2dd4bf"];
-            return (
-              <div key={i} style={{position:"absolute",width:8,height:8,borderRadius:"50%",
-                background:colors[i],left:x-4,top:y-4,
-                boxShadow:`0 0 8px ${colors[i]}`,
-                animation:`tw1 ${2+i*0.3}s ease-in-out infinite ${i*0.4}s`}}/>
-            );
-          })}
-        </div>
-
-        {/* Bottom stats */}
-        <div style={{display:"flex",gap:32,animation:"fadeUp 1s ease both 1.4s"}}>
-          {[["15","Users"],["2","Projects"],["100%","MFA Required"]].map(([val,label])=>(
-            <div key={label}>
-              <div style={{fontSize:22,fontWeight:600,color:"#c8e8ff",fontFamily:"'DM Mono',monospace",lineHeight:1}}>{val}</div>
-              <div style={{fontSize:9,color:"rgba(140,190,255,0.45)",textTransform:"uppercase",letterSpacing:"0.15em",marginTop:4}}>{label}</div>
-            </div>
-          ))}
-        </div>
+        <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow"
+          style={{width:280,height:"auto",position:"relative",zIndex:2,display:"block"}}/>
       </div>
 
-      {/* ══════════════════════════════════════
-          RIGHT — Login form
-      ══════════════════════════════════════ */}
+      {/* ── Login form — right panel ── */}
       <div className="login-right">
-
-        {/* Form header */}
-        <div style={{marginBottom:40}}>
-          <div style={{fontSize:9,color:"rgba(140,190,255,0.35)",fontFamily:"'DM Mono',monospace",
-            letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>
+        <div style={{marginBottom:36}}>
+          <div style={{fontSize:8,color:"rgba(200,225,255,0.45)",fontFamily:"'DM Mono',monospace",
+            letterSpacing:"0.35em",textTransform:"uppercase",marginBottom:18}}>
             Restricted access
           </div>
-          <div style={{height:1,background:"linear-gradient(90deg,rgba(100,160,255,0.2),transparent)"}}/>
+          <div style={{height:1,width:36,background:"linear-gradient(90deg,rgba(140,200,255,0.35),transparent)"}}/>
         </div>
 
-        {/* Inputs */}
-        <div style={{display:"flex",flexDirection:"column",gap:16,marginBottom:8}}>
+        <div style={{display:"flex",flexDirection:"column",gap:18,marginBottom:10}}>
           <div>
-            <div style={{fontSize:9,color:"rgba(140,190,255,0.5)",fontFamily:"'DM Mono',monospace",
-              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:7}}>Email</div>
+            <div style={{fontSize:9,color:"rgba(230,245,255,0.8)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Email</div>
             <input className="login-input" type="email" placeholder="your@email.com"
               value={email} onChange={e=>setEmail(e.target.value)}
               onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
           </div>
           <div>
-            <div style={{fontSize:9,color:"rgba(140,190,255,0.5)",fontFamily:"'DM Mono',monospace",
-              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:7}}>Password</div>
+            <div style={{fontSize:9,color:"rgba(230,245,255,0.8)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Password</div>
             <input className="login-input" type="password" placeholder="••••••••••"
               value={pw} onChange={e=>setPw(e.target.value)}
               onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
@@ -604,58 +553,46 @@ function LoginScreen({onLogin}) {
         </div>
 
         {err && (
-          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",marginBottom:8,
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",marginBottom:12,
             background:"rgba(248,113,113,0.06)",border:"1px solid rgba(248,113,113,0.18)",borderRadius:9}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:"#f87171",flexShrink:0,boxShadow:"0 0 5px #f87171"}}/>
-            <div style={{fontSize:11,color:"#fca5a5",fontFamily:"'DM Mono',monospace"}}>{err}</div>
+            <div style={{fontSize:12,color:"#fca5a5",fontFamily:"'DM Mono',monospace"}}>{err}</div>
           </div>
         )}
 
         <button className="login-btn" onClick={login} disabled={loading||!email||!pw}
-          style={{marginBottom:32}}>
+          style={{marginBottom:28,marginTop:6}}>
           {loading ? (
             <span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
-              <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.25)",borderTopColor:"#fff",
+              <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.2)",borderTopColor:"#fff",
                 borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
-              Verifying identity…
+              Verifying…
             </span>
           ) : "Enter God Mode →"}
         </button>
 
-        {/* Divider */}
-        <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(100,160,255,0.15),transparent)",marginBottom:28}}/>
+        <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(100,160,255,0.12),transparent)",marginBottom:22}}/>
 
-        {/* MFA notice */}
-        <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:40,
-          padding:"12px 14px",background:"rgba(60,120,255,0.06)",
+        <div style={{display:"flex",gap:8,alignItems:"center",
+          padding:"11px 14px",background:"rgba(60,120,255,0.05)",
           border:"1px solid rgba(100,160,255,0.1)",borderRadius:9}}>
-          <div style={{width:16,height:16,borderRadius:"50%",background:"rgba(100,160,255,0.15)",
-            border:"1px solid rgba(100,160,255,0.3)",display:"flex",alignItems:"center",
-            justifyContent:"center",flexShrink:0,marginTop:1}}>
-            <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(140,200,255,0.8)"}}/>
-          </div>
-          <div>
-            <div style={{fontSize:11,color:"rgba(160,210,255,0.7)",fontWeight:500,marginBottom:3}}>MFA Required</div>
-            <div style={{fontSize:10,color:"rgba(120,170,220,0.45)",lineHeight:1.4}}>
-              Two-factor authentication is mandatory for all God Mode sessions.
-            </div>
+          <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(140,200,255,0.7)",
+            flexShrink:0,boxShadow:"0 0 6px rgba(140,200,255,0.5)"}}/>
+          <div style={{fontSize:10,color:"rgba(200,225,255,0.55)",lineHeight:1.4}}>
+            MFA required for all sessions
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{marginTop:"auto",paddingTop:20}}>
-          <div style={{fontSize:8,color:"rgba(80,120,180,0.3)",fontFamily:"'DM Mono',monospace",
-            letterSpacing:"0.15em",textAlign:"center",lineHeight:1.8}}>
-            TARGETFLOW OY · INTERNAL SYSTEM<br/>
-            UNAUTHORISED ACCESS PROHIBITED
-          </div>
+        <div style={{marginTop:"auto",paddingTop:32,fontSize:8,color:"rgba(80,120,180,0.22)",
+          fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",lineHeight:1.8}}>
+          TARGETFLOW OY · INTERNAL SYSTEM<br/>
+          UNAUTHORISED ACCESS PROHIBITED
         </div>
       </div>
 
     </div>
   );
 }
-
 
 // ── User registry ────────────────────────────────────────────────────────────
 const USER_REGISTRY = [
