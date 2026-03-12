@@ -85,8 +85,8 @@ const STYLE = `
   }
   @keyframes rise{
     0%  {opacity:0;transform:translateY(0)}
-    8%  {opacity:var(--op,0.55)}
-    88% {opacity:calc(var(--op,0.55)*0.3)}
+    5%  {opacity:var(--op,0.55)}
+    90% {opacity:calc(var(--op,0.55)*0.25)}
     100%{opacity:0;transform:translateY(-100vh)}
   }
   /* Ambient orb */
@@ -470,7 +470,7 @@ function LoginScreen({onLogin}) {
     left:  `${(i * 5.5 + 2) % 96}%`,
     size:  `${1 + (i%4)*0.6}px`,
     dur:   `${7 + (i%6)*2.2}s`,
-    delay: `${(i*1.7)%9}s`,
+    delay: `${((i * 1.7) % (7 + (i%6)*2.2)).toFixed(2)}s`,
     op:    0.25 + (i%5)*0.12,
   }));
 
@@ -486,12 +486,13 @@ function LoginScreen({onLogin}) {
       {/* ── Rising particles (bottom of screen, full width) ── */}
       {PARTICLES.map((p,i)=>(
         <div key={i} style={{
-          position:"fixed",bottom:0,left:p.left,
+          position:"fixed",bottom:"-10px",left:p.left,
           width:p.size,height:p.size,borderRadius:"50%",
           background:"rgba(200,225,255,0.85)",
           boxShadow:"0 0 5px rgba(200,225,255,0.5)",
-          "--dx":"0px","--op":p.op,
-          animation:`rise ${p.dur} ease-in infinite ${p.delay}`,
+          "--op":p.op,
+          animation:`rise ${p.dur} ease-in infinite`,
+          animationDelay:`-${p.delay}`,
           pointerEvents:"none",zIndex:1,
         }}/>
       ))}
