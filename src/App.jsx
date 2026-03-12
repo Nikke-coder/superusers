@@ -42,278 +42,179 @@ const sum = (arr) => (arr||[]).reduce((a,b)=>(a||0)+(b||0),0);
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const STYLE = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:#020510;color:#dde8ff;font-family:'DM Sans',sans-serif;}
   ::-webkit-scrollbar{width:4px;}
   ::-webkit-scrollbar-track{background:#050a1a;}
-  ::-webkit-scrollbar-thumb{background:rgba(100,160,255,0.3);border-radius:2px;}
+  ::-webkit-scrollbar-thumb{background:rgba(100,160,255,0.25);border-radius:2px;}
 
-  /* ─── Shared cards ─── */
-  .card{
-    background:rgba(8,14,35,0.65);
-    border:1px solid rgba(100,160,255,0.1);
-    border-radius:16px;
-    transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
-    backdrop-filter:blur(16px);
-  }
+  .card{background:rgba(8,14,35,0.65);border:1px solid rgba(100,160,255,0.1);border-radius:16px;
+    transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;backdrop-filter:blur(16px);}
   .card:hover{border-color:rgba(150,200,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,20,80,0.5);}
-  .open-btn{
-    background:rgba(20,50,120,0.3);border:1px solid rgba(100,160,255,0.2);
-    border-radius:8px;color:#7ab4e8;font-family:'DM Mono',monospace;font-size:10px;
-    padding:5px 12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;
-    backdrop-filter:blur(8px);
-  }
+  .open-btn{background:rgba(20,50,120,0.3);border:1px solid rgba(100,160,255,0.2);border-radius:8px;
+    color:#7ab4e8;font-family:'DM Mono',monospace;font-size:10px;padding:5px 12px;cursor:pointer;
+    transition:all 0.2s;white-space:nowrap;backdrop-filter:blur(8px);}
   .open-btn:hover{border-color:#60a5fa;color:#bde0ff;background:rgba(30,70,160,0.4);}
 
-  /* ─── Login inputs ─── */
-  .login-input{
-    width:100%;background:rgba(5,10,28,0.6);
-    border:1px solid rgba(140,190,255,0.2);border-radius:12px;
-    padding:16px 20px;color:#e8f2ff;font-size:15px;outline:none;
-    font-family:'DM Sans',sans-serif;
-    transition:border-color 0.3s,box-shadow 0.3s,background 0.3s;
-    backdrop-filter:blur(16px);
-  }
-  .login-input:focus{
-    border-color:rgba(160,210,255,0.6);
-    background:rgba(8,16,40,0.75);
-    box-shadow:0 0 0 3px rgba(80,160,255,0.1),0 0 40px rgba(80,160,255,0.08);
-  }
-  .login-input::placeholder{color:rgba(140,180,255,0.3);}
-
-  .login-btn{
-    width:100%;padding:16px;border-radius:12px;
-    background:linear-gradient(135deg,#1a45c8 0%,#0e7ad4 50%,#07a8e0 100%);
-    border:1px solid rgba(160,210,255,0.4);color:#fff;font-size:11px;font-weight:700;
-    cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:0.22em;
-    transition:all 0.3s;text-transform:uppercase;
-    box-shadow:0 6px 30px rgba(14,122,212,0.4),0 2px 8px rgba(0,0,0,0.3);
-  }
-  .login-btn:hover:not(:disabled){
-    box-shadow:0 8px 50px rgba(14,165,233,0.6),0 2px 12px rgba(0,0,0,0.4);
-    transform:translateY(-2px);
-    background:linear-gradient(135deg,#1e52e8 0%,#0e8de4 50%,#07b8f0 100%);
-  }
+  /* ── Login inputs ── */
+  .login-input{width:100%;background:rgba(4,8,22,0.5);border:1px solid rgba(140,190,255,0.15);border-radius:10px;
+    padding:14px 18px;color:#e8f2ff;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;
+    transition:border-color 0.3s,box-shadow 0.3s;backdrop-filter:blur(12px);}
+  .login-input:focus{border-color:rgba(160,210,255,0.5);box-shadow:0 0 0 3px rgba(80,160,255,0.08);}
+  .login-input::placeholder{color:rgba(120,160,220,0.25);}
+  .login-btn{width:100%;padding:14px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(30,70,200,0.9),rgba(14,130,220,0.9));
+    border:1px solid rgba(160,210,255,0.3);color:#fff;font-size:11px;font-weight:600;
+    cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:0.2em;transition:all 0.3s;text-transform:uppercase;
+    box-shadow:0 4px 24px rgba(14,100,220,0.3);}
+  .login-btn:hover:not(:disabled){box-shadow:0 4px 40px rgba(14,165,233,0.5);transform:translateY(-1px);}
   .login-btn:active:not(:disabled){transform:translateY(0);}
   .login-btn:disabled{background:rgba(8,14,32,0.8);border:1px solid rgba(100,140,200,0.08);color:#1e3055;cursor:not-allowed;box-shadow:none;}
 
-  /* ══════════════════════════════════════
-     KEYFRAMES
-  ══════════════════════════════════════ */
-  @keyframes spin   {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-  @keyframes fadeUp {from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeIn {from{opacity:0}to{opacity:1}}
+  /* ════════════ KEYFRAMES ════════════ */
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 
-  /* Orbs drift */
-  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}20%{transform:translate(60px,-40px) scale(1.05)}50%{transform:translate(30px,50px) scale(0.97)}80%{transform:translate(-40px,-20px) scale(1.03)}}
-  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(-50px,35px) scale(1.04)}60%{transform:translate(25px,-45px) scale(0.96)}85%{transform:translate(35px,20px) scale(1.02)}}
-  @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(30px,50px)}66%{transform:translate(-40px,-30px)}}
+  /* Orb drifts */
+  @keyframes drift1{0%,100%{transform:translate(0,0)}25%{transform:translate(50px,-35px)}50%{transform:translate(20px,45px)}75%{transform:translate(-35px,-15px)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0)}30%{transform:translate(-45px,30px)}60%{transform:translate(20px,-40px)}85%{transform:translate(30px,25px)}}
+  @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(25px,45px)}66%{transform:translate(-35px,-25px)}}
 
-  /* God rays spin */
+  /* Rays spin */
   @keyframes rayspin{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
 
-  /* Stars twinkle */
+  /* Stars */
   @keyframes tw1{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
-  @keyframes tw2{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.9;transform:scale(1.3)}}
+  @keyframes tw2{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.85;transform:scale(1.3)}}
   @keyframes tw3{0%,100%{opacity:0.1;transform:scale(1)}50%{opacity:0.7;transform:scale(1.5)}}
 
-  /* Particle float upward */
+  /* Particles */
   @keyframes particleRise{
     0%  {opacity:0;transform:translateY(0) translateX(0) scale(0.5)}
-    15% {opacity:1}
-    85% {opacity:0.6}
-    100%{opacity:0;transform:translateY(-180px) translateX(var(--dx,20px)) scale(1.2)}
+    15% {opacity:0.9}
+    85% {opacity:0.5}
+    100%{opacity:0;transform:translateY(-200px) translateX(var(--dx,15px)) scale(0.8)}
   }
 
-  /* Logo divine glow */
+  /* Logo glow */
   @keyframes divineGlow{
-    0%,100%{
-      filter:drop-shadow(0 0 10px rgba(180,220,255,0.6))
-             drop-shadow(0 0 30px rgba(100,180,255,0.3))
-             drop-shadow(0 0 60px rgba(80,140,255,0.15))
-             brightness(1.2);
-    }
-    50%{
-      filter:drop-shadow(0 0 20px rgba(220,240,255,0.9))
-             drop-shadow(0 0 55px rgba(130,200,255,0.55))
-             drop-shadow(0 0 100px rgba(80,160,255,0.3))
-             brightness(1.5);
-    }
+    0%,100%{filter:drop-shadow(0 0 8px rgba(180,220,255,0.55)) drop-shadow(0 0 25px rgba(100,180,255,0.25)) brightness(1.15)}
+    50%    {filter:drop-shadow(0 0 18px rgba(220,240,255,0.9)) drop-shadow(0 0 50px rgba(130,200,255,0.5)) brightness(1.45)}
   }
 
-  /* Title shimmer */
-  @keyframes titleShimmer{
-    0%  {background-position:200% center}
-    100%{background-position:-200% center}
-  }
-
-  /* Halo ring pulse */
-  @keyframes haloPulse{
-    0%,100%{opacity:0.4;transform:translate(-50%,-50%) scale(1)}
-    50%    {opacity:0.8;transform:translate(-50%,-50%) scale(1.08)}
-  }
-
-  /* Heaven orbs slow pulse */
+  /* Heaven orb pulse */
   @keyframes heavenPulse{0%,100%{opacity:0.5}50%{opacity:1}}
-  @keyframes heavenDrift1{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(20px)}}
+  @keyframes heavenDrift{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(18px)}}
 
-  /* ══════════════════════════════════════
-     LOGIN BACKGROUND SCENE
-  ══════════════════════════════════════ */
-  .login-scene{position:fixed;inset:0;overflow:hidden;background:#010308;}
+  /* Tagline letter reveal */
+  @keyframes letterReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-  /* Deep space gradient base */
-  .login-scene::before{
-    content:'';position:absolute;inset:0;
-    background:
-      radial-gradient(ellipse 180% 80% at 50% -20%,rgba(80,140,255,0.28) 0%,rgba(40,90,220,0.12) 30%,transparent 60%),
-      radial-gradient(ellipse 120% 55% at 50% -8%, rgba(255,255,255,0.07) 0%,transparent 45%),
-      radial-gradient(ellipse 80%  70% at 0%   80%,rgba(70,50,200,0.12) 0%,transparent 55%),
-      radial-gradient(ellipse 70%  60% at 100% 70%,rgba(0,140,220,0.1) 0%,transparent 50%),
-      radial-gradient(ellipse 50%  50% at 50%  50%,rgba(15,25,70,0.5) 0%,transparent 100%);
-  }
+  /* Floating credential card */
+  @keyframes cardFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
 
-  /* Animated nebula orbs */
-  .l-orb1{position:absolute;width:800px;height:800px;border-radius:50%;top:-250px;left:calc(50% - 400px);
-    background:radial-gradient(circle,rgba(70,130,255,0.18) 0%,rgba(40,80,200,0.08) 45%,transparent 75%);
-    filter:blur(55px);animation:drift1 22s ease-in-out infinite;}
-  .l-orb2{position:absolute;width:600px;height:600px;border-radius:50%;top:15%;left:-200px;
-    background:radial-gradient(circle,rgba(90,60,240,0.14) 0%,transparent 70%);
-    filter:blur(65px);animation:drift2 28s ease-in-out infinite 3s;}
-  .l-orb3{position:absolute;width:550px;height:550px;border-radius:50%;bottom:-50px;right:-150px;
-    background:radial-gradient(circle,rgba(0,150,230,0.12) 0%,transparent 70%);
-    filter:blur(60px);animation:drift3 35s ease-in-out infinite 6s;}
-  .l-orb4{position:absolute;width:350px;height:350px;border-radius:50%;top:35%;right:10%;
-    background:radial-gradient(circle,rgba(120,80,255,0.1) 0%,transparent 70%);
-    filter:blur(45px);animation:drift1 20s ease-in-out infinite 8s;}
+  /* Aureole spin */
+  @keyframes aureoleSpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+  @keyframes aureoleSpinRev{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(-360deg)}}
 
-  /* God rays — slowly rotating cone of light */
-  .l-rays{
-    position:absolute;top:0;left:50%;
-    width:220%;height:120vh;
-    background:repeating-conic-gradient(from 0deg at 50% -35%,
-      rgba(160,200,255,0.07) 0deg 2.5deg,
-      transparent 2.5deg 10deg,
-      rgba(160,200,255,0.04) 10deg 12deg,
-      transparent 12deg 22deg,
-      rgba(200,220,255,0.03) 22deg 23.5deg,
-      transparent 23.5deg 32deg);
-    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.4) 35%,transparent 70%);
-    animation:rayspin 120s linear infinite;
-    transform-origin:50% 0%;
-    transform:translateX(-50%);
-  }
+  /* ════════════ LOGIN SCENE ════════════ */
+  .login-scene{position:fixed;inset:0;overflow:hidden;background:radial-gradient(ellipse 200% 100% at 50% 0%, #060e28 0%, #020510 60%);}
 
-  /* Grid overlay */
-  .l-grid{
-    position:absolute;inset:0;
-    background-image:
-      linear-gradient(rgba(100,160,255,0.05) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(100,160,255,0.05) 1px,transparent 1px);
-    background-size:72px 72px;
-    mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 100%);
-  }
+  .l-orb1{position:absolute;width:900px;height:900px;border-radius:50%;top:-300px;left:calc(50% - 450px);
+    background:radial-gradient(circle,rgba(60,120,255,0.16) 0%,rgba(30,70,200,0.06) 50%,transparent 75%);
+    filter:blur(60px);animation:drift1 24s ease-in-out infinite;}
+  .l-orb2{position:absolute;width:650px;height:650px;border-radius:50%;top:10%;left:-220px;
+    background:radial-gradient(circle,rgba(80,50,230,0.12) 0%,transparent 70%);
+    filter:blur(70px);animation:drift2 30s ease-in-out infinite 4s;}
+  .l-orb3{position:absolute;width:600px;height:600px;border-radius:50%;bottom:-80px;right:-170px;
+    background:radial-gradient(circle,rgba(0,140,230,0.1) 0%,transparent 70%);
+    filter:blur(65px);animation:drift3 38s ease-in-out infinite 8s;}
+  .l-orb4{position:absolute;width:400px;height:400px;border-radius:50%;top:30%;right:8%;
+    background:radial-gradient(circle,rgba(100,60,255,0.08) 0%,transparent 70%);
+    filter:blur(50px);animation:drift1 22s ease-in-out infinite 10s;}
 
-  /* Floating particles */
-  .l-particle{
-    position:absolute;border-radius:50%;
-    background:rgba(180,220,255,0.9);
-    animation:particleRise var(--dur,8s) ease-in-out infinite var(--delay,0s);
-    width:var(--size,2px);height:var(--size,2px);
-  }
+  .l-rays{position:absolute;top:0;left:50%;width:230%;height:130vh;
+    background:repeating-conic-gradient(from 0deg at 50% -40%,
+      rgba(150,200,255,0.055) 0deg 2deg, transparent 2deg 9deg,
+      rgba(150,200,255,0.03) 9deg 11deg, transparent 11deg 20deg,
+      rgba(200,220,255,0.02) 20deg 21deg, transparent 21deg 30deg);
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 30%,transparent 65%);
+    animation:rayspin 130s linear infinite;transform-origin:50% 0%;transform:translateX(-50%);}
 
-  /* Stars */
+  .l-grid{position:absolute;inset:0;
+    background-image:linear-gradient(rgba(80,140,255,0.04) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(80,140,255,0.04) 1px,transparent 1px);
+    background-size:80px 80px;
+    mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,black 0%,transparent 100%);}
+
   .l-star{position:absolute;border-radius:50%;background:#fff;}
   .l-star.tw1{animation:tw1 var(--dur,3s) ease-in-out infinite var(--delay,0s);}
   .l-star.tw2{animation:tw2 var(--dur,4s) ease-in-out infinite var(--delay,0s);}
   .l-star.tw3{animation:tw3 var(--dur,5s) ease-in-out infinite var(--delay,0s);}
 
-  /* ══════════════════════════════════════
-     LOGIN CARD
-  ══════════════════════════════════════ */
-  .login-card{
-    animation:fadeUp 1.1s cubic-bezier(0.16,1,0.3,1) both 0.2s;
-    position:relative;z-index:10;
-    background:rgba(4,8,22,0.72);
-    border-radius:28px;padding:54px 48px;width:430px;box-sizing:border-box;
-    backdrop-filter:blur(40px) saturate(1.8);
-    border:1px solid rgba(140,200,255,0.14);
-    box-shadow:
-      inset 0 1px 0 rgba(200,230,255,0.1),
-      inset 0 -1px 0 rgba(0,0,0,0.2),
-      0 0 0 1px rgba(0,0,0,0.4),
-      0 40px 100px rgba(0,0,30,0.7),
-      0 0 140px rgba(30,80,200,0.12);
-  }
-  .login-card::before{
-    content:'';position:absolute;top:0;left:8%;right:8%;height:1px;border-radius:1px;
-    background:linear-gradient(90deg,transparent,rgba(140,200,255,0.5),rgba(220,240,255,1),rgba(140,200,255,0.5),transparent);
-  }
-  .login-card::after{
-    content:'';position:absolute;bottom:0;left:20%;right:20%;height:1px;border-radius:1px;
-    background:linear-gradient(90deg,transparent,rgba(80,140,255,0.2),transparent);
+  .l-particle{position:absolute;border-radius:50%;
+    width:var(--size,2px);height:var(--size,2px);
+    background:radial-gradient(circle,rgba(200,230,255,1),rgba(140,200,255,0.6));
+    box-shadow:0 0 4px rgba(180,220,255,0.8);
+    animation:particleRise var(--dur,10s) ease-in-out infinite var(--delay,0s);}
+
+  /* ════════════ FULL-PAGE LOGIN LAYOUT ════════════ */
+  /* Left panel — branding */
+  .login-left{
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+    padding:80px 60px;position:relative;z-index:2;
+    animation:fadeIn 1.2s ease both 0.3s;
   }
 
-  /* ── Logo divine glow ── */
+  /* Right panel — form */
+  .login-right{
+    width:420px;display:flex;flex-direction:column;justify-content:center;
+    padding:60px 56px;position:relative;z-index:2;
+    background:rgba(3,6,18,0.75);
+    border-left:1px solid rgba(100,160,255,0.08);
+    backdrop-filter:blur(40px) saturate(1.8);
+    min-height:100vh;
+    animation:slideRight 0.9s cubic-bezier(0.16,1,0.3,1) both 0.1s;
+  }
+  .login-right::before{
+    content:'';position:absolute;top:0;left:0;bottom:0;width:1px;
+    background:linear-gradient(to bottom,transparent,rgba(140,200,255,0.25) 30%,rgba(180,220,255,0.4) 50%,rgba(140,200,255,0.25) 70%,transparent);
+  }
+
+  /* Aureole — decorative ring around logo */
+  .aureole{position:absolute;border-radius:50%;border:1px solid rgba(140,200,255,0.12);}
+  .aureole-1{width:260px;height:260px;animation:aureoleSpin 30s linear infinite;}
+  .aureole-2{width:340px;height:340px;animation:aureoleSpinRev 45s linear infinite;border-style:dashed;border-color:rgba(100,160,255,0.07);}
+  .aureole-3{width:430px;height:430px;animation:aureoleSpin 65s linear infinite;border-color:rgba(80,140,255,0.05);}
+
+  /* Logo glow */
   .tf-logo-glow{animation:divineGlow 4s ease-in-out infinite;}
 
-  /* ── God title ── */
-  .god-title{
-    font-family:'Cinzel Decorative',serif;font-size:26px;font-weight:900;letter-spacing:0.08em;
-    background:linear-gradient(120deg,#a8d0ff 0%,#ffffff 25%,#ddf0ff 50%,#ffffff 75%,#a8d0ff 100%);
-    background-size:250% auto;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    animation:titleShimmer 6s linear infinite;
-  }
-
-  /* Halo ring */
-  .halo-ring{
-    position:absolute;top:50%;left:50%;
-    border-radius:50%;border:1px solid rgba(140,200,255,0.25);
-    animation:haloPulse 4s ease-in-out infinite;
-  }
-
-  /* ══════════════════════════════════════
-     HEAVEN INTERIOR (after login)
-  ══════════════════════════════════════ */
-  .heaven-bg{
-    position:fixed;inset:0;pointer-events:none;z-index:0;
+  /* ════════════ HEAVEN INTERIOR ════════════ */
+  .heaven-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
     background:
-      radial-gradient(ellipse 220% 65% at 50% -8%,  rgba(80,140,255,0.16) 0%, rgba(50,100,220,0.08) 30%,transparent 58%),
-      radial-gradient(ellipse 140% 45% at 50% -2%,  rgba(255,255,255,0.05) 0%,transparent 42%),
-      radial-gradient(ellipse 70%  60% at 5%   90%,  rgba(70,50,200,0.07) 0%,transparent 55%),
-      radial-gradient(ellipse 60%  50% at 95%  85%,  rgba(0,150,220,0.06) 0%,transparent 50%),
-      #020510;
-  }
-  .heaven-orb1{
-    position:fixed;width:1000px;height:450px;border-radius:50%;
-    top:-120px;left:50%;pointer-events:none;z-index:0;
-    background:radial-gradient(ellipse,rgba(80,140,255,0.14) 0%,rgba(50,100,220,0.05) 50%,transparent 75%);
-    filter:blur(70px);
-    animation:heavenPulse 14s ease-in-out infinite, heavenDrift1 20s ease-in-out infinite;
-  }
-  .heaven-orb2{
-    position:fixed;width:700px;height:700px;border-radius:50%;
-    top:5%;left:-250px;pointer-events:none;z-index:0;
-    background:radial-gradient(circle,rgba(60,50,200,0.08) 0%,transparent 70%);
-    filter:blur(90px);animation:heavenPulse 20s ease-in-out infinite 5s;
-  }
-  .heaven-orb3{
-    position:fixed;width:600px;height:600px;border-radius:50%;
-    bottom:-100px;right:-180px;pointer-events:none;z-index:0;
-    background:radial-gradient(circle,rgba(0,150,220,0.07) 0%,transparent 70%);
-    filter:blur(80px);animation:heavenPulse 17s ease-in-out infinite 9s;
-  }
-  .heaven-rays{
-    position:fixed;top:0;left:50%;
-    width:140%;height:75vh;pointer-events:none;z-index:0;
+      radial-gradient(ellipse 220% 65% at 50% -8%,rgba(60,120,255,0.14) 0%,rgba(40,90,200,0.07) 30%,transparent 58%),
+      radial-gradient(ellipse 120% 40% at 50% -2%,rgba(255,255,255,0.04) 0%,transparent 40%),
+      radial-gradient(ellipse 60% 55% at 5% 90%,rgba(60,40,200,0.06) 0%,transparent 55%),
+      radial-gradient(ellipse 50% 45% at 95% 85%,rgba(0,140,220,0.05) 0%,transparent 50%),#020510;}
+  .heaven-orb1{position:fixed;width:1000px;height:450px;border-radius:50%;top:-120px;left:50%;
+    pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse,rgba(60,120,255,0.12) 0%,rgba(40,90,200,0.04) 50%,transparent 75%);
+    filter:blur(70px);animation:heavenPulse 14s ease-in-out infinite,heavenDrift 20s ease-in-out infinite;}
+  .heaven-orb2{position:fixed;width:700px;height:700px;border-radius:50%;top:5%;left:-250px;
+    pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(50,40,200,0.07) 0%,transparent 70%);
+    filter:blur(90px);animation:heavenPulse 20s ease-in-out infinite 5s;}
+  .heaven-orb3{position:fixed;width:600px;height:600px;border-radius:50%;bottom:-100px;right:-180px;
+    pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(0,140,220,0.06) 0%,transparent 70%);
+    filter:blur(80px);animation:heavenPulse 17s ease-in-out infinite 9s;}
+  .heaven-rays{position:fixed;top:0;left:50%;width:140%;height:75vh;pointer-events:none;z-index:0;
     background:repeating-conic-gradient(from -18deg at 50% -22%,
-      rgba(140,190,255,0.05) 0deg 3deg,transparent 3deg 9deg,
-      rgba(140,190,255,0.03) 9deg 11.5deg,transparent 11.5deg 20deg);
-    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.15) 55%,transparent 100%);
-    transform:translateX(-50%);
-  }
+      rgba(120,180,255,0.045) 0deg 3deg,transparent 3deg 9deg,
+      rgba(120,180,255,0.025) 9deg 11.5deg,transparent 11.5deg 20deg);
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 55%,transparent 100%);
+    transform:translateX(-50%);}
   .heaven-logo{width:130px;height:auto;}
 `;
 
@@ -535,125 +436,233 @@ function LoginScreen({onLogin}) {
     onLogin();
   };
 
-  // Stars & particles — generated once
   const STARS = [
-    {cls:"tw1",w:2,h:2,top:"8%", left:"12%",dur:"3.2s",delay:"0s"},
-    {cls:"tw2",w:1.5,h:1.5,top:"14%",left:"78%",dur:"4.1s",delay:"0.8s"},
-    {cls:"tw1",w:2.5,h:2.5,top:"22%",left:"92%",dur:"2.8s",delay:"1.5s"},
-    {cls:"tw3",w:1,h:1,top:"35%",left:"5%", dur:"5s",  delay:"0.3s"},
-    {cls:"tw2",w:2,h:2,top:"55%",left:"88%",dur:"3.7s",delay:"2s"},
-    {cls:"tw1",w:1.5,h:1.5,top:"70%",left:"15%",dur:"4.4s",delay:"1s"},
-    {cls:"tw3",w:3,h:3,top:"18%",left:"55%",dur:"6s",  delay:"2.5s"},
-    {cls:"tw2",w:1,h:1,top:"80%",left:"45%",dur:"3s",  delay:"0.5s"},
-    {cls:"tw1",w:2,h:2,top:"42%",left:"70%",dur:"5.2s",delay:"3s"},
-    {cls:"tw3",w:1.5,h:1.5,top:"90%",left:"80%",dur:"4s",delay:"1.8s"},
-    {cls:"tw1",w:1,h:1,top:"6%", left:"35%",dur:"3.5s",delay:"0.2s"},
-    {cls:"tw2",w:2,h:2,top:"65%",left:"60%",dur:"4.8s",delay:"2.2s"},
+    {cls:"tw1",w:2,  h:2,  top:"5%", left:"8%", dur:"3.2s",delay:"0s"},
+    {cls:"tw2",w:1.5,h:1.5,top:"12%",left:"72%",dur:"4.1s",delay:"0.8s"},
+    {cls:"tw1",w:2.5,h:2.5,top:"20%",left:"88%",dur:"2.8s",delay:"1.5s"},
+    {cls:"tw3",w:1,  h:1,  top:"32%",left:"4%", dur:"5s",  delay:"0.3s"},
+    {cls:"tw2",w:2,  h:2,  top:"52%",left:"82%",dur:"3.7s",delay:"2s"},
+    {cls:"tw1",w:1.5,h:1.5,top:"68%",left:"14%",dur:"4.4s",delay:"1s"},
+    {cls:"tw3",w:3,  h:3,  top:"16%",left:"50%",dur:"6s",  delay:"2.5s"},
+    {cls:"tw2",w:1,  h:1,  top:"78%",left:"40%",dur:"3s",  delay:"0.5s"},
+    {cls:"tw1",w:2,  h:2,  top:"40%",left:"65%",dur:"5.2s",delay:"3s"},
+    {cls:"tw3",w:1.5,h:1.5,top:"88%",left:"75%",dur:"4s",  delay:"1.8s"},
+    {cls:"tw1",w:1,  h:1,  top:"6%", left:"30%",dur:"3.5s",delay:"0.2s"},
+    {cls:"tw2",w:2,  h:2,  top:"62%",left:"55%",dur:"4.8s",delay:"2.2s"},
+    {cls:"tw3",w:1,  h:1,  top:"25%",left:"22%",dur:"5.5s",delay:"1.3s"},
+    {cls:"tw1",w:1.5,h:1.5,top:"45%",left:"95%",dur:"3.9s",delay:"3.5s"},
+    {cls:"tw2",w:2.5,h:2.5,top:"72%",left:"28%",dur:"4.6s",delay:"0.7s"},
   ];
   const PARTICLES = [
-    {bottom:"5%", left:"20%", size:"2px",dur:"9s", delay:"0s",  dx:"15px"},
-    {bottom:"10%",left:"50%", size:"1.5px",dur:"11s",delay:"2s", dx:"-10px"},
-    {bottom:"8%", left:"70%", size:"2px",dur:"8s", delay:"4s",  dx:"20px"},
-    {bottom:"3%", left:"35%", size:"1px",dur:"13s",delay:"1s",  dx:"-18px"},
-    {bottom:"6%", left:"82%", size:"2.5px",dur:"10s",delay:"5s", dx:"12px"},
-    {bottom:"12%",left:"8%",  size:"1.5px",dur:"7s", delay:"3s",  dx:"8px"},
+    {bottom:"4%", left:"18%",size:"2px",  dur:"10s",delay:"0s", dx:"18px"},
+    {bottom:"8%", left:"42%",size:"1.5px",dur:"12s",delay:"2s", dx:"-12px"},
+    {bottom:"6%", left:"65%",size:"2px",  dur:"9s", delay:"4s", dx:"22px"},
+    {bottom:"2%", left:"30%",size:"1px",  dur:"14s",delay:"1s", dx:"-20px"},
+    {bottom:"5%", left:"78%",size:"2.5px",dur:"11s",delay:"5s", dx:"14px"},
+    {bottom:"10%",left:"6%", size:"1.5px",dur:"8s", delay:"3s", dx:"10px"},
+    {bottom:"3%", left:"55%",size:"1px",  dur:"13s",delay:"6s", dx:"-8px"},
+    {bottom:"7%", left:"88%",size:"2px",  dur:"10s",delay:"1.5s",dx:"16px"},
   ];
 
+  // Tagline words for staggered reveal
+  const TAGLINE = ["Portfolio", "Intelligence", "Command", "Center"];
+
   return (
-    <div style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#010308"}}>
+    <div style={{minHeight:"100vh",display:"flex",overflow:"hidden",background:"#020510",position:"relative"}}>
 
-      {/* ─── Full animated background ─── */}
+      {/* ── Animated background (behind everything) ── */}
       <div className="login-scene">
-        <div className="l-orb1"/>
-        <div className="l-orb2"/>
-        <div className="l-orb3"/>
-        <div className="l-orb4"/>
-        <div className="l-rays"/>
-        <div className="l-grid"/>
-
-        {/* Twinkling stars */}
+        <div className="l-orb1"/><div className="l-orb2"/>
+        <div className="l-orb3"/><div className="l-orb4"/>
+        <div className="l-rays"/><div className="l-grid"/>
         {STARS.map((s,i)=>(
           <div key={i} className={`l-star ${s.cls}`}
-            style={{top:s.top,left:s.left,width:s.w,height:s.h,
-              "--dur":s.dur,"--delay":s.delay}}/>
+            style={{top:s.top,left:s.left,width:s.w,height:s.h,"--dur":s.dur,"--delay":s.delay}}/>
         ))}
-
-        {/* Rising light particles */}
         {PARTICLES.map((p,i)=>(
           <div key={i} className="l-particle"
-            style={{bottom:p.bottom,left:p.left,
-              "--size":p.size,"--dur":p.dur,"--delay":p.delay,"--dx":p.dx}}/>
+            style={{bottom:p.bottom,left:p.left,"--size":p.size,"--dur":p.dur,"--delay":p.delay,"--dx":p.dx}}/>
         ))}
       </div>
 
-      {/* ─── Login card ─── */}
-      <div className="login-card">
+      {/* ══════════════════════════════════════
+          LEFT — Branding panel
+      ══════════════════════════════════════ */}
+      <div className="login-left">
 
-        {/* Logo + title */}
-        <div style={{textAlign:"center",marginBottom:40}}>
+        {/* Logo */}
+        <div style={{marginBottom:56,animation:"fadeUp 1s ease both 0.4s"}}>
+          <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow"
+            style={{width:200,height:"auto",display:"block"}}/>
+        </div>
 
-          {/* Halo rings behind logo */}
-          <div style={{position:"relative",display:"inline-block",marginBottom:16}}>
-            <div className="halo-ring" style={{width:320,height:100,"--delay":"0s"}}/>
-            <div className="halo-ring" style={{width:260,height:80,opacity:0.6,animationDelay:"1s"}}/>
-            <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow"
-              style={{width:230,height:"auto",position:"relative",zIndex:2,display:"block"}}/>
-          </div>
-
-          {/* God Mode title */}
-          <div className="god-title" style={{marginBottom:10}}>GOD MODE</div>
-
-          {/* Divider */}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:4}}>
-            <div style={{flex:1,maxWidth:60,height:1,background:"linear-gradient(90deg,transparent,rgba(140,200,255,0.4))"}}/>
-            <div style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"rgba(160,210,255,0.55)",letterSpacing:"0.25em",textTransform:"uppercase"}}>
-              Authorised Access Only
-            </div>
-            <div style={{flex:1,maxWidth:60,height:1,background:"linear-gradient(90deg,rgba(140,200,255,0.4),transparent)"}}/>
+        {/* Main headline */}
+        <div style={{marginBottom:20,animation:"fadeUp 1s ease both 0.6s"}}>
+          <div style={{
+            fontFamily:"'Cormorant Garamond',serif",
+            fontSize:"clamp(52px,6vw,88px)",
+            fontWeight:300,
+            lineHeight:1.05,
+            letterSpacing:"-0.02em",
+            color:"#ffffff",
+          }}>
+            <div style={{display:"block"}}>God</div>
+            <div style={{
+              display:"block",fontStyle:"italic",fontWeight:300,
+              background:"linear-gradient(135deg,#a8d0ff 0%,#ffffff 40%,#c8e8ff 100%)",
+              WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
+            }}>Mode.</div>
           </div>
         </div>
 
-        {/* Form */}
-        <div style={{display:"flex",flexDirection:"column",gap:14}}>
-          <div>
-            <div style={{fontSize:10,color:"rgba(160,200,255,0.6)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:7}}>Email</div>
-            <input className="login-input" type="email" placeholder="your@email.com" value={email}
-              onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
+        {/* Tagline — staggered word reveal */}
+        <div style={{display:"flex",gap:10,marginBottom:48,flexWrap:"wrap",animation:"fadeIn 1s ease both 0.9s"}}>
+          {TAGLINE.map((word,i)=>(
+            <span key={i} style={{
+              fontSize:11,letterSpacing:"0.2em",textTransform:"uppercase",
+              color:"rgba(160,210,255,0.55)",fontFamily:"'DM Mono',monospace",
+              animation:`letterReveal 0.6s ease both ${0.9+i*0.12}s`,
+            }}>
+              {word}{i<TAGLINE.length-1&&<span style={{color:"rgba(100,150,220,0.25)",marginLeft:10}}>·</span>}
+            </span>
+          ))}
+        </div>
+
+        {/* Aureole + stat orbs */}
+        <div style={{position:"relative",width:220,height:220,marginBottom:56,animation:"fadeIn 1.5s ease both 1.2s"}}>
+          {/* Spinning rings */}
+          <div className="aureole aureole-1" style={{position:"absolute",top:"50%",left:"50%"}}/>
+          <div className="aureole aureole-2" style={{position:"absolute",top:"50%",left:"50%"}}/>
+          <div className="aureole aureole-3" style={{position:"absolute",top:"50%",left:"50%"}}/>
+          {/* Center */}
+          <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
+            width:100,height:100,borderRadius:"50%",
+            background:"radial-gradient(circle,rgba(80,140,255,0.18),rgba(40,90,200,0.08),transparent)",
+            border:"1px solid rgba(140,200,255,0.2)",
+            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+            boxShadow:"0 0 40px rgba(60,120,255,0.15)"}}>
+            <div style={{fontSize:24,fontWeight:700,color:"#c8e8ff",fontFamily:"'DM Mono',monospace",lineHeight:1}}>8</div>
+            <div style={{fontSize:8,color:"rgba(140,200,255,0.5)",letterSpacing:"0.15em",textTransform:"uppercase",marginTop:3}}>Clients</div>
           </div>
-          <div>
-            <div style={{fontSize:10,color:"rgba(160,200,255,0.6)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:7}}>Password</div>
-            <input className="login-input" type="password" placeholder="••••••••••" value={pw}
-              onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
-          </div>
-          {err && (
-            <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",
-              background:"rgba(248,113,113,0.07)",border:"1px solid rgba(248,113,113,0.2)",borderRadius:10}}>
-              <div style={{width:5,height:5,borderRadius:"50%",background:"#f87171",flexShrink:0,boxShadow:"0 0 6px #f87171"}}/>
-              <div style={{fontSize:12,color:"#fca5a5",fontFamily:"'DM Mono',monospace"}}>{err}</div>
+          {/* Orbit dots */}
+          {[0,1,2,3,4,5,6,7].map((i)=>{
+            const angle = (i/8)*360;
+            const rad = angle*(Math.PI/180);
+            const r = 108;
+            const x = 110 + r*Math.cos(rad);
+            const y = 110 + r*Math.sin(rad);
+            const colors=["#818cf8","#38bdf8","#86efac","#38bdf8","#4ade80","#60a5fa","#60a5fa","#2dd4bf"];
+            return (
+              <div key={i} style={{position:"absolute",width:8,height:8,borderRadius:"50%",
+                background:colors[i],left:x-4,top:y-4,
+                boxShadow:`0 0 8px ${colors[i]}`,
+                animation:`tw1 ${2+i*0.3}s ease-in-out infinite ${i*0.4}s`}}/>
+            );
+          })}
+        </div>
+
+        {/* Bottom stats */}
+        <div style={{display:"flex",gap:32,animation:"fadeUp 1s ease both 1.4s"}}>
+          {[["15","Users"],["2","Projects"],["100%","MFA Required"]].map(([val,label])=>(
+            <div key={label}>
+              <div style={{fontSize:22,fontWeight:600,color:"#c8e8ff",fontFamily:"'DM Mono',monospace",lineHeight:1}}>{val}</div>
+              <div style={{fontSize:9,color:"rgba(140,190,255,0.45)",textTransform:"uppercase",letterSpacing:"0.15em",marginTop:4}}>{label}</div>
             </div>
-          )}
-          <button className="login-btn" onClick={login} disabled={loading||!email||!pw} style={{marginTop:6}}>
-            {loading ? (
-              <span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
-                <span style={{width:13,height:13,border:"2px solid rgba(255,255,255,0.25)",borderTopColor:"white",borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
-                Authenticating…
-              </span>
-            ) : "⚡ Enter God Mode"}
-          </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════
+          RIGHT — Login form
+      ══════════════════════════════════════ */}
+      <div className="login-right">
+
+        {/* Form header */}
+        <div style={{marginBottom:40}}>
+          <div style={{fontSize:9,color:"rgba(140,190,255,0.4)",fontFamily:"'DM Mono',monospace",
+            letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:14}}>
+            Restricted access
+          </div>
+          <div style={{
+            fontFamily:"'Cormorant Garamond',serif",fontSize:36,fontWeight:400,
+            color:"#e8f4ff",lineHeight:1.15,letterSpacing:"-0.01em",
+          }}>
+            Sign in to<br/>
+            <span style={{fontStyle:"italic",color:"rgba(160,210,255,0.8)"}}>God Mode</span>
+          </div>
+        </div>
+
+        {/* Inputs */}
+        <div style={{display:"flex",flexDirection:"column",gap:16,marginBottom:8}}>
+          <div>
+            <div style={{fontSize:9,color:"rgba(140,190,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:7}}>Email</div>
+            <input className="login-input" type="email" placeholder="your@email.com"
+              value={email} onChange={e=>setEmail(e.target.value)}
+              onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
+          </div>
+          <div>
+            <div style={{fontSize:9,color:"rgba(140,190,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:7}}>Password</div>
+            <input className="login-input" type="password" placeholder="••••••••••"
+              value={pw} onChange={e=>setPw(e.target.value)}
+              onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
+          </div>
+        </div>
+
+        {err && (
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",marginBottom:8,
+            background:"rgba(248,113,113,0.06)",border:"1px solid rgba(248,113,113,0.18)",borderRadius:9}}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:"#f87171",flexShrink:0,boxShadow:"0 0 5px #f87171"}}/>
+            <div style={{fontSize:11,color:"#fca5a5",fontFamily:"'DM Mono',monospace"}}>{err}</div>
+          </div>
+        )}
+
+        <button className="login-btn" onClick={login} disabled={loading||!email||!pw}
+          style={{marginBottom:32}}>
+          {loading ? (
+            <span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
+              <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.25)",borderTopColor:"#fff",
+                borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
+              Verifying identity…
+            </span>
+          ) : "Enter God Mode →"}
+        </button>
+
+        {/* Divider */}
+        <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(100,160,255,0.15),transparent)",marginBottom:28}}/>
+
+        {/* MFA notice */}
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:40,
+          padding:"12px 14px",background:"rgba(60,120,255,0.06)",
+          border:"1px solid rgba(100,160,255,0.1)",borderRadius:9}}>
+          <div style={{width:16,height:16,borderRadius:"50%",background:"rgba(100,160,255,0.15)",
+            border:"1px solid rgba(100,160,255,0.3)",display:"flex",alignItems:"center",
+            justifyContent:"center",flexShrink:0,marginTop:1}}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(140,200,255,0.8)"}}/>
+          </div>
+          <div>
+            <div style={{fontSize:11,color:"rgba(160,210,255,0.7)",fontWeight:500,marginBottom:3}}>MFA Required</div>
+            <div style={{fontSize:10,color:"rgba(120,170,220,0.45)",lineHeight:1.4}}>
+              Two-factor authentication is mandatory for all God Mode sessions.
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
-        <div style={{marginTop:28,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-          <div style={{width:3,height:3,borderRadius:"50%",background:"rgba(100,160,255,0.4)"}}/>
-          <div style={{fontSize:9,color:"rgba(100,150,220,0.35)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em"}}>
-            TARGETFLOW · INTERNAL · RESTRICTED
+        <div style={{marginTop:"auto",paddingTop:20}}>
+          <div style={{fontSize:8,color:"rgba(80,120,180,0.3)",fontFamily:"'DM Mono',monospace",
+            letterSpacing:"0.15em",textAlign:"center",lineHeight:1.8}}>
+            TARGETFLOW OY · INTERNAL SYSTEM<br/>
+            UNAUTHORISED ACCESS PROHIBITED
           </div>
-          <div style={{width:3,height:3,borderRadius:"50%",background:"rgba(100,160,255,0.4)"}}/>
         </div>
       </div>
+
     </div>
   );
 }
+
 
 // ── User registry ────────────────────────────────────────────────────────────
 const USER_REGISTRY = [
