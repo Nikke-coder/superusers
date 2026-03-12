@@ -83,6 +83,12 @@ const STYLE = `
     85% {opacity:calc(var(--op,0.6)*0.4)}
     100%{opacity:0;transform:translateY(-180px) translateX(var(--dx,10px))}
   }
+  @keyframes rise{
+    0%  {opacity:0;transform:translateY(0)}
+    8%  {opacity:var(--op,0.55)}
+    88% {opacity:calc(var(--op,0.55)*0.3)}
+    100%{opacity:0;transform:translateY(-100vh)}
+  }
   /* Ambient orb */
   @keyframes orbDrift{
     0%,100%{transform:translate(-50%,-50%) scale(1)}
@@ -460,14 +466,12 @@ function LoginScreen({onLogin}) {
   };
 
   // Particles
-  const PARTICLES = Array.from({length:12},(_,i)=>({
-    left: `${8 + i*7.5}%`,
-    bottom: `${4 + (i%4)*6}%`,
-    size: `${1 + (i%3)*0.8}px`,
-    dur:  `${8 + (i%5)*2.5}s`,
-    delay:`${(i*1.3)%7}s`,
-    dx:   `${(i%2===0?1:-1)*(8+i%12)}px`,
-    op:   0.3 + (i%4)*0.15,
+  const PARTICLES = Array.from({length:18},(_,i)=>({
+    left:  `${(i * 5.5 + 2) % 96}%`,
+    size:  `${1 + (i%4)*0.6}px`,
+    dur:   `${7 + (i%6)*2.2}s`,
+    delay: `${(i*1.7)%9}s`,
+    op:    0.25 + (i%5)*0.12,
   }));
 
   // Constellation nodes around logo
@@ -492,15 +496,15 @@ function LoginScreen({onLogin}) {
       <div className="lx-bg"/>
       <div className="lx-glow"/>
 
-      {/* ── Floating particles ── */}
+      {/* ── Rising particles (bottom of screen, full width) ── */}
       {PARTICLES.map((p,i)=>(
         <div key={i} style={{
-          position:"fixed",bottom:p.bottom,left:p.left,
+          position:"fixed",bottom:0,left:p.left,
           width:p.size,height:p.size,borderRadius:"50%",
-          background:"rgba(200,225,255,0.9)",
-          boxShadow:"0 0 4px rgba(200,225,255,0.6)",
-          "--dx":p.dx,"--op":p.op,
-          animation:`float ${p.dur} ease-in-out infinite ${p.delay}`,
+          background:"rgba(200,225,255,0.85)",
+          boxShadow:"0 0 5px rgba(200,225,255,0.5)",
+          "--dx":"0px","--op":p.op,
+          animation:`rise ${p.dur} ease-in infinite ${p.delay}`,
           pointerEvents:"none",zIndex:1,
         }}/>
       ))}
@@ -564,7 +568,7 @@ function LoginScreen({onLogin}) {
         {/* Tag */}
         <div style={{
           fontFamily:"'DM Mono',monospace",fontSize:8,
-          letterSpacing:"0.3em",color:"rgba(180,210,255,0.3)",
+          letterSpacing:"0.3em",color:"rgba(220,235,255,0.55)",
           textTransform:"uppercase",marginBottom:44,
         }}>
           Targetflow · Internal System
@@ -645,7 +649,7 @@ function LoginScreen({onLogin}) {
         <div style={{
           marginTop:"auto",paddingTop:48,
           fontFamily:"'DM Mono',monospace",fontSize:7,
-          color:"rgba(140,170,220,0.2)",letterSpacing:"0.15em",
+          color:"rgba(180,210,255,0.35)",letterSpacing:"0.15em",
           lineHeight:1.9,
         }}>
           RESTRICTED ACCESS ONLY<br/>
