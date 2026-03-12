@@ -42,271 +42,268 @@ const sum = (arr) => (arr||[]).reduce((a,b)=>(a||0)+(b||0),0);
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const STYLE = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Syne:wght@400;500;600;700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:#020510;color:#dde8ff;font-family:'DM Sans',sans-serif;}
-  ::-webkit-scrollbar{width:4px;}
-  ::-webkit-scrollbar-track{background:#050a1a;}
-  ::-webkit-scrollbar-thumb{background:rgba(100,160,255,0.25);border-radius:2px;}
+  body{background:#03050a;color:#c8d8f0;font-family:'Space Grotesk',sans-serif;}
+  ::-webkit-scrollbar{width:3px;}
+  ::-webkit-scrollbar-track{background:#03050a;}
+  ::-webkit-scrollbar-thumb{background:rgba(0,200,120,0.25);border-radius:2px;}
 
-  .card{background:rgba(8,14,35,0.65);border:1px solid rgba(100,160,255,0.1);border-radius:16px;
+  /* ─── Dashboard card (post-login) ─── */
+  .card{background:rgba(6,10,22,0.8);border:1px solid rgba(0,180,100,0.1);border-radius:4px;
     transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;backdrop-filter:blur(16px);}
-  .card:hover{border-color:rgba(150,200,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,20,80,0.5);}
-  .open-btn{background:rgba(20,50,120,0.3);border:1px solid rgba(100,160,255,0.2);border-radius:8px;
-    color:#7ab4e8;font-family:'DM Mono',monospace;font-size:10px;padding:5px 12px;cursor:pointer;
-    transition:all 0.2s;white-space:nowrap;backdrop-filter:blur(8px);}
-  .open-btn:hover{border-color:#60a5fa;color:#bde0ff;background:rgba(30,70,160,0.4);}
+  .card:hover{border-color:rgba(0,220,130,0.25);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.6);}
+  .open-btn{background:rgba(0,180,100,0.08);border:1px solid rgba(0,180,100,0.2);border-radius:2px;
+    color:#00c878;font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 10px;cursor:pointer;
+    transition:all 0.15s;white-space:nowrap;letter-spacing:0.08em;}
+  .open-btn:hover{border-color:#00c878;color:#00ff9d;background:rgba(0,180,100,0.14);}
 
-  /* ── Login inputs ── */
-  .login-input{width:100%;background:rgba(8,15,40,0.7);border:1px solid rgba(140,190,255,0.25);border-radius:10px;
-    padding:14px 18px;color:#ffffff;font-size:15px;font-weight:400;outline:none;font-family:'DM Sans',sans-serif;
-    transition:border-color 0.3s,box-shadow 0.3s,background 0.3s;backdrop-filter:blur(16px);}
-  .login-input:focus{border-color:rgba(140,200,255,0.65);background:rgba(12,22,55,0.8);
-    box-shadow:0 0 0 3px rgba(80,160,255,0.1),0 0 20px rgba(80,160,255,0.06);}
-  .login-input::placeholder{color:rgba(140,180,240,0.35);}
-  .login-btn{width:100%;padding:14px;border-radius:10px;
-    background:linear-gradient(135deg,rgba(30,70,200,0.9),rgba(14,130,220,0.9));
-    border:1px solid rgba(160,210,255,0.3);color:#fff;font-size:11px;font-weight:600;
-    cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:0.2em;transition:all 0.3s;text-transform:uppercase;
-    box-shadow:0 4px 24px rgba(14,100,220,0.3);}
-  .login-btn:hover:not(:disabled){box-shadow:0 4px 40px rgba(14,165,233,0.5);transform:translateY(-1px);}
-  .login-btn:active:not(:disabled){transform:translateY(0);}
-  .login-btn:disabled{background:rgba(8,14,32,0.8);border:1px solid rgba(100,140,200,0.08);color:#1e3055;cursor:not-allowed;box-shadow:none;}
-
-  /* ════════════ KEYFRAMES ════════════ */
-  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
-
-  /* Orb drifts */
-  @keyframes drift1{0%,100%{transform:translate(0,0)}25%{transform:translate(50px,-35px)}50%{transform:translate(20px,45px)}75%{transform:translate(-35px,-15px)}}
-  @keyframes drift2{0%,100%{transform:translate(0,0)}30%{transform:translate(-45px,30px)}60%{transform:translate(20px,-40px)}85%{transform:translate(30px,25px)}}
-  @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(25px,45px)}66%{transform:translate(-35px,-25px)}}
-
-  /* Rays spin */
-  @keyframes rayspin{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
-
-  /* Stars */
-  @keyframes tw1{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
-  @keyframes tw2{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.85;transform:scale(1.3)}}
-  @keyframes tw3{0%,100%{opacity:0.1;transform:scale(1)}50%{opacity:0.7;transform:scale(1.5)}}
-
-  /* Particles */
-  @keyframes particleRise{
-    0%  {opacity:0;transform:translateY(0) translateX(0) scale(0.5)}
-    15% {opacity:0.9}
-    85% {opacity:0.5}
-    100%{opacity:0;transform:translateY(-200px) translateX(var(--dx,15px)) scale(0.8)}
+  /* ═══════════════════════════════════
+     LOGIN SCENE
+  ═══════════════════════════════════ */
+  .lx-root{
+    position:fixed;inset:0;display:flex;
+    background:#03050a;overflow:hidden;
+    font-family:'JetBrains Mono',monospace;
   }
 
-  /* ── God Mode button lightning ── */
-  @keyframes btnPulse{
-    0%,100%{box-shadow:0 0 20px rgba(80,160,255,0.4),0 0 60px rgba(40,100,255,0.2),inset 0 0 20px rgba(255,255,255,0.04)}
-    50%    {box-shadow:0 0 35px rgba(100,180,255,0.7),0 0 90px rgba(60,140,255,0.4),inset 0 0 30px rgba(255,255,255,0.08)}
-  }
-  @keyframes lightningFlash{
-    0%,89%,100%{opacity:0}
-    90%{opacity:1}
-    92%{opacity:0}
-    94%{opacity:0.8}
-    96%{opacity:0}
-    98%{opacity:0.4}
-  }
-  @keyframes boltDrop{
-    0%  {transform:translateY(-100%) scaleY(0);opacity:0}
-    30% {opacity:1}
-    70% {opacity:0.8}
-    100%{transform:translateY(100%) scaleY(1);opacity:0}
-  }
-  @keyframes shimmerSlide{
-    0%  {transform:translateX(-100%) skewX(-15deg)}
-    100%{transform:translateX(250%) skewX(-15deg)}
-  }
-  @keyframes labelFloat{
-    0%,100%{letter-spacing:0.2em;opacity:1}
-    50%{letter-spacing:0.28em;opacity:0.85}
+  /* Scanlines overlay */
+  .lx-root::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:100;
+    background:repeating-linear-gradient(
+      0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px
+    );
   }
 
-  /* ── God Mode button ── */
+  /* Fine grid */
+  .lx-grid{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(0,200,100,0.028) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,200,100,0.028) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+
+  /* Diagonal accent line */
+  .lx-diag{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    pointer-events:none;z-index:0;overflow:hidden;
+  }
+  .lx-diag::before{
+    content:'';position:absolute;
+    top:-20%;left:42%;
+    width:1px;height:140%;
+    background:linear-gradient(to bottom,transparent 0%,rgba(0,200,100,0.15) 30%,rgba(0,220,120,0.3) 50%,rgba(0,200,100,0.15) 70%,transparent 100%);
+    transform:rotate(8deg);
+  }
+  .lx-diag::after{
+    content:'';position:absolute;
+    top:-20%;left:44%;
+    width:1px;height:140%;
+    background:linear-gradient(to bottom,transparent 0%,rgba(0,200,100,0.06) 40%,rgba(0,200,100,0.1) 50%,transparent 100%);
+    transform:rotate(8deg);
+  }
+
+  /* ── LEFT PANEL ── */
+  .lx-left{
+    flex:1;display:flex;flex-direction:column;justify-content:space-between;
+    padding:48px 56px;position:relative;z-index:2;
+    border-right:1px solid rgba(0,200,100,0.07);
+  }
+
+  .lx-logo{width:180px;height:auto;filter:brightness(1.1);}
+
+  .lx-headline{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(44px,5.5vw,72px);
+    font-weight:800;
+    line-height:0.95;
+    letter-spacing:-0.03em;
+    color:#ffffff;
+  }
+  .lx-headline em{
+    font-style:normal;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(0,220,120,0.7);
+  }
+
+  .lx-sub{
+    font-size:11px;color:rgba(0,200,100,0.6);
+    letter-spacing:0.25em;text-transform:uppercase;
+    margin-top:20px;line-height:1.8;
+  }
+
+  /* Status readouts */
+  .lx-status-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    border:1px solid rgba(0,200,100,0.1);
+    background:rgba(0,200,100,0.06);
+    margin-top:0;
+  }
+  .lx-status-cell{
+    background:#03050a;padding:16px 18px;
+  }
+  .lx-status-label{
+    font-size:8px;letter-spacing:0.2em;text-transform:uppercase;
+    color:rgba(0,200,100,0.45);margin-bottom:6px;
+  }
+  .lx-status-val{
+    font-size:22px;font-weight:700;color:#ffffff;font-family:'Syne',sans-serif;
+    letter-spacing:-0.02em;line-height:1;
+  }
+  .lx-status-val.green{color:#00dc7a;}
+  .lx-status-meta{font-size:8px;color:rgba(0,180,80,0.4);margin-top:4px;letter-spacing:0.1em;}
+
+  /* Ticker tape */
+  .lx-ticker{
+    border-top:1px solid rgba(0,200,100,0.08);
+    border-bottom:1px solid rgba(0,200,100,0.08);
+    padding:8px 0;overflow:hidden;white-space:nowrap;
+  }
+  .lx-ticker-inner{
+    display:inline-flex;gap:48px;
+    animation:tickerScroll 30s linear infinite;
+  }
+  .lx-ticker-item{
+    font-size:9px;letter-spacing:0.15em;color:rgba(0,200,100,0.35);text-transform:uppercase;
+  }
+  .lx-ticker-item span{color:rgba(0,200,100,0.6);margin-right:10px;}
+
+  @keyframes tickerScroll{
+    0%{transform:translateX(0)}
+    100%{transform:translateX(-50%)}
+  }
+
+  /* Corner brackets */
+  .lx-bracket{position:absolute;width:16px;height:16px;}
+  .lx-bracket.tl{top:0;left:0;border-top:1px solid rgba(0,200,100,0.5);border-left:1px solid rgba(0,200,100,0.5);}
+  .lx-bracket.tr{top:0;right:0;border-top:1px solid rgba(0,200,100,0.5);border-right:1px solid rgba(0,200,100,0.5);}
+  .lx-bracket.bl{bottom:0;left:0;border-bottom:1px solid rgba(0,200,100,0.5);border-left:1px solid rgba(0,200,100,0.5);}
+  .lx-bracket.br{bottom:0;right:0;border-bottom:1px solid rgba(0,200,100,0.5);border-right:1px solid rgba(0,200,100,0.5);}
+
+  /* ── RIGHT PANEL ── */
+  .lx-right{
+    width:420px;display:flex;flex-direction:column;justify-content:center;
+    padding:64px 52px;position:relative;z-index:2;
+    background:rgba(0,4,12,0.6);
+    backdrop-filter:blur(20px);
+  }
+
+  .lx-form-header{
+    font-size:8px;letter-spacing:0.3em;text-transform:uppercase;
+    color:rgba(0,200,100,0.5);margin-bottom:32px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .lx-form-header::before{content:'';display:block;width:20px;height:1px;background:rgba(0,200,100,0.4);}
+
+  .lx-field-label{
+    font-size:9px;letter-spacing:0.2em;text-transform:uppercase;
+    color:rgba(255,255,255,0.65);margin-bottom:8px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .lx-field-label::before{content:'//';color:rgba(0,200,100,0.5);font-size:9px;}
+
+  .login-input{
+    width:100%;
+    background:rgba(0,8,20,0.8);
+    border:none;
+    border-bottom:1px solid rgba(0,200,100,0.2);
+    padding:12px 4px;
+    color:#ffffff;font-size:14px;font-weight:400;
+    outline:none;font-family:'JetBrains Mono',monospace;
+    transition:border-color 0.2s;
+    border-radius:0;
+  }
+  .login-input:focus{border-bottom-color:rgba(0,220,120,0.7);}
+  .login-input::placeholder{color:rgba(255,255,255,0.18);}
+
+  /* God Mode button */
   .god-btn{
     position:relative;overflow:hidden;
-    width:100%;padding:16px 24px;border-radius:12px;
-    background:linear-gradient(135deg,#0d1f6e 0%,#0a3d8f 40%,#0d6efd 70%,#0ea5e9 100%);
-    border:1px solid rgba(120,200,255,0.45);
-    color:#ffffff;font-size:11px;font-weight:700;
-    cursor:pointer;font-family:'DM Mono',monospace;
-    letter-spacing:0.2em;text-transform:uppercase;
-    transition:transform 0.15s,filter 0.15s;
-    animation:btnPulse 3s ease-in-out infinite;
-    filter:brightness(1);
+    width:100%;padding:15px 24px;border-radius:0;
+    background:transparent;
+    border:1px solid rgba(0,220,120,0.5);
+    color:#00dc7a;font-size:10px;font-weight:700;
+    cursor:pointer;font-family:'JetBrains Mono',monospace;
+    letter-spacing:0.25em;text-transform:uppercase;
+    transition:all 0.2s;
   }
   .god-btn:hover:not(:disabled){
-    transform:translateY(-2px) scale(1.01);
-    filter:brightness(1.2);
-    animation:btnPulse 1.5s ease-in-out infinite;
+    background:rgba(0,220,120,0.08);
+    border-color:#00dc7a;
+    color:#ffffff;
+    box-shadow:0 0 30px rgba(0,200,100,0.15),inset 0 0 20px rgba(0,200,100,0.04);
   }
-  .god-btn:active:not(:disabled){transform:translateY(1px) scale(0.99);filter:brightness(1.4);}
-  .god-btn:disabled{
-    background:rgba(8,14,32,0.8);border:1px solid rgba(100,140,200,0.08);
-    color:#1e3055;cursor:not-allowed;box-shadow:none;animation:none;
-  }
-  /* Shimmer sweep on hover */
+  .god-btn:active:not(:disabled){background:rgba(0,220,120,0.12);}
+  .god-btn:disabled{border-color:rgba(0,200,100,0.1);color:rgba(0,200,100,0.2);cursor:not-allowed;}
   .god-btn::before{
-    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-    background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.12) 50%,transparent 100%);
-    transform:translateX(-100%) skewX(-15deg);
-    transition:none;
+    content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(0,220,120,0.08),transparent);
+    transition:left 0.4s;
   }
-  .god-btn:hover::before{animation:shimmerSlide 0.7s ease forwards;}
-  /* Top edge highlight */
-  .god-btn::after{
-    content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
-    border-radius:1px;
-  }
-  /* Lightning bolt overlay */
-  .god-btn .bolt{
-    position:absolute;top:0;left:50%;transform:translateX(-50%);
-    width:2px;height:100%;
-    background:linear-gradient(to bottom,rgba(255,255,255,0.9),rgba(150,220,255,0.6),transparent);
-    animation:lightningFlash 4s ease-in-out infinite;
-    pointer-events:none;border-radius:1px;
-    filter:blur(0.5px);
-  }
-  .god-btn .bolt2{
-    left:30%;animation:lightningFlash 4s ease-in-out infinite 2.1s;
-    background:linear-gradient(to bottom,transparent,rgba(180,230,255,0.7),transparent);
-    width:1px;
-  }
-  .god-btn .bolt3{
-    left:70%;animation:lightningFlash 4s ease-in-out infinite 3.3s;
-    background:linear-gradient(to bottom,transparent,rgba(200,240,255,0.5),transparent);
-    width:1px;
-  }
-  .god-btn .btn-text{
-    position:relative;z-index:2;
-    animation:labelFloat 3s ease-in-out infinite;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-  }
-  .god-btn .btn-icon{font-size:14px;filter:drop-shadow(0 0 4px rgba(255,220,100,0.8));}
+  .god-btn:hover::before{left:150%;}
+  .god-btn .btn-text{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;}
+  .god-btn .bolt{display:none;}
+  .god-btn .bolt2{display:none;}
+  .god-btn .bolt3{display:none;}
+  .god-btn .btn-icon{font-size:12px;}
 
-  /* Logo glow */
+  /* Divider */
+  .lx-divider{
+    display:flex;align-items:center;gap:12px;margin:20px 0;
+  }
+  .lx-divider::before,.lx-divider::after{
+    content:'';flex:1;height:1px;background:rgba(0,200,100,0.08);
+  }
+  .lx-divider span{
+    font-size:8px;color:rgba(0,200,100,0.25);letter-spacing:0.2em;text-transform:uppercase;
+  }
+
+  /* MFA badge */
+  .lx-mfa{
+    display:flex;align-items:center;gap:10px;padding:10px 14px;
+    border:1px solid rgba(0,200,100,0.1);background:rgba(0,200,100,0.03);
+  }
+  .lx-mfa-dot{width:5px;height:5px;border-radius:50%;background:#00dc7a;
+    box-shadow:0 0 6px #00dc7a;flex-shrink:0;}
+  .lx-mfa-text{font-size:9px;color:rgba(0,200,100,0.55);letter-spacing:0.15em;text-transform:uppercase;}
+
+  /* Error */
+  .lx-err{
+    display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:14px;
+    border:1px solid rgba(255,80,80,0.2);background:rgba(255,50,50,0.04);
+  }
+  .lx-err-dot{width:5px;height:5px;border-radius:50%;background:#ff4444;flex-shrink:0;}
+  .lx-err-text{font-size:10px;color:#ff8888;letter-spacing:0.05em;}
+
+  /* Spinner */
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
   @keyframes divineGlow{
-    0%,100%{filter:drop-shadow(0 0 8px rgba(180,220,255,0.55)) drop-shadow(0 0 25px rgba(100,180,255,0.25)) brightness(1.15)}
-    50%    {filter:drop-shadow(0 0 18px rgba(220,240,255,0.9)) drop-shadow(0 0 50px rgba(130,200,255,0.5)) brightness(1.45)}
+    0%,100%{filter:brightness(1) drop-shadow(0 0 6px rgba(0,200,100,0.3))}
+    50%    {filter:brightness(1.15) drop-shadow(0 0 14px rgba(0,220,120,0.5))}
   }
-
-  /* Heaven orb pulse */
-  @keyframes heavenPulse{0%,100%{opacity:0.5}50%{opacity:1}}
-  @keyframes heavenDrift{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(18px)}}
-
-  /* Tagline letter reveal */
-  @keyframes letterReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-  /* Floating credential card */
-  @keyframes cardFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
-
-  /* Aureole spin */
+  @keyframes heavenPulse{0%,100%{opacity:0.6}50%{opacity:1}}
+  @keyframes heavenDrift{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(12px)}}
   @keyframes aureoleSpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
   @keyframes aureoleSpinRev{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(-360deg)}}
 
-  /* ════════════ LOGIN SCENE ════════════ */
-  .login-scene{position:fixed;inset:0;overflow:hidden;background:radial-gradient(ellipse 200% 100% at 50% 0%, #060e28 0%, #020510 60%);}
+  /* Cursor blink for terminal feel */
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .cursor{display:inline-block;width:8px;height:14px;background:#00dc7a;
+    vertical-align:middle;animation:blink 1s step-end infinite;margin-left:2px;}
 
-  .l-orb1{position:absolute;width:900px;height:900px;border-radius:50%;top:-300px;left:calc(50% - 450px);
-    background:radial-gradient(circle,rgba(60,120,255,0.16) 0%,rgba(30,70,200,0.06) 50%,transparent 75%);
-    filter:blur(60px);animation:drift1 24s ease-in-out infinite;}
-  .l-orb2{position:absolute;width:650px;height:650px;border-radius:50%;top:10%;left:-220px;
-    background:radial-gradient(circle,rgba(80,50,230,0.12) 0%,transparent 70%);
-    filter:blur(70px);animation:drift2 30s ease-in-out infinite 4s;}
-  .l-orb3{position:absolute;width:600px;height:600px;border-radius:50%;bottom:-80px;right:-170px;
-    background:radial-gradient(circle,rgba(0,140,230,0.1) 0%,transparent 70%);
-    filter:blur(65px);animation:drift3 38s ease-in-out infinite 8s;}
-  .l-orb4{position:absolute;width:400px;height:400px;border-radius:50%;top:30%;right:8%;
-    background:radial-gradient(circle,rgba(100,60,255,0.08) 0%,transparent 70%);
-    filter:blur(50px);animation:drift1 22s ease-in-out infinite 10s;}
-
-  .l-rays{position:absolute;top:0;left:50%;width:230%;height:130vh;
-    background:repeating-conic-gradient(from 0deg at 50% -40%,
-      rgba(150,200,255,0.055) 0deg 2deg, transparent 2deg 9deg,
-      rgba(150,200,255,0.03) 9deg 11deg, transparent 11deg 20deg,
-      rgba(200,220,255,0.02) 20deg 21deg, transparent 21deg 30deg);
-    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 30%,transparent 65%);
-    animation:rayspin 130s linear infinite;transform-origin:50% 0%;transform:translateX(-50%);}
-
-  .l-grid{position:absolute;inset:0;
-    background-image:linear-gradient(rgba(80,140,255,0.04) 1px,transparent 1px),
-                     linear-gradient(90deg,rgba(80,140,255,0.04) 1px,transparent 1px);
-    background-size:80px 80px;
-    mask-image:radial-gradient(ellipse 75% 75% at 50% 50%,black 0%,transparent 100%);}
-
-  .l-star{position:absolute;border-radius:50%;background:#fff;}
-  .l-star.tw1{animation:tw1 var(--dur,3s) ease-in-out infinite var(--delay,0s);}
-  .l-star.tw2{animation:tw2 var(--dur,4s) ease-in-out infinite var(--delay,0s);}
-  .l-star.tw3{animation:tw3 var(--dur,5s) ease-in-out infinite var(--delay,0s);}
-
-  .l-particle{position:absolute;border-radius:50%;
-    width:var(--size,2px);height:var(--size,2px);
-    background:radial-gradient(circle,rgba(200,230,255,1),rgba(140,200,255,0.6));
-    box-shadow:0 0 4px rgba(180,220,255,0.8);
-    animation:particleRise var(--dur,10s) ease-in-out infinite var(--delay,0s);}
-
-  /* ════════════ FULL-PAGE LOGIN LAYOUT ════════════ */
-  /* Left panel — branding */
-  .login-left{
-    flex:1;display:flex;flex-direction:column;justify-content:center;
-    padding:80px 60px;position:relative;z-index:2;
-    animation:fadeIn 1.2s ease both 0.3s;
-  }
-
-  /* Right panel — form */
-  .login-right{
-    width:400px;display:flex;flex-direction:column;justify-content:center;
-    padding:56px 48px;
-    position:fixed;top:0;right:0;bottom:0;z-index:10;
-    background:rgba(3,6,18,0.82);
-    backdrop-filter:blur(40px) saturate(1.8);
-    animation:slideRight 0.9s cubic-bezier(0.16,1,0.3,1) both 0.1s;
-  }
-  .login-right::before{
-    content:'';position:absolute;top:0;left:0;bottom:0;width:1px;
-    background:linear-gradient(to bottom,transparent,rgba(140,200,255,0.25) 30%,rgba(180,220,255,0.4) 50%,rgba(140,200,255,0.25) 70%,transparent);
-  }
-
-  /* Aureole — decorative ring around logo */
-  .aureole{position:absolute;border-radius:50%;border:1px solid rgba(140,200,255,0.12);}
-  .aureole-1{width:260px;height:260px;animation:aureoleSpin 30s linear infinite;}
-  .aureole-2{width:340px;height:340px;animation:aureoleSpinRev 45s linear infinite;border-style:dashed;border-color:rgba(100,160,255,0.07);}
-  .aureole-3{width:430px;height:430px;animation:aureoleSpin 65s linear infinite;border-color:rgba(80,140,255,0.05);}
-
-  /* Logo glow */
-  .tf-logo-glow{animation:divineGlow 4s ease-in-out infinite;}
-
-  /* ════════════ HEAVEN INTERIOR ════════════ */
+  /* ── Heaven (post-login) — minimal, no animation ── */
   .heaven-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
     background:
-      radial-gradient(ellipse 220% 65% at 50% -8%,rgba(60,120,255,0.14) 0%,rgba(40,90,200,0.07) 30%,transparent 58%),
-      radial-gradient(ellipse 120% 40% at 50% -2%,rgba(255,255,255,0.04) 0%,transparent 40%),
-      radial-gradient(ellipse 60% 55% at 5% 90%,rgba(60,40,200,0.06) 0%,transparent 55%),
-      radial-gradient(ellipse 50% 45% at 95% 85%,rgba(0,140,220,0.05) 0%,transparent 50%),#020510;}
-  .heaven-orb1{position:fixed;width:1000px;height:450px;border-radius:50%;top:-120px;left:50%;
-    pointer-events:none;z-index:0;
-    background:radial-gradient(ellipse,rgba(60,120,255,0.12) 0%,rgba(40,90,200,0.04) 50%,transparent 75%);
-    filter:blur(70px);animation:heavenPulse 14s ease-in-out infinite,heavenDrift 20s ease-in-out infinite;}
-  .heaven-orb2{position:fixed;width:700px;height:700px;border-radius:50%;top:5%;left:-250px;
-    pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(50,40,200,0.07) 0%,transparent 70%);
-    filter:blur(90px);animation:heavenPulse 20s ease-in-out infinite 5s;}
-  .heaven-orb3{position:fixed;width:600px;height:600px;border-radius:50%;bottom:-100px;right:-180px;
-    pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(0,140,220,0.06) 0%,transparent 70%);
-    filter:blur(80px);animation:heavenPulse 17s ease-in-out infinite 9s;}
-  .heaven-rays{position:fixed;top:0;left:50%;width:140%;height:75vh;pointer-events:none;z-index:0;
-    background:repeating-conic-gradient(from -18deg at 50% -22%,
-      rgba(120,180,255,0.045) 0deg 3deg,transparent 3deg 9deg,
-      rgba(120,180,255,0.025) 9deg 11.5deg,transparent 11.5deg 20deg);
-    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 55%,transparent 100%);
-    transform:translateX(-50%);}
-  .heaven-logo{width:130px;height:auto;}
+      radial-gradient(ellipse 100% 40% at 50% 0%,rgba(0,180,80,0.06) 0%,transparent 60%),
+      #03050a;
+  }
+  .heaven-orb1,.heaven-orb2,.heaven-orb3{display:none;}
+  .heaven-rays{display:none;}
+  .heaven-logo{width:110px;height:auto;}
 `;
 
 // ── Sparkline ─────────────────────────────────────────────────────────────────
@@ -527,168 +524,167 @@ function LoginScreen({onLogin}) {
     onLogin();
   };
 
-  const STARS = [
-    {cls:"tw1",w:2,  h:2,  top:"5%", left:"8%", dur:"3.2s",delay:"0s"},
-    {cls:"tw2",w:1.5,h:1.5,top:"12%",left:"72%",dur:"4.1s",delay:"0.8s"},
-    {cls:"tw1",w:2.5,h:2.5,top:"20%",left:"88%",dur:"2.8s",delay:"1.5s"},
-    {cls:"tw3",w:1,  h:1,  top:"32%",left:"4%", dur:"5s",  delay:"0.3s"},
-    {cls:"tw2",w:2,  h:2,  top:"52%",left:"82%",dur:"3.7s",delay:"2s"},
-    {cls:"tw1",w:1.5,h:1.5,top:"68%",left:"14%",dur:"4.4s",delay:"1s"},
-    {cls:"tw3",w:3,  h:3,  top:"16%",left:"50%",dur:"6s",  delay:"2.5s"},
-    {cls:"tw2",w:1,  h:1,  top:"78%",left:"40%",dur:"3s",  delay:"0.5s"},
-    {cls:"tw1",w:2,  h:2,  top:"40%",left:"65%",dur:"5.2s",delay:"3s"},
-    {cls:"tw3",w:1.5,h:1.5,top:"88%",left:"75%",dur:"4s",  delay:"1.8s"},
-    {cls:"tw1",w:1,  h:1,  top:"6%", left:"30%",dur:"3.5s",delay:"0.2s"},
-    {cls:"tw2",w:2,  h:2,  top:"62%",left:"55%",dur:"4.8s",delay:"2.2s"},
-    {cls:"tw3",w:1,  h:1,  top:"25%",left:"22%",dur:"5.5s",delay:"1.3s"},
-    {cls:"tw1",w:1.5,h:1.5,top:"45%",left:"95%",dur:"3.9s",delay:"3.5s"},
-    {cls:"tw2",w:2.5,h:2.5,top:"72%",left:"28%",dur:"4.6s",delay:"0.7s"},
-    {cls:"tw3",w:1,  h:1,  top:"55%",left:"2%", dur:"4.2s",delay:"2.8s"},
-    {cls:"tw1",w:2,  h:2,  top:"33%",left:"48%",dur:"3.8s",delay:"1.6s"},
-    {cls:"tw2",w:1,  h:1,  top:"85%",left:"18%",dur:"5.1s",delay:"0.4s"},
+  const TICKER = [
+    {label:"CLIENTS",val:"08"},
+    {label:"ACTIVE USERS",val:"15"},
+    {label:"MFA ENFORCED",val:"100%"},
+    {label:"UPTIME",val:"99.9%"},
+    {label:"ENCRYPTION",val:"AES-256"},
+    {label:"ACCESS LEVEL",val:"GOD"},
+    {label:"PROJECTS",val:"02"},
+    {label:"PROTOCOL",val:"TLS 1.3"},
   ];
-  const PARTICLES = [
-    {bottom:"4%", left:"18%",size:"2px",  dur:"10s",delay:"0s",  dx:"18px"},
-    {bottom:"8%", left:"42%",size:"1.5px",dur:"12s",delay:"2s",  dx:"-12px"},
-    {bottom:"6%", left:"65%",size:"2px",  dur:"9s", delay:"4s",  dx:"22px"},
-    {bottom:"2%", left:"30%",size:"1px",  dur:"14s",delay:"1s",  dx:"-20px"},
-    {bottom:"5%", left:"78%",size:"2.5px",dur:"11s",delay:"5s",  dx:"14px"},
-    {bottom:"10%",left:"6%", size:"1.5px",dur:"8s", delay:"3s",  dx:"10px"},
-    {bottom:"3%", left:"55%",size:"1px",  dur:"13s",delay:"6s",  dx:"-8px"},
-    {bottom:"7%", left:"88%",size:"2px",  dur:"10s",delay:"1.5s",dx:"16px"},
-    {bottom:"1%", left:"70%",size:"1.5px",dur:"15s",delay:"7s",  dx:"-14px"},
-    {bottom:"9%", left:"35%",size:"1px",  dur:"11s",delay:"4.5s",dx:"10px"},
+
+  const STATUS = [
+    {label:"Active Clients",   val:"08",    sub:"portfolios monitored",   green:false},
+    {label:"Portal Users",     val:"15",    sub:"registered accounts",    green:false},
+    {label:"System Status",    val:"LIVE",  sub:"all systems operational", green:true},
+    {label:"Security Level",   val:"AAL2",  sub:"MFA enforced",           green:true},
   ];
 
   return (
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#010208",position:"relative"}}>
+    <div className="lx-root">
+      <div className="lx-grid"/>
+      <div className="lx-diag"/>
 
-      {/* ── Scene ── */}
-      <div className="login-scene">
-        <div className="l-orb1"/><div className="l-orb2"/>
-        <div className="l-orb3"/><div className="l-orb4"/>
-        <div className="l-rays"/><div className="l-grid"/>
-        {STARS.map((s,i)=>(
-          <div key={i} className={`l-star ${s.cls}`}
-            style={{top:s.top,left:s.left,width:s.w,height:s.h,"--dur":s.dur,"--delay":s.delay}}/>
-        ))}
-        {PARTICLES.map((p,i)=>(
-          <div key={i} className="l-particle"
-            style={{bottom:p.bottom,left:p.left,"--size":p.size,"--dur":p.dur,"--delay":p.delay,"--dx":p.dx}}/>
-        ))}
-      </div>
+      {/* ══════════════════════════════
+          LEFT — branding + status
+      ══════════════════════════════ */}
+      <div className="lx-left">
 
-      {/* ── Centered logo — fixed behind everything ── */}
-      <div style={{
-        position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
-        display:"flex",flexDirection:"column",alignItems:"center",
-        pointerEvents:"none",zIndex:1,
-      }}>
-        {/* Bloom */}
-        <div style={{
-          position:"absolute",width:700,height:350,borderRadius:"50%",
-          background:"radial-gradient(ellipse,rgba(80,140,255,0.14) 0%,transparent 70%)",
-          filter:"blur(50px)",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
-        }}/>
-        <div style={{
-          position:"absolute",width:400,height:200,borderRadius:"50%",
-          background:"radial-gradient(ellipse,rgba(180,220,255,0.07) 0%,transparent 70%)",
-          filter:"blur(20px)",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
-        }}/>
-        {/* Spinning rings */}
-        <div style={{position:"absolute",top:"50%",left:"50%",
-          width:380,height:380,borderRadius:"50%",
-          border:"1px solid rgba(140,200,255,0.07)",
-          animation:"aureoleSpin 45s linear infinite",
-          transform:"translate(-50%,-50%)"}}/>
-        <div style={{position:"absolute",top:"50%",left:"50%",
-          width:300,height:300,borderRadius:"50%",
-          border:"1px dashed rgba(100,160,255,0.05)",
-          animation:"aureoleSpinRev 30s linear infinite",
-          transform:"translate(-50%,-50%)"}}/>
-        <div style={{position:"absolute",top:"50%",left:"50%",
-          width:490,height:490,borderRadius:"50%",
-          border:"1px solid rgba(80,130,255,0.03)",
-          animation:"aureoleSpin 70s linear infinite",
-          transform:"translate(-50%,-50%)"}}/>
-        {/* Logo */}
-        <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow"
-          style={{width:280,height:"auto",position:"relative",zIndex:2,display:"block"}}/>
-      </div>
-
-      {/* ── Login form — right panel ── */}
-      <div className="login-right">
-        <div style={{marginBottom:36}}>
-          <div style={{fontSize:8,color:"rgba(200,225,255,0.7)",fontFamily:"'DM Mono',monospace",
-            letterSpacing:"0.35em",textTransform:"uppercase",marginBottom:18}}>
-            Restricted access
-          </div>
-          <div style={{height:1,width:36,background:"linear-gradient(90deg,rgba(140,200,255,0.35),transparent)"}}/>
+        {/* Top */}
+        <div>
+          <img src={TF_LOGO} alt="Targetflow" className="lx-logo"
+            style={{marginBottom:56,filter:"brightness(1.1) drop-shadow(0 0 8px rgba(0,200,100,0.2))"}}/>
         </div>
 
-        <div style={{display:"flex",flexDirection:"column",gap:18,marginBottom:10}}>
+        {/* Headline */}
+        <div>
+          <div className="lx-headline">
+            <div>Portfolio</div>
+            <div>Intelligence</div>
+            <div><em>Command.</em></div>
+          </div>
+          <div className="lx-sub">
+            Superuser · Restricted System · Internal Use Only
+          </div>
+        </div>
+
+        {/* Status grid */}
+        <div>
+          <div style={{fontSize:8,letterSpacing:"0.25em",color:"rgba(0,200,100,0.35)",
+            textTransform:"uppercase",marginBottom:12}}>// System Status</div>
+          <div className="lx-status-grid">
+            {STATUS.map((s,i)=>(
+              <div key={i} className="lx-status-cell" style={{position:"relative"}}>
+                <div className="lx-bracket tl"/>
+                <div className="lx-bracket br"/>
+                <div className="lx-status-label">{s.label}</div>
+                <div className={`lx-status-val${s.green?" green":""}`}>{s.val}</div>
+                <div className="lx-status-meta">{s.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Ticker */}
+        <div className="lx-ticker">
+          <div className="lx-ticker-inner">
+            {[...TICKER,...TICKER].map((t,i)=>(
+              <div key={i} className="lx-ticker-item">
+                <span>{t.label}</span>{t.val}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom label */}
+        <div style={{fontSize:8,color:"rgba(0,200,100,0.2)",letterSpacing:"0.2em",textTransform:"uppercase"}}>
+          © TARGETFLOW OY · INTERNAL SYSTEM · UNAUTHORISED ACCESS PROHIBITED
+        </div>
+      </div>
+
+      {/* ══════════════════════════════
+          RIGHT — auth form
+      ══════════════════════════════ */}
+      <div className="lx-right">
+
+        {/* Corner brackets */}
+        <div style={{position:"absolute",top:32,left:32,right:32}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{width:12,height:12,borderTop:"1px solid rgba(0,200,100,0.4)",borderLeft:"1px solid rgba(0,200,100,0.4)"}}/>
+            <div style={{fontSize:8,color:"rgba(0,200,100,0.3)",letterSpacing:"0.25em",fontFamily:"'JetBrains Mono',monospace"}}>
+              AUTH_MODULE v2.4
+            </div>
+            <div style={{width:12,height:12,borderTop:"1px solid rgba(0,200,100,0.4)",borderRight:"1px solid rgba(0,200,100,0.4)"}}/>
+          </div>
+        </div>
+
+        {/* Form header */}
+        <div className="lx-form-header">Authentication Required</div>
+
+        {/* Terminal prompt line */}
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,
+          color:"rgba(0,200,100,0.4)",marginBottom:32,lineHeight:1.6}}>
+          <div>$ auth --level=god --mfa=required</div>
+          <div style={{marginTop:2}}>
+            <span style={{color:"rgba(0,200,100,0.25)"}}>›</span>
+            <span style={{color:"rgba(255,255,255,0.3)",marginLeft:6}}>Awaiting credentials</span>
+            <span className="cursor"/>
+          </div>
+        </div>
+
+        {/* Fields */}
+        <div style={{display:"flex",flexDirection:"column",gap:28,marginBottom:10}}>
           <div>
-            <div style={{fontSize:9,color:"#e0f0ff",fontFamily:"'DM Mono',monospace",
-              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Email</div>
-            <input className="login-input" type="email" placeholder="your@email.com"
+            <div className="lx-field-label">Email Address</div>
+            <input className="login-input" type="email" placeholder="user@domain.com"
               value={email} onChange={e=>setEmail(e.target.value)}
               onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
           </div>
           <div>
-            <div style={{fontSize:9,color:"#e0f0ff",fontFamily:"'DM Mono',monospace",
-              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:8}}>Password</div>
-            <input className="login-input" type="password" placeholder="••••••••••"
+            <div className="lx-field-label">Passphrase</div>
+            <input className="login-input" type="password" placeholder="••••••••••••••"
               value={pw} onChange={e=>setPw(e.target.value)}
               onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
           </div>
         </div>
 
         {err && (
-          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",marginBottom:12,
-            background:"rgba(248,113,113,0.06)",border:"1px solid rgba(248,113,113,0.18)",borderRadius:9}}>
-            <div style={{width:5,height:5,borderRadius:"50%",background:"#f87171",flexShrink:0,boxShadow:"0 0 5px #f87171"}}/>
-            <div style={{fontSize:12,color:"#fca5a5",fontFamily:"'DM Mono',monospace"}}>{err}</div>
+          <div className="lx-err" style={{marginBottom:16}}>
+            <div className="lx-err-dot"/>
+            <div className="lx-err-text">ERROR: {err}</div>
           </div>
         )}
 
         <button className="god-btn" onClick={login} disabled={loading||!email||!pw}
-          style={{marginBottom:28,marginTop:6}}>
-          <div className="bolt"/>
-          <div className="bolt bolt2"/>
-          <div className="bolt bolt3"/>
+          style={{marginBottom:24,marginTop:8}}>
           <div className="btn-text">
             {loading ? (
               <>
-                <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.2)",borderTopColor:"#fff",
+                <span style={{width:11,height:11,border:"1px solid rgba(0,200,100,0.3)",borderTopColor:"#00dc7a",
                   borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
-                <span>Verifying…</span>
+                <span>Verifying credentials…</span>
               </>
             ) : (
-              <>
-                <span className="btn-icon">⚡</span>
-                <span>Enter God Mode</span>
-                <span className="btn-icon">⚡</span>
-              </>
+              <span>_ Enter God Mode</span>
             )}
           </div>
         </button>
 
-        <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(100,160,255,0.12),transparent)",marginBottom:22}}/>
+        <div className="lx-divider"><span>security</span></div>
 
-        <div style={{display:"flex",gap:8,alignItems:"center",
-          padding:"11px 14px",background:"rgba(60,120,255,0.05)",
-          border:"1px solid rgba(100,160,255,0.1)",borderRadius:9}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:"rgba(140,200,255,0.7)",
-            flexShrink:0,boxShadow:"0 0 6px rgba(140,200,255,0.5)"}}/>
-          <div style={{fontSize:10,color:"rgba(200,225,255,0.55)",lineHeight:1.4}}>
-            MFA required for all sessions
-          </div>
+        <div className="lx-mfa">
+          <div className="lx-mfa-dot"/>
+          <div className="lx-mfa-text">MFA — TOTP required on next step</div>
         </div>
 
-        <div style={{marginTop:"auto",paddingTop:32,fontSize:8,color:"rgba(80,120,180,0.22)",
-          fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",lineHeight:1.8}}>
-          TARGETFLOW OY · INTERNAL SYSTEM<br/>
-          UNAUTHORISED ACCESS PROHIBITED
+        {/* Bottom corner brackets */}
+        <div style={{position:"absolute",bottom:32,left:32,right:32}}>
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+            <div style={{width:12,height:12,borderBottom:"1px solid rgba(0,200,100,0.4)",borderLeft:"1px solid rgba(0,200,100,0.4)"}}/>
+            <div style={{width:12,height:12,borderBottom:"1px solid rgba(0,200,100,0.4)",borderRight:"1px solid rgba(0,200,100,0.4)"}}/>
+          </div>
         </div>
       </div>
 
