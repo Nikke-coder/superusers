@@ -42,125 +42,284 @@ const sum = (arr) => (arr||[]).reduce((a,b)=>(a||0)+(b||0),0);
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const STYLE = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Cinzel:wght@400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:#020408;color:#e2e8f0;font-family:'DM Sans',sans-serif;}
-  ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:#0a0f1a;} ::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px;}
-  .card{background:rgba(8,14,28,0.75);border:1px solid rgba(255,255,255,0.05);border-radius:14px;transition:border-color 0.18s,transform 0.18s;}
-  .card:hover{border-color:rgba(99,179,237,0.15);transform:translateY(-2px);}
-  .open-btn{background:none;border:1px solid #1e2d45;border-radius:8px;color:#64748b;font-family:'DM Mono',monospace;font-size:10px;
-    padding:5px 10px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-  .open-btn:hover{border-color:#3b82f6;color:#60a5fa;}
-  .login-input{width:100%;background:rgba(2,4,12,0.6);border:1px solid rgba(147,197,253,0.12);border-radius:10px;
-    padding:14px 18px;color:#e2e8f0;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;
-    transition:border-color 0.25s,box-shadow 0.25s;backdrop-filter:blur(12px);}
-  .login-input:focus{border-color:rgba(147,197,253,0.35);box-shadow:0 0 24px rgba(99,179,237,0.07);}
-  .login-input::placeholder{color:rgba(147,197,253,0.18);}
-  .login-btn{width:100%;padding:14px;border-radius:10px;
-    background:linear-gradient(135deg,rgba(29,78,216,0.85),rgba(14,165,233,0.85));
-    border:1px solid rgba(147,197,253,0.25);color:#fff;font-size:11px;font-weight:600;
-    cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:0.18em;
-    transition:all 0.25s;text-transform:uppercase;}
-  .login-btn:hover:not(:disabled){box-shadow:0 0 40px rgba(14,165,233,0.2);border-color:rgba(147,197,253,0.4);}
-  .login-btn:disabled{background:rgba(8,12,24,0.6);border:1px solid rgba(255,255,255,0.04);color:#1e3a5f;cursor:not-allowed;}
+  body{background:#020510;color:#dde8ff;font-family:'DM Sans',sans-serif;}
+  ::-webkit-scrollbar{width:4px;}
+  ::-webkit-scrollbar-track{background:#050a1a;}
+  ::-webkit-scrollbar-thumb{background:rgba(100,160,255,0.3);border-radius:2px;}
 
-  /* ── Keyframes ── */
-  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-  @keyframes glow{0%,100%{filter:drop-shadow(0 0 12px rgba(147,197,253,0.45)) drop-shadow(0 0 30px rgba(99,179,237,0.2)) brightness(1.2)}
-                  50%{filter:drop-shadow(0 0 22px rgba(200,225,255,0.7)) drop-shadow(0 0 55px rgba(99,179,237,0.35)) brightness(1.4)}}
-  @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(0.97)}}
-  @keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-25px,20px) scale(1.03)}66%{transform:translate(20px,-15px) scale(0.98)}}
-  @keyframes rayRotate{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
-  @keyframes particleDrift{0%{opacity:0;transform:translateY(0) translateX(0)}20%{opacity:1}80%{opacity:0.6}100%{opacity:0;transform:translateY(-120px) translateX(20px)}}
+  /* ─── Shared cards ─── */
+  .card{
+    background:rgba(8,14,35,0.65);
+    border:1px solid rgba(100,160,255,0.1);
+    border-radius:16px;
+    transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
+    backdrop-filter:blur(16px);
+  }
+  .card:hover{border-color:rgba(150,200,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,20,80,0.5);}
+  .open-btn{
+    background:rgba(20,50,120,0.3);border:1px solid rgba(100,160,255,0.2);
+    border-radius:8px;color:#7ab4e8;font-family:'DM Mono',monospace;font-size:10px;
+    padding:5px 12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;
+    backdrop-filter:blur(8px);
+  }
+  .open-btn:hover{border-color:#60a5fa;color:#bde0ff;background:rgba(30,70,160,0.4);}
 
-  /* ── Login background ── */
-  .login-scene{position:fixed;inset:0;overflow:hidden;background:#02040a;}
+  /* ─── Login inputs ─── */
+  .login-input{
+    width:100%;background:rgba(5,10,28,0.6);
+    border:1px solid rgba(140,190,255,0.2);border-radius:12px;
+    padding:16px 20px;color:#e8f2ff;font-size:15px;outline:none;
+    font-family:'DM Sans',sans-serif;
+    transition:border-color 0.3s,box-shadow 0.3s,background 0.3s;
+    backdrop-filter:blur(16px);
+  }
+  .login-input:focus{
+    border-color:rgba(160,210,255,0.6);
+    background:rgba(8,16,40,0.75);
+    box-shadow:0 0 0 3px rgba(80,160,255,0.1),0 0 40px rgba(80,160,255,0.08);
+  }
+  .login-input::placeholder{color:rgba(140,180,255,0.3);}
+
+  .login-btn{
+    width:100%;padding:16px;border-radius:12px;
+    background:linear-gradient(135deg,#1a45c8 0%,#0e7ad4 50%,#07a8e0 100%);
+    border:1px solid rgba(160,210,255,0.4);color:#fff;font-size:11px;font-weight:700;
+    cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:0.22em;
+    transition:all 0.3s;text-transform:uppercase;
+    box-shadow:0 6px 30px rgba(14,122,212,0.4),0 2px 8px rgba(0,0,0,0.3);
+  }
+  .login-btn:hover:not(:disabled){
+    box-shadow:0 8px 50px rgba(14,165,233,0.6),0 2px 12px rgba(0,0,0,0.4);
+    transform:translateY(-2px);
+    background:linear-gradient(135deg,#1e52e8 0%,#0e8de4 50%,#07b8f0 100%);
+  }
+  .login-btn:active:not(:disabled){transform:translateY(0);}
+  .login-btn:disabled{background:rgba(8,14,32,0.8);border:1px solid rgba(100,140,200,0.08);color:#1e3055;cursor:not-allowed;box-shadow:none;}
+
+  /* ══════════════════════════════════════
+     KEYFRAMES
+  ══════════════════════════════════════ */
+  @keyframes spin   {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes fadeUp {from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn {from{opacity:0}to{opacity:1}}
+
+  /* Orbs drift */
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}20%{transform:translate(60px,-40px) scale(1.05)}50%{transform:translate(30px,50px) scale(0.97)}80%{transform:translate(-40px,-20px) scale(1.03)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(-50px,35px) scale(1.04)}60%{transform:translate(25px,-45px) scale(0.96)}85%{transform:translate(35px,20px) scale(1.02)}}
+  @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(30px,50px)}66%{transform:translate(-40px,-30px)}}
+
+  /* God rays spin */
+  @keyframes rayspin{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
+
+  /* Stars twinkle */
+  @keyframes tw1{0%,100%{opacity:0.15;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+  @keyframes tw2{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.9;transform:scale(1.3)}}
+  @keyframes tw3{0%,100%{opacity:0.1;transform:scale(1)}50%{opacity:0.7;transform:scale(1.5)}}
+
+  /* Particle float upward */
+  @keyframes particleRise{
+    0%  {opacity:0;transform:translateY(0) translateX(0) scale(0.5)}
+    15% {opacity:1}
+    85% {opacity:0.6}
+    100%{opacity:0;transform:translateY(-180px) translateX(var(--dx,20px)) scale(1.2)}
+  }
+
+  /* Logo divine glow */
+  @keyframes divineGlow{
+    0%,100%{
+      filter:drop-shadow(0 0 10px rgba(180,220,255,0.6))
+             drop-shadow(0 0 30px rgba(100,180,255,0.3))
+             drop-shadow(0 0 60px rgba(80,140,255,0.15))
+             brightness(1.2);
+    }
+    50%{
+      filter:drop-shadow(0 0 20px rgba(220,240,255,0.9))
+             drop-shadow(0 0 55px rgba(130,200,255,0.55))
+             drop-shadow(0 0 100px rgba(80,160,255,0.3))
+             brightness(1.5);
+    }
+  }
+
+  /* Title shimmer */
+  @keyframes titleShimmer{
+    0%  {background-position:200% center}
+    100%{background-position:-200% center}
+  }
+
+  /* Halo ring pulse */
+  @keyframes haloPulse{
+    0%,100%{opacity:0.4;transform:translate(-50%,-50%) scale(1)}
+    50%    {opacity:0.8;transform:translate(-50%,-50%) scale(1.08)}
+  }
+
+  /* Heaven orbs slow pulse */
+  @keyframes heavenPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+  @keyframes heavenDrift1{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(20px)}}
+
+  /* ══════════════════════════════════════
+     LOGIN BACKGROUND SCENE
+  ══════════════════════════════════════ */
+  .login-scene{position:fixed;inset:0;overflow:hidden;background:#010308;}
+
+  /* Deep space gradient base */
   .login-scene::before{
     content:'';position:absolute;inset:0;
-    background:radial-gradient(ellipse 130% 65% at 50% -10%, rgba(130,180,255,0.13) 0%, rgba(60,120,220,0.07) 35%, transparent 65%),
-               radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 50%),
-               radial-gradient(ellipse 60% 50% at 15% 90%, rgba(99,102,241,0.06) 0%, transparent 55%),
-               radial-gradient(ellipse 50% 40% at 85% 85%, rgba(6,182,212,0.05) 0%, transparent 50%);
-  }
-  .orb1{position:absolute;width:500px;height:500px;border-radius:50%;top:-150px;left:calc(50% - 250px);
-    background:radial-gradient(circle,rgba(100,170,255,0.09) 0%,transparent 70%);
-    filter:blur(40px);animation:orbFloat 14s ease-in-out infinite;}
-  .orb2{position:absolute;width:350px;height:350px;border-radius:50%;top:30%;left:-80px;
-    background:radial-gradient(circle,rgba(99,102,241,0.07) 0%,transparent 70%);
-    filter:blur(50px);animation:orbFloat2 18s ease-in-out infinite;}
-  .orb3{position:absolute;width:300px;height:300px;border-radius:50%;bottom:10%;right:-60px;
-    background:radial-gradient(circle,rgba(6,182,212,0.06) 0%,transparent 70%);
-    filter:blur(45px);animation:orbFloat 22s ease-in-out infinite 3s;}
-  .grid-overlay{
-    position:absolute;inset:0;
-    background-image:linear-gradient(rgba(147,197,253,0.03) 1px,transparent 1px),
-                     linear-gradient(90deg,rgba(147,197,253,0.03) 1px,transparent 1px);
-    background-size:56px 56px;
-    mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 20%,transparent 100%);
-  }
-  .rays{
-    position:absolute;top:0;left:50%;transform:translateX(-50%);
-    width:120%;height:75vh;
-    background:repeating-conic-gradient(from -12deg at 50% -25%,
-      rgba(160,200,255,0.03) 0deg 3deg, transparent 3deg 9deg,
-      rgba(160,200,255,0.02) 9deg 11deg, transparent 11deg 20deg);
-    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,transparent 100%);
+    background:
+      radial-gradient(ellipse 180% 80% at 50% -20%,rgba(80,140,255,0.28) 0%,rgba(40,90,220,0.12) 30%,transparent 60%),
+      radial-gradient(ellipse 120% 55% at 50% -8%, rgba(255,255,255,0.07) 0%,transparent 45%),
+      radial-gradient(ellipse 80%  70% at 0%   80%,rgba(70,50,200,0.12) 0%,transparent 55%),
+      radial-gradient(ellipse 70%  60% at 100% 70%,rgba(0,140,220,0.1) 0%,transparent 50%),
+      radial-gradient(ellipse 50%  50% at 50%  50%,rgba(15,25,70,0.5) 0%,transparent 100%);
   }
 
-  /* ── Login card ── */
+  /* Animated nebula orbs */
+  .l-orb1{position:absolute;width:800px;height:800px;border-radius:50%;top:-250px;left:calc(50% - 400px);
+    background:radial-gradient(circle,rgba(70,130,255,0.18) 0%,rgba(40,80,200,0.08) 45%,transparent 75%);
+    filter:blur(55px);animation:drift1 22s ease-in-out infinite;}
+  .l-orb2{position:absolute;width:600px;height:600px;border-radius:50%;top:15%;left:-200px;
+    background:radial-gradient(circle,rgba(90,60,240,0.14) 0%,transparent 70%);
+    filter:blur(65px);animation:drift2 28s ease-in-out infinite 3s;}
+  .l-orb3{position:absolute;width:550px;height:550px;border-radius:50%;bottom:-50px;right:-150px;
+    background:radial-gradient(circle,rgba(0,150,230,0.12) 0%,transparent 70%);
+    filter:blur(60px);animation:drift3 35s ease-in-out infinite 6s;}
+  .l-orb4{position:absolute;width:350px;height:350px;border-radius:50%;top:35%;right:10%;
+    background:radial-gradient(circle,rgba(120,80,255,0.1) 0%,transparent 70%);
+    filter:blur(45px);animation:drift1 20s ease-in-out infinite 8s;}
+
+  /* God rays — slowly rotating cone of light */
+  .l-rays{
+    position:absolute;top:0;left:50%;
+    width:220%;height:120vh;
+    background:repeating-conic-gradient(from 0deg at 50% -35%,
+      rgba(160,200,255,0.07) 0deg 2.5deg,
+      transparent 2.5deg 10deg,
+      rgba(160,200,255,0.04) 10deg 12deg,
+      transparent 12deg 22deg,
+      rgba(200,220,255,0.03) 22deg 23.5deg,
+      transparent 23.5deg 32deg);
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.4) 35%,transparent 70%);
+    animation:rayspin 120s linear infinite;
+    transform-origin:50% 0%;
+    transform:translateX(-50%);
+  }
+
+  /* Grid overlay */
+  .l-grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(100,160,255,0.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(100,160,255,0.05) 1px,transparent 1px);
+    background-size:72px 72px;
+    mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 0%,transparent 100%);
+  }
+
+  /* Floating particles */
+  .l-particle{
+    position:absolute;border-radius:50%;
+    background:rgba(180,220,255,0.9);
+    animation:particleRise var(--dur,8s) ease-in-out infinite var(--delay,0s);
+    width:var(--size,2px);height:var(--size,2px);
+  }
+
+  /* Stars */
+  .l-star{position:absolute;border-radius:50%;background:#fff;}
+  .l-star.tw1{animation:tw1 var(--dur,3s) ease-in-out infinite var(--delay,0s);}
+  .l-star.tw2{animation:tw2 var(--dur,4s) ease-in-out infinite var(--delay,0s);}
+  .l-star.tw3{animation:tw3 var(--dur,5s) ease-in-out infinite var(--delay,0s);}
+
+  /* ══════════════════════════════════════
+     LOGIN CARD
+  ══════════════════════════════════════ */
   .login-card{
-    animation:fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
-    position:relative;z-index:2;
-    background:rgba(2,5,14,0.82);
-    border:1px solid rgba(147,197,253,0.08);
-    border-radius:22px;padding:50px 44px;width:410px;box-sizing:border-box;
-    backdrop-filter:blur(28px);
-    box-shadow:0 0 0 1px rgba(255,255,255,0.02) inset,
-               0 60px 100px rgba(0,0,0,0.65),
-               0 0 80px rgba(14,165,233,0.04);
+    animation:fadeUp 1.1s cubic-bezier(0.16,1,0.3,1) both 0.2s;
+    position:relative;z-index:10;
+    background:rgba(4,8,22,0.72);
+    border-radius:28px;padding:54px 48px;width:430px;box-sizing:border-box;
+    backdrop-filter:blur(40px) saturate(1.8);
+    border:1px solid rgba(140,200,255,0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(200,230,255,0.1),
+      inset 0 -1px 0 rgba(0,0,0,0.2),
+      0 0 0 1px rgba(0,0,0,0.4),
+      0 40px 100px rgba(0,0,30,0.7),
+      0 0 140px rgba(30,80,200,0.12);
   }
   .login-card::before{
-    content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(147,197,253,0.3),transparent);
-    border-radius:1px;
+    content:'';position:absolute;top:0;left:8%;right:8%;height:1px;border-radius:1px;
+    background:linear-gradient(90deg,transparent,rgba(140,200,255,0.5),rgba(220,240,255,1),rgba(140,200,255,0.5),transparent);
+  }
+  .login-card::after{
+    content:'';position:absolute;bottom:0;left:20%;right:20%;height:1px;border-radius:1px;
+    background:linear-gradient(90deg,transparent,rgba(80,140,255,0.2),transparent);
   }
 
-  /* ── Logo glow animation ── */
-  .tf-logo-glow{animation:glow 3s ease-in-out infinite;}
+  /* ── Logo divine glow ── */
+  .tf-logo-glow{animation:divineGlow 4s ease-in-out infinite;}
 
   /* ── God title ── */
   .god-title{
-    font-family:'Cinzel',serif;font-size:26px;font-weight:700;letter-spacing:0.14em;
-    background:linear-gradient(180deg,#ffffff 0%,#93c5fd 55%,rgba(14,165,233,0.65) 100%);
+    font-family:'Cinzel Decorative',serif;font-size:26px;font-weight:900;letter-spacing:0.08em;
+    background:linear-gradient(120deg,#a8d0ff 0%,#ffffff 25%,#ddf0ff 50%,#ffffff 75%,#a8d0ff 100%);
+    background-size:250% auto;
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:titleShimmer 6s linear infinite;
   }
 
-  /* ── Heaven interior (no animation) ── */
+  /* Halo ring */
+  .halo-ring{
+    position:absolute;top:50%;left:50%;
+    border-radius:50%;border:1px solid rgba(140,200,255,0.25);
+    animation:haloPulse 4s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════
+     HEAVEN INTERIOR (after login)
+  ══════════════════════════════════════ */
   .heaven-bg{
     position:fixed;inset:0;pointer-events:none;z-index:0;
     background:
-      radial-gradient(ellipse 160% 55% at 50% -10%, rgba(180,215,255,0.07) 0%, rgba(99,150,230,0.04) 35%, transparent 58%),
-      radial-gradient(ellipse 90% 35% at 50% 0%, rgba(255,255,255,0.025) 0%, transparent 45%),
-      radial-gradient(ellipse 50% 30% at 20% 100%, rgba(99,102,241,0.03) 0%, transparent 55%),
-      radial-gradient(ellipse 40% 25% at 80% 95%, rgba(6,182,212,0.025) 0%, transparent 50%),
-      #020408;
+      radial-gradient(ellipse 220% 65% at 50% -8%,  rgba(80,140,255,0.16) 0%, rgba(50,100,220,0.08) 30%,transparent 58%),
+      radial-gradient(ellipse 140% 45% at 50% -2%,  rgba(255,255,255,0.05) 0%,transparent 42%),
+      radial-gradient(ellipse 70%  60% at 5%   90%,  rgba(70,50,200,0.07) 0%,transparent 55%),
+      radial-gradient(ellipse 60%  50% at 95%  85%,  rgba(0,150,220,0.06) 0%,transparent 50%),
+      #020510;
+  }
+  .heaven-orb1{
+    position:fixed;width:1000px;height:450px;border-radius:50%;
+    top:-120px;left:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse,rgba(80,140,255,0.14) 0%,rgba(50,100,220,0.05) 50%,transparent 75%);
+    filter:blur(70px);
+    animation:heavenPulse 14s ease-in-out infinite, heavenDrift1 20s ease-in-out infinite;
+  }
+  .heaven-orb2{
+    position:fixed;width:700px;height:700px;border-radius:50%;
+    top:5%;left:-250px;pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(60,50,200,0.08) 0%,transparent 70%);
+    filter:blur(90px);animation:heavenPulse 20s ease-in-out infinite 5s;
+  }
+  .heaven-orb3{
+    position:fixed;width:600px;height:600px;border-radius:50%;
+    bottom:-100px;right:-180px;pointer-events:none;z-index:0;
+    background:radial-gradient(circle,rgba(0,150,220,0.07) 0%,transparent 70%);
+    filter:blur(80px);animation:heavenPulse 17s ease-in-out infinite 9s;
   }
   .heaven-rays{
-    position:fixed;top:0;left:50%;transform:translateX(-50%);
-    width:110%;height:65vh;pointer-events:none;z-index:0;
-    background:repeating-conic-gradient(from -14deg at 50% -22%,
-      rgba(170,205,255,0.022) 0deg 2.5deg,transparent 2.5deg 8deg,
-      rgba(170,205,255,0.014) 8deg 10.5deg,transparent 10.5deg 19deg);
-    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.55) 0%,transparent 100%);
+    position:fixed;top:0;left:50%;
+    width:140%;height:75vh;pointer-events:none;z-index:0;
+    background:repeating-conic-gradient(from -18deg at 50% -22%,
+      rgba(140,190,255,0.05) 0deg 3deg,transparent 3deg 9deg,
+      rgba(140,190,255,0.03) 9deg 11.5deg,transparent 11.5deg 20deg);
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.15) 55%,transparent 100%);
+    transform:translateX(-50%);
   }
   .heaven-logo{width:130px;height:auto;}
 `;
 
 // ── Sparkline ─────────────────────────────────────────────────────────────────
 function Spark({data, color, actLast}) {
-  if(!data||!data.length) return <div style={{height:48,display:"flex",alignItems:"center",justifyContent:"center",color:"#1e2d45",fontSize:10,fontFamily:"'DM Mono',monospace"}}>no data</div>;
+  if(!data||!data.length) return <div style={{height:48,display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(100,140,200,0.3)",fontSize:10,fontFamily:"'DM Mono',monospace"}}>no data</div>;
   const chartData = data.slice(0, (actLast??11)+1).map((v,i)=>({m:MONTHS_A[i], v:v||0}));
   return (
     <ResponsiveContainer width="100%" height={48}>
@@ -173,7 +332,7 @@ function Spark({data, color, actLast}) {
         </defs>
         <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#g${color.replace("#","")})`} dot={false}/>
         <Tooltip
-          contentStyle={{background:"#0c1420",border:"1px solid #1e2d45",borderRadius:6,fontSize:10,fontFamily:"'DM Mono',monospace",color:"#94a3b8",padding:"4px 8px"}}
+          contentStyle={{background:"#0c1420",border:"1px solid #1e2d45",borderRadius:6,fontSize:10,fontFamily:"'DM Mono',monospace",color:"#c0d8f0",padding:"4px 8px"}}
           formatter={v=>[fmt(v),"EBITDA"]} labelFormatter={l=>l}/>
       </AreaChart>
     </ResponsiveContainer>
@@ -184,7 +343,7 @@ function Spark({data, color, actLast}) {
 function KPIPill({label, value, color, pct}) {
   return (
     <div style={{flex:1,minWidth:80}}>
-      <div style={{fontSize:9,color:"#475569",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:3}}>{label}</div>
+      <div style={{fontSize:9,color:"rgba(160,200,255,0.55)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:3}}>{label}</div>
       <div style={{fontSize:16,fontWeight:600,color:color||"#e2e8f0",fontFamily:"'DM Mono',monospace"}}>{value}</div>
       {pct!=null && <div style={{fontSize:9,color:pct>=0?"#4ade80":"#f87171",fontFamily:"'DM Mono',monospace",marginTop:1}}>{fmtPct(pct)}</div>}
     </div>
@@ -222,9 +381,9 @@ function ClientCard({client, snap}) {
             <div style={{width:8,height:8,borderRadius:"50%",background:client.accent,flexShrink:0}}/>
             <div style={{fontSize:13,fontWeight:600,color:"#e2e8f0"}}>{client.name}</div>
           </div>
-          <div style={{fontSize:10,color:"#334155",fontFamily:"'DM Mono',monospace",paddingLeft:16}}>
+          <div style={{fontSize:10,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",paddingLeft:16}}>
             {lastMon ? `Last data: ${lastMon} ${yr}` : "No data yet"}
-            {timeSince && <span style={{color:"#1e3a5f",marginLeft:8}}>{timeSince}</span>}
+            {timeSince && <span style={{color:"rgba(100,150,220,0.35)",marginLeft:8}}>{timeSince}</span>}
           </div>
         </div>
         <button className="open-btn" onClick={()=>window.open(client.url,"_blank")}>
@@ -237,7 +396,7 @@ function ClientCard({client, snap}) {
 
       {/* KPIs */}
       <div style={{display:"flex",gap:12,borderTop:"1px solid #0a1628",paddingTop:12}}>
-        <KPIPill label="Revenue"  value={totRev!=null?fmt(totRev):"—"} color="#94a3b8"/>
+        <KPIPill label="Revenue"  value={totRev!=null?fmt(totRev):"—"} color="#c0d8f0"/>
         <KPIPill label="EBITDA"   value={totEBT!=null?fmt(totEBT):"—"} color={client.accent} pct={ebitdaMgn}/>
         <KPIPill label="Net"      value={totNet!=null?fmt(totNet):"—"} color={totNet!=null?(totNet>=0?"#4ade80":"#f87171"):null}/>
       </div>
@@ -275,14 +434,14 @@ function MfaScreen({onVerified}) {
         </div>
         <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,"").slice(0,6))}
           onKeyDown={e=>e.key==="Enter"&&verify()} placeholder="000000" maxLength={6}
-          style={{width:"100%",background:"#0c1420",border:"1px solid "+(err?"#f87171":"#1e2d45"),
+          style={{width:"100%",background:"#0c1420",border:"1px solid "+(err?"#f87171":"rgba(100,140,200,0.3)"),
             borderRadius:10,padding:"14px 16px",color:"#e2e8f0",fontSize:22,outline:"none",
             fontFamily:"'DM Mono',monospace",letterSpacing:8,textAlign:"center",boxSizing:"border-box",marginBottom:14}}/>
         {err&&<div style={{color:"#f87171",fontSize:11,textAlign:"center",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>Invalid code — try again</div>}
         <button onClick={verify} disabled={code.length<6||loading}
           style={{width:"100%",padding:"13px",borderRadius:10,
             background:code.length===6&&!loading?"linear-gradient(135deg,#1d4ed8,#0ea5e9)":"#0c1420",
-            border:"1px solid "+(code.length===6&&!loading?"#3b82f6":"#1e2d45"),
+            border:"1px solid "+(code.length===6&&!loading?"#3b82f6":"rgba(100,140,200,0.3)"),
             color:code.length===6&&!loading?"#fff":"#64748b",fontSize:13,fontWeight:600,cursor:code.length===6?"pointer":"not-allowed"}}>
           {loading?"Verifying…":"Verify"}
         </button>
@@ -326,26 +485,26 @@ function MfaEnrollScreen({onDone}) {
         {qr
           ? <img src={qr} alt="QR" style={{width:180,height:180,borderRadius:12,background:"#fff",padding:8,marginBottom:20}}/>
           : <div style={{width:180,height:180,background:"#0c1420",borderRadius:12,margin:"0 auto 20px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <div style={{color:"#475569",fontSize:11,fontFamily:"'DM Mono',monospace"}}>{err?"Error":"Loading…"}</div>
+              <div style={{color:"rgba(160,200,255,0.55)",fontSize:11,fontFamily:"'DM Mono',monospace"}}>{err?"Error":"Loading…"}</div>
             </div>
         }
         {secret&&(
           <div style={{marginBottom:20}}>
-            <div style={{fontSize:10,color:"#475569",fontFamily:"'DM Mono',monospace",marginBottom:6}}>Or enter manually:</div>
+            <div style={{fontSize:10,color:"rgba(160,200,255,0.55)",fontFamily:"'DM Mono',monospace",marginBottom:6}}>Or enter manually:</div>
             <div style={{fontSize:12,color:"#93c5fd",fontFamily:"'DM Mono',monospace",letterSpacing:2,background:"#0c1420",padding:"8px 12px",borderRadius:8,border:"1px solid #1e2d45"}}>{secret}</div>
           </div>
         )}
         <div style={{fontSize:11,color:"#64748b",marginBottom:12}}>Enter the 6-digit code to confirm</div>
         <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,"").slice(0,6))}
           onKeyDown={e=>e.key==="Enter"&&verify()} placeholder="000000" maxLength={6}
-          style={{width:"100%",background:"#0c1420",border:"1px solid "+(err?"#f87171":"#1e2d45"),borderRadius:10,
+          style={{width:"100%",background:"#0c1420",border:"1px solid "+(err?"#f87171":"rgba(100,140,200,0.3)"),borderRadius:10,
             padding:"14px 16px",color:"#e2e8f0",fontSize:22,outline:"none",fontFamily:"'DM Mono',monospace",
             letterSpacing:8,textAlign:"center",boxSizing:"border-box",marginBottom:14}}/>
         {err&&<div style={{color:"#f87171",fontSize:11,marginBottom:10,fontFamily:"'DM Mono',monospace"}}>Invalid code — try again</div>}
         <button onClick={verify} disabled={code.length<6||loading}
           style={{width:"100%",padding:"13px",borderRadius:10,
             background:code.length===6&&!loading?"linear-gradient(135deg,#1d4ed8,#0ea5e9)":"#0c1420",
-            border:"1px solid "+(code.length===6&&!loading?"#3b82f6":"#1e2d45"),
+            border:"1px solid "+(code.length===6&&!loading?"#3b82f6":"rgba(100,140,200,0.3)"),
             color:code.length===6&&!loading?"#fff":"#64748b",fontSize:13,fontWeight:600,cursor:code.length===6?"pointer":"not-allowed"}}>
           {loading?"Verifying…":"Activate & continue →"}
         </button>
@@ -376,71 +535,144 @@ function LoginScreen({onLogin}) {
     onLogin();
   };
 
+  // Stars & particles — generated once
+  const STARS = [
+    {cls:"tw1",w:2,h:2,top:"8%", left:"12%",dur:"3.2s",delay:"0s"},
+    {cls:"tw2",w:1.5,h:1.5,top:"14%",left:"78%",dur:"4.1s",delay:"0.8s"},
+    {cls:"tw1",w:2.5,h:2.5,top:"22%",left:"92%",dur:"2.8s",delay:"1.5s"},
+    {cls:"tw3",w:1,h:1,top:"35%",left:"5%", dur:"5s",  delay:"0.3s"},
+    {cls:"tw2",w:2,h:2,top:"55%",left:"88%",dur:"3.7s",delay:"2s"},
+    {cls:"tw1",w:1.5,h:1.5,top:"70%",left:"15%",dur:"4.4s",delay:"1s"},
+    {cls:"tw3",w:3,h:3,top:"18%",left:"55%",dur:"6s",  delay:"2.5s"},
+    {cls:"tw2",w:1,h:1,top:"80%",left:"45%",dur:"3s",  delay:"0.5s"},
+    {cls:"tw1",w:2,h:2,top:"42%",left:"70%",dur:"5.2s",delay:"3s"},
+    {cls:"tw3",w:1.5,h:1.5,top:"90%",left:"80%",dur:"4s",delay:"1.8s"},
+    {cls:"tw1",w:1,h:1,top:"6%", left:"35%",dur:"3.5s",delay:"0.2s"},
+    {cls:"tw2",w:2,h:2,top:"65%",left:"60%",dur:"4.8s",delay:"2.2s"},
+  ];
+  const PARTICLES = [
+    {bottom:"5%", left:"20%", size:"2px",dur:"9s", delay:"0s",  dx:"15px"},
+    {bottom:"10%",left:"50%", size:"1.5px",dur:"11s",delay:"2s", dx:"-10px"},
+    {bottom:"8%", left:"70%", size:"2px",dur:"8s", delay:"4s",  dx:"20px"},
+    {bottom:"3%", left:"35%", size:"1px",dur:"13s",delay:"1s",  dx:"-18px"},
+    {bottom:"6%", left:"82%", size:"2.5px",dur:"10s",delay:"5s", dx:"12px"},
+    {bottom:"12%",left:"8%",  size:"1.5px",dur:"7s", delay:"3s",  dx:"8px"},
+  ];
+
   return (
-    <div style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#02040a"}}>
-      {/* ── Animated background ── */}
-      <div style={{position:"fixed",inset:0,background:"radial-gradient(ellipse 120% 60% at 50% -15%, rgba(180,210,255,0.18) 0%, rgba(99,179,237,0.12) 30%, transparent 65%), radial-gradient(ellipse 80% 40% at 50% -5%, rgba(255,255,255,0.05) 0%, transparent 50%), radial-gradient(ellipse 60% 50% at 15% 90%, rgba(99,102,241,0.08) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 85% 80%, rgba(6,182,212,0.06) 0%, transparent 50%), #020408"}}/>
-      {/* Grid */}
-      <div style={{position:"fixed",inset:0,backgroundImage:"linear-gradient(rgba(14,165,233,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(14,165,233,0.04) 1px,transparent 1px)",backgroundSize:"60px 60px",maskImage:"radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%)"}}/>
-      {/* Orbs */}
-      <div style={{position:"fixed",top:"8%",left:"50%",transform:"translateX(-50%)",width:600,height:300,borderRadius:"50%",background:"radial-gradient(ellipse,rgba(180,220,255,0.14) 0%,rgba(14,165,233,0.06) 50%,transparent 70%)",filter:"blur(40px)",animation:"pulse 7s ease-in-out infinite"}}/>
-      <div style={{position:"fixed",top:"20%",left:"10%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(ellipse,rgba(99,102,241,0.07) 0%,transparent 70%)",filter:"blur(50px)",animation:"pulse 9s ease-in-out infinite 2s"}}/>
-      <div style={{position:"fixed",bottom:"15%",right:"10%",width:250,height:250,borderRadius:"50%",background:"radial-gradient(ellipse,rgba(6,182,212,0.06) 0%,transparent 70%)",filter:"blur(40px)",animation:"pulse 8s ease-in-out infinite 4s"}}/>
-      {/* Scanline effect */}
-      <div style={{position:"fixed",inset:0,background:"repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px)",pointerEvents:"none"}}/>
+    <div style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#010308"}}>
 
-      {/* ── Card ── */}
+      {/* ─── Full animated background ─── */}
+      <div className="login-scene">
+        <div className="l-orb1"/>
+        <div className="l-orb2"/>
+        <div className="l-orb3"/>
+        <div className="l-orb4"/>
+        <div className="l-rays"/>
+        <div className="l-grid"/>
+
+        {/* Twinkling stars */}
+        {STARS.map((s,i)=>(
+          <div key={i} className={`l-star ${s.cls}`}
+            style={{top:s.top,left:s.left,width:s.w,height:s.h,
+              "--dur":s.dur,"--delay":s.delay}}/>
+        ))}
+
+        {/* Rising light particles */}
+        {PARTICLES.map((p,i)=>(
+          <div key={i} className="l-particle"
+            style={{bottom:p.bottom,left:p.left,
+              "--size":p.size,"--dur":p.dur,"--delay":p.delay,"--dx":p.dx}}/>
+        ))}
+      </div>
+
+      {/* ─── Login card ─── */}
       <div className="login-card">
-        {/* Top border glow */}
-        <div style={{position:"absolute",top:0,left:"20%",right:"20%",height:1,background:"linear-gradient(90deg,transparent,rgba(99,179,237,0.4),transparent)"}}/>
 
-        {/* Logo area */}
-        <div style={{textAlign:"center",marginBottom:36}}>
-          <div style={{position:"relative",marginBottom:4}}>
-            <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
-              width:320,height:80,borderRadius:"50%",
-              background:"radial-gradient(ellipse,rgba(147,197,253,0.12) 0%,transparent 70%)",
-              filter:"blur(18px)",pointerEvents:"none"}}/>
-            <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow" style={{width:220,height:"auto",position:"relative"}}/>
+        {/* Logo + title */}
+        <div style={{textAlign:"center",marginBottom:40}}>
+
+          {/* Halo rings behind logo */}
+          <div style={{position:"relative",display:"inline-block",marginBottom:16}}>
+            <div className="halo-ring" style={{width:320,height:100,"--delay":"0s"}}/>
+            <div className="halo-ring" style={{width:260,height:80,opacity:0.6,animationDelay:"1s"}}/>
+            <img src={TF_LOGO} alt="Targetflow" className="tf-logo-glow"
+              style={{width:230,height:"auto",position:"relative",zIndex:2,display:"block"}}/>
           </div>
-          <div className="god-title" style={{marginBottom:12}}>God Mode</div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-            <div style={{height:1,width:40,background:"linear-gradient(90deg,transparent,rgba(99,179,237,0.25))"}}/>
-            <div style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"#1e3a5f",letterSpacing:"0.2em",textTransform:"uppercase"}}>Authorised access only</div>
-            <div style={{height:1,width:40,background:"linear-gradient(90deg,rgba(99,179,237,0.25),transparent)"}}/>
+
+          {/* God Mode title */}
+          <div className="god-title" style={{marginBottom:10}}>GOD MODE</div>
+
+          {/* Divider */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:4}}>
+            <div style={{flex:1,maxWidth:60,height:1,background:"linear-gradient(90deg,transparent,rgba(140,200,255,0.4))"}}/>
+            <div style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"rgba(160,210,255,0.55)",letterSpacing:"0.25em",textTransform:"uppercase"}}>
+              Authorised Access Only
+            </div>
+            <div style={{flex:1,maxWidth:60,height:1,background:"linear-gradient(90deg,rgba(140,200,255,0.4),transparent)"}}/>
           </div>
         </div>
 
         {/* Form */}
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          <input className="login-input" type="email" placeholder="Email address" value={email}
-            onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
-          <input className="login-input" type="password" placeholder="Password" value={pw}
-            onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div>
+            <div style={{fontSize:10,color:"rgba(160,200,255,0.6)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:7}}>Email</div>
+            <input className="login-input" type="email" placeholder="your@email.com" value={email}
+              onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
+          </div>
+          <div>
+            <div style={{fontSize:10,color:"rgba(160,200,255,0.6)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:7}}>Password</div>
+            <input className="login-input" type="password" placeholder="••••••••••" value={pw}
+              onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
+          </div>
           {err && (
-            <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",background:"rgba(248,113,113,0.06)",border:"1px solid rgba(248,113,113,0.15)",borderRadius:8}}>
-              <div style={{width:4,height:4,borderRadius:"50%",background:"#f87171",flexShrink:0}}/>
-              <div style={{fontSize:11,color:"#f87171",fontFamily:"'DM Mono',monospace"}}>{err}</div>
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",
+              background:"rgba(248,113,113,0.07)",border:"1px solid rgba(248,113,113,0.2)",borderRadius:10}}>
+              <div style={{width:5,height:5,borderRadius:"50%",background:"#f87171",flexShrink:0,boxShadow:"0 0 6px #f87171"}}/>
+              <div style={{fontSize:12,color:"#fca5a5",fontFamily:"'DM Mono',monospace"}}>{err}</div>
             </div>
           )}
-          <button className="login-btn" onClick={login} disabled={loading||!email||!pw} style={{marginTop:4}}>
+          <button className="login-btn" onClick={login} disabled={loading||!email||!pw} style={{marginTop:6}}>
             {loading ? (
-              <span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-                <span style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"white",borderRadius:"50%",display:"inline-block",animation:"rotateOrb 0.8s linear infinite"}}/>
-                Authenticating
+              <span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
+                <span style={{width:13,height:13,border:"2px solid rgba(255,255,255,0.25)",borderTopColor:"white",borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
+                Authenticating…
               </span>
-            ) : "Enter →"}
+            ) : "⚡ Enter God Mode"}
           </button>
         </div>
 
-        {/* Bottom */}
-        <div style={{marginTop:24,textAlign:"center",fontSize:9,color:"#0f1e30",fontFamily:"'DM Mono',monospace",letterSpacing:"0.1em"}}>
-          TARGETFLOW · INTERNAL SYSTEM · RESTRICTED
+        {/* Footer */}
+        <div style={{marginTop:28,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+          <div style={{width:3,height:3,borderRadius:"50%",background:"rgba(100,160,255,0.4)"}}/>
+          <div style={{fontSize:9,color:"rgba(100,150,220,0.35)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em"}}>
+            TARGETFLOW · INTERNAL · RESTRICTED
+          </div>
+          <div style={{width:3,height:3,borderRadius:"50%",background:"rgba(100,160,255,0.4)"}}/>
         </div>
       </div>
     </div>
   );
 }
+
+// ── User registry ────────────────────────────────────────────────────────────
+const USER_REGISTRY = [
+  {name:"Niklas Isaksson",   email:"niklas.isaksson@targetflow.fi", role:"God Mode",     color:"#93c5fd"},
+  {name:"Virpi Lämsa",       email:"virpi.lamsa@targetflow.fi",      role:"God Mode",     color:"#93c5fd"},
+  {name:"Matias Soini",      email:"matias.soini@stremet.fi",        role:"Stremet",      color:"#818cf8"},
+  {name:"Carl Axel Schauman",email:"acke@niittysiemen.fi",           role:"Niittysiemen", color:"#4ade80"},
+  {name:"Kristina Luhtala",  email:"kristina@niittysiemen.fi",       role:"Niittysiemen", color:"#4ade80"},
+  {name:"Teemu Sipilä",      email:"teemu.sipila@cuuma.com",         role:"Cuuma",        color:"#60a5fa"},
+  {name:"Christine Leisti",  email:"christine@drop.fi",              role:"Drop Design",  color:"#38bdf8"},
+  {name:"Kirsi Junnilainen", email:"kirsi.junnilainen@manutec.fi",   role:"Manutec",      color:"#38bdf8"},
+  {name:"Meria Rahkola",     email:"merkku@1306.fi",                 role:"Strand",       color:"#60a5fa"},
+  {name:"Jenni Kyönnös",     email:"jenni.kynnos@itsybitsy.fi",      role:"Strand",       color:"#60a5fa"},
+  {name:"Sirena Kiviranta",  email:"sirena@strand.es",               role:"Strand",       color:"#60a5fa"},
+  {name:"Anssi Kiviranta",   email:"anssi@kiviranta.fi",             role:"Strand",       color:"#60a5fa"},
+  {name:"Lukas Paulikas",    email:"lukas.paulikas@accrease.com",    role:"Accrease",     color:"#86efac"},
+  {name:"Richard Nilsen",    email:"richard.nilsen@tepcomp.fi",      role:"Tepcomp",      color:"#2dd4bf"},
+  {name:"Masi Lehtisalo",    email:"masi.lehtisalo@tepcomp.fi",      role:"Tepcomp",      color:"#2dd4bf"},
+];
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 function SuperDashboard({userEmail, onSignOut}) {
@@ -448,28 +680,31 @@ function SuperDashboard({userEmail, onSignOut}) {
   const [loading,    setLoading]    = useState(true);
   const [lastRefresh,setLastRefresh]= useState(null);
   const [activity,   setActivity]   = useState([]);
+  const [users,      setUsers]      = useState([]);
+  const [userTab,    setUserTab]    = useState("overview"); // overview | detail
 
   const load = useCallback(async () => {
-    const [snapRes, authRes] = await Promise.all([
+    const [snapRes, userRes, errRes] = await Promise.all([
       supabase.from("client_snapshots").select("*"),
-      supabase.auth.admin ? Promise.resolve(null) : Promise.resolve(null),
+      supabase.rpc("get_user_stats"),
+      supabase.from("error_logs").select("*").order("created_at",{ascending:false}).limit(50),
     ]);
     if(snapRes.data){
       const map = {};
       snapRes.data.forEach(r => { map[r.client] = r; });
       setSnaps(map);
-      // Build activity feed from snapshot updated_at
       const acts = snapRes.data
         .filter(r=>r.updated_at && r.last_month)
         .sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))
-        .slice(0,8)
-        .map(r=>({
-          client: r.client,
-          month: r.last_month,
-          at: new Date(r.updated_at),
-          type: "import"
-        }));
+        .slice(0,10)
+        .map(r=>({client:r.client,month:r.last_month,at:new Date(r.updated_at),type:"import"}));
       setActivity(acts);
+    }
+    if(userRes.data){
+      setUsers(userRes.data.map(u=>({
+        ...u,
+        errors: errRes.data?.filter(e=>e.user_email===u.email)||[],
+      })));
     }
     setLastRefresh(new Date());
     setLoading(false);
@@ -496,9 +731,12 @@ function SuperDashboard({userEmail, onSignOut}) {
   const clientsWithData = CLIENTS.filter(c=>snaps[c.name]?.last_month).length;
 
   return (
-    <div style={{minHeight:"100vh",background:"transparent",position:"relative",zIndex:1}}>
-      {/* Heaven background — static, no animation */}
+    <div style={{minHeight:"100vh",background:"transparent",position:"relative",zIndex:1,color:"#dde8ff"}}>
+      {/* Heaven background */}
       <div className="heaven-bg"/>
+      <div className="heaven-orb1"/>
+      <div className="heaven-orb2"/>
+      <div className="heaven-orb3"/>
       <div className="heaven-rays"/>
 
       {/* Top bar */}
@@ -513,13 +751,13 @@ function SuperDashboard({userEmail, onSignOut}) {
         </div>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
           {lastRefresh && (
-            <div style={{fontSize:10,color:"#1e3a5f",fontFamily:"'DM Mono',monospace"}}>
+            <div style={{fontSize:10,color:"rgba(100,150,220,0.35)",fontFamily:"'DM Mono',monospace"}}>
               Refreshed {lastRefresh.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}
             </div>
           )}
-          <div style={{fontSize:11,color:"#475569",fontFamily:"'DM Mono',monospace"}}>{userEmail.split("@")[0]}</div>
+          <div style={{fontSize:11,color:"rgba(160,200,255,0.55)",fontFamily:"'DM Mono',monospace"}}>{userEmail.split("@")[0]}</div>
           <button onClick={onSignOut}
-            style={{background:"none",border:"1px solid #1e2d45",borderRadius:7,color:"#475569",
+            style={{background:"none",border:"1px solid #1e2d45",borderRadius:7,color:"rgba(160,200,255,0.55)",
               fontFamily:"'DM Mono',monospace",fontSize:10,padding:"4px 10px",cursor:"pointer"}}>
             Sign out
           </button>
@@ -530,18 +768,18 @@ function SuperDashboard({userEmail, onSignOut}) {
       <div style={{borderBottom:"1px solid rgba(255,255,255,0.03)",background:"rgba(2,4,8,0.7)",backdropFilter:"blur(8px)",padding:"12px 32px",
         display:"flex",gap:32,alignItems:"center"}}>
         <div>
-          <div style={{fontSize:9,color:"#334155",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Portfolio Revenue</div>
+          <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Portfolio Revenue</div>
           <div style={{fontSize:20,fontWeight:600,color:"#e2e8f0",fontFamily:"'DM Mono',monospace"}}>{fmt(totalRevenue)}</div>
         </div>
         <div style={{width:1,height:32,background:"#0f1e30"}}/>
         <div>
-          <div style={{fontSize:9,color:"#334155",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Portfolio EBITDA</div>
+          <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Portfolio EBITDA</div>
           <div style={{fontSize:20,fontWeight:600,color:"#2dd4bf",fontFamily:"'DM Mono',monospace"}}>{fmt(totalEBITDA)}</div>
         </div>
         <div style={{width:1,height:32,background:"#0f1e30"}}/>
         <div>
-          <div style={{fontSize:9,color:"#334155",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Clients with data</div>
-          <div style={{fontSize:20,fontWeight:600,color:"#94a3b8",fontFamily:"'DM Mono',monospace"}}>{clientsWithData}/{CLIENTS.length}</div>
+          <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Clients with data</div>
+          <div style={{fontSize:20,fontWeight:600,color:"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>{clientsWithData}/{CLIENTS.length}</div>
         </div>
         <div style={{marginLeft:"auto"}}>
           <button onClick={load}
@@ -555,7 +793,7 @@ function SuperDashboard({userEmail, onSignOut}) {
       {/* Grid */}
       <div style={{padding:"28px 32px 0 32px",position:"relative",zIndex:1}}>
         {loading ? (
-          <div style={{textAlign:"center",color:"#334155",fontFamily:"'DM Mono',monospace",fontSize:12,marginTop:60}}>Loading snapshots…</div>
+          <div style={{textAlign:"center",color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",fontSize:12,marginTop:60}}>Loading snapshots…</div>
         ) : (
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:16}}>
             {CLIENTS.map(c => (
@@ -565,92 +803,229 @@ function SuperDashboard({userEmail, onSignOut}) {
         )}
       </div>
 
-      {/* ── Bottom panel: Users + Activity ── */}
-      <div style={{padding:"24px 32px 40px",position:"relative",zIndex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginTop:8}}>
+      {/* ── User Intelligence Panel ── */}
+      <div style={{padding:"0 32px 48px",position:"relative",zIndex:1,marginTop:8}}>
 
-        {/* Active users */}
-        <div style={{background:"rgba(4,8,20,0.7)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
-          <div style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"#334155",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Portal Users</div>
-          <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {[
-              {name:"Niklas Isaksson",  email:"niklas.isaksson@targetflow.fi", role:"God Mode", color:"#93c5fd"},
-              {name:"Virpi Lämsa",      email:"virpi.lamsa@targetflow.fi",      role:"God Mode", color:"#93c5fd"},
-              {name:"Matias Soini",     email:"matias.soini@stremet.fi",        role:"Stremet",  color:"#818cf8"},
-              {name:"Carl Axel Schauman",email:"acke@niittysiemen.fi",          role:"Niittysiemen",color:"#4ade80"},
-              {name:"Kristina Luhtala", email:"kristina@niittysiemen.fi",       role:"Niittysiemen",color:"#4ade80"},
-              {name:"Teemu Sipilä",     email:"teemu.sipila@cuuma.com",         role:"Cuuma",    color:"#60a5fa"},
-              {name:"Christine Leisti", email:"christine@drop.fi",              role:"Drop Design",color:"#38bdf8"},
-              {name:"Kirsi Junnilainen",email:"kirsi.junnilainen@manutec.fi",   role:"Manutec",  color:"#38bdf8"},
-              {name:"Meria Rahkola",    email:"merkku@1306.fi",                 role:"Strand",   color:"#60a5fa"},
-              {name:"Lukas Paulikas",   email:"lukas.paulikas@accrease.com",    role:"Accrease", color:"#86efac"},
-              {name:"Richard Nilsen",   email:"richard.nilsen@tepcomp.fi",      role:"Tepcomp",  color:"#2dd4bf"},
-              {name:"Masi Lehtisalo",   email:"masi.lehtisalo@tepcomp.fi",      role:"Tepcomp",  color:"#2dd4bf"},
-            ].map(u=>(
-              <div key={u.email} style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{width:28,height:28,borderRadius:"50%",background:`rgba(${u.color==='#93c5fd'?'147,197,253':u.color==='#818cf8'?'129,140,248':u.color==='#4ade80'?'74,222,128':u.color==='#60a5fa'?'96,165,250':u.color==='#38bdf8'?'56,189,248':u.color==='#86efac'?'134,239,172':'45,212,191'},0.12)`,
-                  border:`1px solid ${u.color}22`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                  <div style={{fontSize:10,fontWeight:600,color:u.color}}>{u.name.charAt(0)}</div>
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12,color:"#94a3b8",fontWeight:500,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{u.name}</div>
-                  <div style={{fontSize:9,color:"#334155",fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{u.email}</div>
-                </div>
-                <div style={{fontSize:9,color:u.color,fontFamily:"'DM Mono',monospace",opacity:0.7,flexShrink:0,
-                  background:`${u.color}11`,border:`1px solid ${u.color}22`,borderRadius:4,padding:"2px 6px"}}>{u.role}</div>
-              </div>
-            ))}
+        {/* Section header with tabs */}
+        <div style={{display:"flex",alignItems:"center",gap:0,marginBottom:16,borderBottom:"1px solid rgba(100,150,255,0.08)"}}>
+          {[["overview","👥 Users"],["activity","⚡ Activity"],["errors","🔴 Errors"]].map(([id,label])=>(
+            <button key={id} onClick={()=>setUserTab(id)}
+              style={{background:"none",border:"none",borderBottom:`2px solid ${userTab===id?"#60a5fa":"transparent"}`,
+                color:userTab===id?"#93c5fd":"rgba(160,200,255,0.45)",
+                fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.12em",textTransform:"uppercase",
+                padding:"8px 18px",cursor:"pointer",transition:"all 0.2s"}}>
+              {label}
+            </button>
+          ))}
+          <div style={{marginLeft:"auto",fontSize:9,color:"rgba(100,140,200,0.35)",fontFamily:"'DM Mono',monospace"}}>
+            {users.length} registered · auto-refresh 60s
           </div>
         </div>
 
-        {/* Activity feed */}
-        <div style={{background:"rgba(4,8,20,0.7)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
-          <div style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"#334155",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Recent Activity</div>
-          {activity.length===0 ? (
-            <div style={{fontSize:11,color:"#1e3a5f",fontFamily:"'DM Mono',monospace",textAlign:"center",marginTop:30}}>No activity yet</div>
-          ) : (
-            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              {activity.map((a,i)=>{
-                const client = CLIENTS.find(c=>c.name===a.client);
-                const color = client?.color||"#64748b";
-                const ago = (()=>{
-                  const diff = (Date.now()-a.at)/1000;
-                  if(diff<60) return "just now";
-                  if(diff<3600) return `${Math.floor(diff/60)}min ago`;
-                  if(diff<86400) return `${Math.floor(diff/3600)}h ago`;
-                  return `${Math.floor(diff/86400)}d ago`;
-                })();
-                return (
-                  <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                    <div style={{width:6,height:6,borderRadius:"50%",background:color,marginTop:4,flexShrink:0,boxShadow:`0 0 6px ${color}88`}}/>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:12,color:"#94a3b8"}}>
-                        <span style={{color}}>{a.client}</span>
-                        {" — data imported through "}
-                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b"}}>{a.month}</span>
-                      </div>
-                      <div style={{fontSize:10,color:"#334155",fontFamily:"'DM Mono',monospace",marginTop:2}}>{ago}</div>
+        {/* ── OVERVIEW TAB ── */}
+        {userTab==="overview" && (
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {/* Column headers */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 100px 80px 90px 90px 100px 120px",
+              gap:8,padding:"6px 16px",fontSize:9,color:"rgba(120,160,220,0.5)",
+              fontFamily:"'DM Mono',monospace",letterSpacing:"0.1em",textTransform:"uppercase"}}>
+              <div>User</div><div>Email</div><div>Client</div><div>Sessions</div>
+              <div>MFA</div><div>Status</div><div>Registered</div><div>Last Login</div>
+            </div>
+            {USER_REGISTRY.map(reg=>{
+              const live = users.find(u=>u.email===reg.email);
+              const lastLogin = live?.last_sign_in_at ? new Date(live.last_sign_in_at) : null;
+              const registered = live?.created_at ? new Date(live.created_at) : null;
+              const sessions = live?.sign_in_count ?? 0;
+              const mfa = live?.mfa_enabled ?? false;
+              const confirmed = live?.email_confirmed_at != null;
+              const neverLoggedIn = !lastLogin;
+              const daysSince = lastLogin ? Math.floor((Date.now()-lastLogin)/86400000) : null;
+              const stale = daysSince !== null && daysSince > 30;
+              const statusColor = !confirmed?"#f87171":neverLoggedIn?"#f59e0b":stale?"#fb923c":"#4ade80";
+              const statusLabel = !confirmed?"Unconfirmed":neverLoggedIn?"Never logged in":stale?"Inactive":"Active";
+              const agoStr = lastLogin ? (()=>{
+                if(daysSince===0) return "Today";
+                if(daysSince===1) return "Yesterday";
+                if(daysSince<7)   return daysSince+"d ago";
+                if(daysSince<30)  return Math.floor(daysSince/7)+"w ago";
+                return Math.floor(daysSince/30)+"mo ago";
+              })() : "—";
+              return (
+                <div key={reg.email}
+                  style={{display:"grid",gridTemplateColumns:"1fr 1fr 100px 80px 90px 90px 100px 120px",
+                    gap:8,padding:"10px 16px",
+                    background:neverLoggedIn?"rgba(245,158,11,0.04)":stale?"rgba(251,146,60,0.03)":"rgba(6,12,30,0.5)",
+                    border:`1px solid ${neverLoggedIn?"rgba(245,158,11,0.12)":stale?"rgba(251,146,60,0.08)":"rgba(100,150,255,0.06)"}`,
+                    borderRadius:10,backdropFilter:"blur(8px)",alignItems:"center"}}>
+
+                  {/* Name + avatar */}
+                  <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                    <div style={{width:26,height:26,borderRadius:"50%",flexShrink:0,
+                      background:`${reg.color}18`,border:`1px solid ${reg.color}30`,
+                      display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      <span style={{fontSize:10,fontWeight:700,color:reg.color}}>{reg.name.charAt(0)}</span>
                     </div>
+                    <span style={{fontSize:12,color:"#d0e8ff",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg.name}</span>
+                  </div>
+
+                  {/* Email */}
+                  <div style={{fontSize:10,color:"rgba(160,200,255,0.5)",fontFamily:"'DM Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg.email}</div>
+
+                  {/* Client badge */}
+                  <div style={{fontSize:9,color:reg.color,fontFamily:"'DM Mono',monospace",
+                    background:`${reg.color}12`,border:`1px solid ${reg.color}25`,
+                    borderRadius:5,padding:"2px 7px",textAlign:"center",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{reg.role}</div>
+
+                  {/* Sessions */}
+                  <div style={{fontSize:12,color:sessions>0?"#93c5fd":"rgba(100,140,200,0.35)",fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
+                    {live ? sessions : <span style={{color:"rgba(100,140,200,0.3)"}}>—</span>}
+                  </div>
+
+                  {/* MFA */}
+                  <div style={{textAlign:"center"}}>
+                    {live ? (
+                      <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",padding:"2px 8px",borderRadius:5,
+                        background:mfa?"rgba(74,222,128,0.08)":"rgba(248,113,113,0.08)",
+                        border:`1px solid ${mfa?"rgba(74,222,128,0.2)":"rgba(248,113,113,0.2)"}`,
+                        color:mfa?"#4ade80":"#f87171"}}>
+                        {mfa?"✓ ON":"✗ OFF"}
+                      </span>
+                    ) : <span style={{color:"rgba(100,140,200,0.3)",fontSize:10}}>—</span>}
+                  </div>
+
+                  {/* Status */}
+                  <div style={{display:"flex",alignItems:"center",gap:5}}>
+                    <div style={{width:6,height:6,borderRadius:"50%",background:statusColor,
+                      boxShadow:`0 0 5px ${statusColor}88`,flexShrink:0}}/>
+                    <span style={{fontSize:10,color:statusColor,fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap"}}>{statusLabel}</span>
+                  </div>
+
+                  {/* Registered */}
+                  <div style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>
+                    {registered ? registered.toLocaleDateString("fi-FI",{day:"2-digit",month:"2-digit",year:"2-digit"}) : "—"}
+                  </div>
+
+                  {/* Last login */}
+                  <div style={{fontSize:11,color:neverLoggedIn?"#f59e0b":stale?"#fb923c":"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>
+                    {agoStr}
+                    {lastLogin && daysSince===0 && (
+                      <div style={{fontSize:9,color:"rgba(160,200,255,0.4)",marginTop:1}}>
+                        {lastLogin.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── ACTIVITY TAB ── */}
+        {userTab==="activity" && (
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            {/* Import activity */}
+            <div style={{background:"rgba(4,8,22,0.7)",border:"1px solid rgba(100,150,255,0.07)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Data Imports</div>
+              {activity.length===0 ? (
+                <div style={{fontSize:11,color:"rgba(100,150,220,0.3)",fontFamily:"'DM Mono',monospace",textAlign:"center",marginTop:30}}>No imports yet</div>
+              ) : activity.map((a,i)=>{
+                const client = CLIENTS.find(c=>c.name===a.client);
+                const color = client?.accent||"#64748b";
+                const diff = (Date.now()-a.at)/1000;
+                const ago = diff<60?"just now":diff<3600?Math.floor(diff/60)+"min ago":diff<86400?Math.floor(diff/3600)+"h ago":Math.floor(diff/86400)+"d ago";
+                return (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,padding:"8px 10px",background:"rgba(8,14,35,0.5)",borderRadius:8}}>
+                    <div style={{width:7,height:7,borderRadius:"50%",background:color,flexShrink:0,boxShadow:`0 0 6px ${color}88`}}/>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,color:"#d0e8ff"}}><span style={{color,fontWeight:600}}>{a.client}</span><span style={{color:"rgba(160,200,255,0.5)"}}> → {a.month}</span></div>
+                      <div style={{fontSize:9,color:"rgba(120,160,220,0.4)",fontFamily:"'DM Mono',monospace",marginTop:1}}>{a.at.toLocaleString("fi-FI",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})} · {ago}</div>
+                    </div>
+                    <div style={{fontSize:9,color:"rgba(100,200,100,0.6)",fontFamily:"'DM Mono',monospace",background:"rgba(74,222,128,0.06)",border:"1px solid rgba(74,222,128,0.1)",borderRadius:4,padding:"2px 6px"}}>IMPORT</div>
                   </div>
                 );
               })}
             </div>
-          )}
-
-          {/* Divider */}
-          <div style={{margin:"20px 0",height:1,background:"rgba(255,255,255,0.04)"}}/>
-
-          {/* Signed-in user */}
-          <div style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"#334155",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:12}}>Current Session</div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:8,height:8,borderRadius:"50%",background:"#4ade80",boxShadow:"0 0 8px #4ade8088",flexShrink:0}}/>
-            <div style={{fontSize:12,color:"#94a3b8",fontFamily:"'DM Mono',monospace"}}>{userEmail}</div>
-            <div style={{marginLeft:"auto",fontSize:9,color:"#4ade80",fontFamily:"'DM Mono',monospace",
-              background:"rgba(74,222,128,0.06)",border:"1px solid rgba(74,222,128,0.15)",borderRadius:4,padding:"2px 7px"}}>ONLINE</div>
+            {/* Login stats summary */}
+            <div style={{background:"rgba(4,8,22,0.7)",border:"1px solid rgba(100,150,255,0.07)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Login Summary</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {[...users].sort((a,b)=>(b.sign_in_count||0)-(a.sign_in_count||0)).slice(0,10).map(u=>{
+                  const reg = USER_REGISTRY.find(r=>r.email===u.email);
+                  const color = reg?.color||"#64748b";
+                  const maxSessions = Math.max(...users.map(x=>x.sign_in_count||0),1);
+                  const pct = Math.round(((u.sign_in_count||0)/maxSessions)*100);
+                  const lastLogin = u.last_sign_in_at ? new Date(u.last_sign_in_at) : null;
+                  return (
+                    <div key={u.email} style={{display:"flex",alignItems:"center",gap:8}}>
+                      <div style={{width:22,height:22,borderRadius:"50%",background:`${color}18`,border:`1px solid ${color}25`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                        <span style={{fontSize:8,fontWeight:700,color}}>{(reg?.name||u.email).charAt(0)}</span>
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3}}>
+                          <span style={{fontSize:11,color:"#c0d8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg?.name||u.email.split("@")[0]}</span>
+                          <span style={{fontSize:10,color:"rgba(160,200,255,0.5)",fontFamily:"'DM Mono',monospace",flexShrink:0,marginLeft:8}}>{u.sign_in_count||0} sessions</span>
+                        </div>
+                        <div style={{height:3,background:"rgba(100,140,200,0.1)",borderRadius:2}}>
+                          <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${color},${color}88)`,borderRadius:2,transition:"width 0.5s"}}/>
+                        </div>
+                        <div style={{fontSize:9,color:"rgba(120,160,220,0.4)",fontFamily:"'DM Mono',monospace",marginTop:2}}>
+                          Last: {lastLogin?lastLogin.toLocaleDateString("fi-FI"):"Never"}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {users.length===0&&<div style={{fontSize:11,color:"rgba(100,150,220,0.3)",fontFamily:"'DM Mono',monospace",textAlign:"center",marginTop:20}}>Run SQL setup first</div>}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
-      </div>
-    </div>
+        {/* ── ERRORS TAB ── */}
+        {userTab==="errors" && (
+          <div style={{background:"rgba(4,8,22,0.7)",border:"1px solid rgba(100,150,255,0.07)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",textTransform:"uppercase"}}>Error Log</div>
+              <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>last 50 events</div>
+            </div>
+            {users.flatMap(u=>u.errors||[]).length===0 ? (
+              <div style={{textAlign:"center",padding:"40px 0"}}>
+                <div style={{fontSize:28,marginBottom:8}}>✓</div>
+                <div style={{fontSize:12,color:"#4ade80",fontFamily:"'DM Mono',monospace"}}>No errors recorded</div>
+                <div style={{fontSize:10,color:"rgba(100,150,220,0.35)",marginTop:6}}>Errors from client dashboards will appear here once error_logs table is set up</div>
+              </div>
+            ) : (
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {users.flatMap(u=>(u.errors||[]).map(e=>({...e,userName:USER_REGISTRY.find(r=>r.email===u.email)?.name||u.email})))
+                  .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+                  .map((e,i)=>(
+                    <div key={i} style={{padding:"10px 14px",background:"rgba(248,113,113,0.04)",border:"1px solid rgba(248,113,113,0.1)",borderRadius:8,display:"flex",alignItems:"flex-start",gap:10}}>
+                      <div style={{width:6,height:6,borderRadius:"50%",background:"#f87171",marginTop:4,flexShrink:0,boxShadow:"0 0 5px #f8717188"}}/>
+                      <div style={{flex:1}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+                          <span style={{fontSize:11,color:"#fca5a5",fontWeight:600}}>{e.error_type||"Error"}</span>
+                          <span style={{fontSize:9,color:"rgba(160,140,180,0.5)",fontFamily:"'DM Mono',monospace"}}>{e.client}</span>
+                          <span style={{fontSize:9,color:"rgba(140,160,200,0.4)",fontFamily:"'DM Mono',monospace",marginLeft:"auto"}}>{new Date(e.created_at).toLocaleString("fi-FI",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
+                        </div>
+                        <div style={{fontSize:11,color:"rgba(200,180,200,0.7)"}}>{e.error_message}</div>
+                        <div style={{fontSize:9,color:"rgba(140,160,200,0.4)",fontFamily:"'DM Mono',monospace",marginTop:2}}>{e.userName} · {e.user_email}</div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Current session bar */}
+        <div style={{marginTop:16,padding:"10px 16px",background:"rgba(4,8,22,0.6)",border:"1px solid rgba(74,222,128,0.12)",borderRadius:10,backdropFilter:"blur(8px)",display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:7,height:7,borderRadius:"50%",background:"#4ade80",boxShadow:"0 0 8px #4ade8088"}}/>
+          <span style={{fontSize:11,color:"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>{userEmail}</span>
+          <span style={{fontSize:9,color:"#4ade80",fontFamily:"'DM Mono',monospace",background:"rgba(74,222,128,0.07)",border:"1px solid rgba(74,222,128,0.15)",borderRadius:4,padding:"2px 7px"}}>ONLINE · GOD MODE</span>
+          {lastRefresh && <span style={{marginLeft:"auto",fontSize:9,color:"rgba(100,140,200,0.35)",fontFamily:"'DM Mono',monospace"}}>Updated {lastRefresh.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}</span>}
+        </div>
+      </div>    </div>
   );
 }
 
@@ -690,7 +1065,7 @@ export default function App() {
       <style>{STYLE}</style>
       {stage==="checking" && (
         <div style={{minHeight:"100vh",background:"#080b12",display:"flex",alignItems:"center",justifyContent:"center"}}>
-          <div style={{color:"#1e3a5f",fontFamily:"'DM Mono',monospace",fontSize:11}}>Initialising…</div>
+          <div style={{color:"rgba(100,150,220,0.35)",fontFamily:"'DM Mono',monospace",fontSize:11}}>Initialising…</div>
         </div>
       )}
       {stage==="login"   && <LoginScreen  onLogin={goIn}/>}
