@@ -42,268 +42,190 @@ const sum = (arr) => (arr||[]).reduce((a,b)=>(a||0)+(b||0),0);
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const STYLE = `
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Syne:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:#03050a;color:#c8d8f0;font-family:'Space Grotesk',sans-serif;}
+  body{background:#05060f;color:#c8d8f0;font-family:'DM Sans',sans-serif;}
   ::-webkit-scrollbar{width:3px;}
-  ::-webkit-scrollbar-track{background:#03050a;}
-  ::-webkit-scrollbar-thumb{background:rgba(0,200,120,0.25);border-radius:2px;}
+  ::-webkit-scrollbar-track{background:#05060f;}
+  ::-webkit-scrollbar-thumb{background:rgba(160,200,255,0.2);border-radius:2px;}
 
-  /* ─── Dashboard card (post-login) ─── */
-  .card{background:rgba(6,10,22,0.8);border:1px solid rgba(0,180,100,0.1);border-radius:4px;
+  /* ─── Dashboard (post-login) ─── */
+  .card{background:rgba(6,10,22,0.8);border:1px solid rgba(100,160,255,0.1);border-radius:10px;
     transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;backdrop-filter:blur(16px);}
-  .card:hover{border-color:rgba(0,220,130,0.25);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.6);}
-  .open-btn{background:rgba(0,180,100,0.08);border:1px solid rgba(0,180,100,0.2);border-radius:2px;
-    color:#00c878;font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 10px;cursor:pointer;
-    transition:all 0.15s;white-space:nowrap;letter-spacing:0.08em;}
-  .open-btn:hover{border-color:#00c878;color:#00ff9d;background:rgba(0,180,100,0.14);}
+  .card:hover{border-color:rgba(150,200,255,0.22);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+  .open-btn{background:rgba(20,50,120,0.25);border:1px solid rgba(100,160,255,0.18);border-radius:6px;
+    color:#7ab4e8;font-family:'DM Mono',monospace;font-size:9px;padding:5px 11px;cursor:pointer;
+    transition:all 0.15s;white-space:nowrap;}
+  .open-btn:hover{border-color:#60a5fa;color:#bde0ff;background:rgba(30,70,160,0.35);}
 
-  /* ═══════════════════════════════════
-     LOGIN SCENE
-  ═══════════════════════════════════ */
-  .lx-root{
-    position:fixed;inset:0;display:flex;
-    background:#03050a;overflow:hidden;
-    font-family:'JetBrains Mono',monospace;
-  }
-
-  /* Scanlines overlay */
-  .lx-root::before{
-    content:'';position:fixed;inset:0;pointer-events:none;z-index:100;
-    background:repeating-linear-gradient(
-      0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px
-    );
-  }
-
-  /* Fine grid */
-  .lx-grid{
-    position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:
-      linear-gradient(rgba(0,200,100,0.028) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(0,200,100,0.028) 1px,transparent 1px);
-    background-size:40px 40px;
-  }
-
-  /* Diagonal accent line */
-  .lx-diag{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    pointer-events:none;z-index:0;overflow:hidden;
-  }
-  .lx-diag::before{
-    content:'';position:absolute;
-    top:-20%;left:42%;
-    width:1px;height:140%;
-    background:linear-gradient(to bottom,transparent 0%,rgba(0,200,100,0.15) 30%,rgba(0,220,120,0.3) 50%,rgba(0,200,100,0.15) 70%,transparent 100%);
-    transform:rotate(8deg);
-  }
-  .lx-diag::after{
-    content:'';position:absolute;
-    top:-20%;left:44%;
-    width:1px;height:140%;
-    background:linear-gradient(to bottom,transparent 0%,rgba(0,200,100,0.06) 40%,rgba(0,200,100,0.1) 50%,transparent 100%);
-    transform:rotate(8deg);
-  }
-
-  /* ── LEFT PANEL ── */
-  .lx-left{
-    flex:1;display:flex;flex-direction:column;justify-content:space-between;
-    padding:48px 56px;position:relative;z-index:2;
-    border-right:1px solid rgba(0,200,100,0.07);
-  }
-
-  .lx-logo{width:180px;height:auto;filter:brightness(1.1);}
-
-  .lx-headline{
-    font-family:'Syne',sans-serif;
-    font-size:clamp(44px,5.5vw,72px);
-    font-weight:800;
-    line-height:0.95;
-    letter-spacing:-0.03em;
-    color:#ffffff;
-  }
-  .lx-headline em{
-    font-style:normal;
-    color:transparent;
-    -webkit-text-stroke:1px rgba(0,220,120,0.7);
-  }
-
-  .lx-sub{
-    font-size:11px;color:rgba(0,200,100,0.6);
-    letter-spacing:0.25em;text-transform:uppercase;
-    margin-top:20px;line-height:1.8;
-  }
-
-  /* Status readouts */
-  .lx-status-grid{
-    display:grid;grid-template-columns:1fr 1fr;gap:1px;
-    border:1px solid rgba(0,200,100,0.1);
-    background:rgba(0,200,100,0.06);
-    margin-top:0;
-  }
-  .lx-status-cell{
-    background:#03050a;padding:16px 18px;
-  }
-  .lx-status-label{
-    font-size:8px;letter-spacing:0.2em;text-transform:uppercase;
-    color:rgba(0,200,100,0.45);margin-bottom:6px;
-  }
-  .lx-status-val{
-    font-size:22px;font-weight:700;color:#ffffff;font-family:'Syne',sans-serif;
-    letter-spacing:-0.02em;line-height:1;
-  }
-  .lx-status-val.green{color:#00dc7a;}
-  .lx-status-meta{font-size:8px;color:rgba(0,180,80,0.4);margin-top:4px;letter-spacing:0.1em;}
-
-  /* Ticker tape */
-  .lx-ticker{
-    border-top:1px solid rgba(0,200,100,0.08);
-    border-bottom:1px solid rgba(0,200,100,0.08);
-    padding:8px 0;overflow:hidden;white-space:nowrap;
-  }
-  .lx-ticker-inner{
-    display:inline-flex;gap:48px;
-    animation:tickerScroll 30s linear infinite;
-  }
-  .lx-ticker-item{
-    font-size:9px;letter-spacing:0.15em;color:rgba(0,200,100,0.35);text-transform:uppercase;
-  }
-  .lx-ticker-item span{color:rgba(0,200,100,0.6);margin-right:10px;}
-
-  @keyframes tickerScroll{
-    0%{transform:translateX(0)}
-    100%{transform:translateX(-50%)}
-  }
-
-  /* Corner brackets */
-  .lx-bracket{position:absolute;width:16px;height:16px;}
-  .lx-bracket.tl{top:0;left:0;border-top:1px solid rgba(0,200,100,0.5);border-left:1px solid rgba(0,200,100,0.5);}
-  .lx-bracket.tr{top:0;right:0;border-top:1px solid rgba(0,200,100,0.5);border-right:1px solid rgba(0,200,100,0.5);}
-  .lx-bracket.bl{bottom:0;left:0;border-bottom:1px solid rgba(0,200,100,0.5);border-left:1px solid rgba(0,200,100,0.5);}
-  .lx-bracket.br{bottom:0;right:0;border-bottom:1px solid rgba(0,200,100,0.5);border-right:1px solid rgba(0,200,100,0.5);}
-
-  /* ── RIGHT PANEL ── */
-  .lx-right{
-    width:420px;display:flex;flex-direction:column;justify-content:center;
-    padding:64px 52px;position:relative;z-index:2;
-    background:rgba(0,4,12,0.6);
-    backdrop-filter:blur(20px);
-  }
-
-  .lx-form-header{
-    font-size:8px;letter-spacing:0.3em;text-transform:uppercase;
-    color:rgba(0,200,100,0.5);margin-bottom:32px;
-    display:flex;align-items:center;gap:10px;
-  }
-  .lx-form-header::before{content:'';display:block;width:20px;height:1px;background:rgba(0,200,100,0.4);}
-
-  .lx-field-label{
-    font-size:9px;letter-spacing:0.2em;text-transform:uppercase;
-    color:rgba(255,255,255,0.65);margin-bottom:8px;
-    display:flex;align-items:center;gap:8px;
-  }
-  .lx-field-label::before{content:'//';color:rgba(0,200,100,0.5);font-size:9px;}
-
-  .login-input{
-    width:100%;
-    background:rgba(0,8,20,0.8);
-    border:none;
-    border-bottom:1px solid rgba(0,200,100,0.2);
-    padding:12px 4px;
-    color:#ffffff;font-size:14px;font-weight:400;
-    outline:none;font-family:'JetBrains Mono',monospace;
-    transition:border-color 0.2s;
-    border-radius:0;
-  }
-  .login-input:focus{border-bottom-color:rgba(0,220,120,0.7);}
-  .login-input::placeholder{color:rgba(255,255,255,0.18);}
-
-  /* God Mode button */
-  .god-btn{
-    position:relative;overflow:hidden;
-    width:100%;padding:15px 24px;border-radius:0;
-    background:transparent;
-    border:1px solid rgba(0,220,120,0.5);
-    color:#00dc7a;font-size:10px;font-weight:700;
-    cursor:pointer;font-family:'JetBrains Mono',monospace;
-    letter-spacing:0.25em;text-transform:uppercase;
-    transition:all 0.2s;
-  }
-  .god-btn:hover:not(:disabled){
-    background:rgba(0,220,120,0.08);
-    border-color:#00dc7a;
-    color:#ffffff;
-    box-shadow:0 0 30px rgba(0,200,100,0.15),inset 0 0 20px rgba(0,200,100,0.04);
-  }
-  .god-btn:active:not(:disabled){background:rgba(0,220,120,0.12);}
-  .god-btn:disabled{border-color:rgba(0,200,100,0.1);color:rgba(0,200,100,0.2);cursor:not-allowed;}
-  .god-btn::before{
-    content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
-    background:linear-gradient(90deg,transparent,rgba(0,220,120,0.08),transparent);
-    transition:left 0.4s;
-  }
-  .god-btn:hover::before{left:150%;}
-  .god-btn .btn-text{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;}
-  .god-btn .bolt{display:none;}
-  .god-btn .bolt2{display:none;}
-  .god-btn .bolt3{display:none;}
-  .god-btn .btn-icon{font-size:12px;}
-
-  /* Divider */
-  .lx-divider{
-    display:flex;align-items:center;gap:12px;margin:20px 0;
-  }
-  .lx-divider::before,.lx-divider::after{
-    content:'';flex:1;height:1px;background:rgba(0,200,100,0.08);
-  }
-  .lx-divider span{
-    font-size:8px;color:rgba(0,200,100,0.25);letter-spacing:0.2em;text-transform:uppercase;
-  }
-
-  /* MFA badge */
-  .lx-mfa{
-    display:flex;align-items:center;gap:10px;padding:10px 14px;
-    border:1px solid rgba(0,200,100,0.1);background:rgba(0,200,100,0.03);
-  }
-  .lx-mfa-dot{width:5px;height:5px;border-radius:50%;background:#00dc7a;
-    box-shadow:0 0 6px #00dc7a;flex-shrink:0;}
-  .lx-mfa-text{font-size:9px;color:rgba(0,200,100,0.55);letter-spacing:0.15em;text-transform:uppercase;}
-
-  /* Error */
-  .lx-err{
-    display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:14px;
-    border:1px solid rgba(255,80,80,0.2);background:rgba(255,50,50,0.04);
-  }
-  .lx-err-dot{width:5px;height:5px;border-radius:50%;background:#ff4444;flex-shrink:0;}
-  .lx-err-text{font-size:10px;color:#ff8888;letter-spacing:0.05em;}
-
-  /* Spinner */
+  /* ══════════ KEYFRAMES ══════════ */
   @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes slideRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-  @keyframes divineGlow{
-    0%,100%{filter:brightness(1) drop-shadow(0 0 6px rgba(0,200,100,0.3))}
-    50%    {filter:brightness(1.15) drop-shadow(0 0 14px rgba(0,220,120,0.5))}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes panelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+
+  /* Halo rings */
+  @keyframes haloSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes haloSpinRev{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+  @keyframes haloPulse{0%,100%{opacity:0.35;transform:scale(1)}50%{opacity:0.7;transform:scale(1.04)}}
+  @keyframes logoGlow{
+    0%,100%{filter:drop-shadow(0 0 18px rgba(255,255,255,0.55)) drop-shadow(0 0 50px rgba(200,230,255,0.25)) brightness(1.1)}
+    50%    {filter:drop-shadow(0 0 32px rgba(255,255,255,0.9))  drop-shadow(0 0 90px rgba(210,235,255,0.45)) brightness(1.3)}
   }
-  @keyframes heavenPulse{0%,100%{opacity:0.6}50%{opacity:1}}
-  @keyframes heavenDrift{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(12px)}}
-  @keyframes aureoleSpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-  @keyframes aureoleSpinRev{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(-360deg)}}
 
-  /* Cursor blink for terminal feel */
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-  .cursor{display:inline-block;width:8px;height:14px;background:#00dc7a;
-    vertical-align:middle;animation:blink 1s step-end infinite;margin-left:2px;}
+  /* Floating particles */
+  @keyframes float{
+    0%  {opacity:0;transform:translateY(0) translateX(0)}
+    15% {opacity:var(--op,0.6)}
+    85% {opacity:calc(var(--op,0.6)*0.4)}
+    100%{opacity:0;transform:translateY(-180px) translateX(var(--dx,10px))}
+  }
+  /* Ambient orb */
+  @keyframes orbDrift{
+    0%,100%{transform:translate(-50%,-50%) scale(1)}
+    50%{transform:translate(-50%,-50%) scale(1.08)}
+  }
 
-  /* ── Heaven (post-login) — minimal, no animation ── */
+  /* Button enter animation */
+  @keyframes btnEnter{
+    0%  {box-shadow:0 0 0 0 rgba(200,220,255,0.7);background:rgba(255,255,255,0.15)}
+    30% {box-shadow:0 0 0 20px rgba(200,220,255,0.0);background:rgba(255,255,255,0.25)}
+    60% {background:rgba(255,255,255,0.08)}
+    100%{background:rgba(255,255,255,0.0);box-shadow:none}
+  }
+  @keyframes btnTextFade{
+    0%{opacity:1;transform:scale(1)}
+    40%{opacity:0;transform:scale(0.92)}
+    100%{opacity:0}
+  }
+  @keyframes spinnerIn{
+    0%{opacity:0;transform:scale(0.5)}
+    100%{opacity:1;transform:scale(1)}
+  }
+
+  /* ── Heaven (post-login) static bg ── */
   .heaven-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
-    background:
-      radial-gradient(ellipse 100% 40% at 50% 0%,rgba(0,180,80,0.06) 0%,transparent 60%),
-      #03050a;
-  }
+    background:radial-gradient(ellipse 120% 50% at 50% -5%,rgba(60,100,255,0.08) 0%,transparent 65%),#05060f;}
   .heaven-orb1,.heaven-orb2,.heaven-orb3{display:none;}
   .heaven-rays{display:none;}
   .heaven-logo{width:110px;height:auto;}
+
+  /* ══════════ LOGIN ══════════ */
+  .lx-bg{
+    position:fixed;inset:0;
+    background:radial-gradient(ellipse 160% 120% at 38% 50%,#090d1f 0%,#05060f 60%);
+    overflow:hidden;
+  }
+  /* Very subtle dot grid */
+  .lx-bg::before{
+    content:'';position:absolute;inset:0;
+    background-image:radial-gradient(rgba(140,180,255,0.12) 1px,transparent 1px);
+    background-size:32px 32px;
+    mask-image:radial-gradient(ellipse 80% 80% at 38% 50%,black,transparent);
+  }
+
+  /* Ambient glow behind logo */
+  .lx-glow{
+    position:absolute;border-radius:50%;
+    top:50%;left:38%;transform:translate(-50%,-50%);
+    width:640px;height:640px;
+    background:radial-gradient(circle,rgba(140,180,255,0.07) 0%,rgba(100,150,255,0.03) 40%,transparent 70%);
+    filter:blur(40px);
+    animation:orbDrift 12s ease-in-out infinite;
+  }
+
+  /* Right panel */
+  .lx-panel{
+    position:fixed;top:0;right:0;bottom:0;width:400px;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:60px 52px;
+    background:rgba(4,6,16,0.7);
+    border-left:1px solid rgba(140,180,255,0.07);
+    backdrop-filter:blur(32px) saturate(1.5);
+    animation:panelIn 0.8s cubic-bezier(0.16,1,0.3,1) both;
+    z-index:10;
+  }
+  .lx-panel::before{
+    content:'';position:absolute;top:0;left:0;bottom:0;width:1px;
+    background:linear-gradient(to bottom,
+      transparent 0%,
+      rgba(180,210,255,0.15) 25%,
+      rgba(200,225,255,0.3) 50%,
+      rgba(180,210,255,0.15) 75%,
+      transparent 100%);
+  }
+
+  /* Inputs */
+  .lx-label{
+    font-family:'DM Mono',monospace;font-size:9px;font-weight:400;
+    letter-spacing:0.18em;text-transform:uppercase;
+    color:rgba(200,220,255,0.55);margin-bottom:9px;
+  }
+  .login-input{
+    width:100%;background:rgba(255,255,255,0.04);
+    border:1px solid rgba(180,210,255,0.12);
+    border-radius:6px;padding:13px 16px;
+    color:#ffffff;font-size:14px;font-weight:300;
+    outline:none;font-family:'DM Sans',sans-serif;
+    transition:border-color 0.25s,background 0.25s;
+  }
+  .login-input:focus{
+    border-color:rgba(180,210,255,0.4);
+    background:rgba(255,255,255,0.07);
+  }
+  .login-input::placeholder{color:rgba(255,255,255,0.18);}
+
+  /* Enter God Mode button */
+  .god-btn{
+    position:relative;overflow:hidden;
+    width:100%;padding:15px 20px;
+    border-radius:7px;cursor:pointer;
+    font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+    letter-spacing:0.18em;text-transform:uppercase;
+    color:#ffffff;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(200,220,255,0.25);
+    transition:background 0.2s,border-color 0.2s,box-shadow 0.2s;
+  }
+  .god-btn:not(:disabled):hover{
+    background:rgba(255,255,255,0.11);
+    border-color:rgba(220,235,255,0.45);
+    box-shadow:0 0 30px rgba(180,210,255,0.1);
+  }
+  .god-btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .god-btn.entering{animation:btnEnter 0.9s ease forwards;}
+  /* Shimmer */
+  .god-btn::after{
+    content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);
+    transform:skewX(-15deg);transition:left 0.5s;
+  }
+  .god-btn:not(:disabled):hover::after{left:140%;}
+  .god-btn .btn-text{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;}
+  /* hide old bolt classes */
+  .god-btn .bolt,.god-btn .bolt2,.god-btn .bolt3{display:none;}
+  .god-btn .btn-icon{display:none;}
+
+  /* Error */
+  .lx-err{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 14px;margin-bottom:14px;
+    background:rgba(255,80,80,0.05);
+    border:1px solid rgba(255,100,100,0.15);
+    border-radius:6px;
+  }
+  .lx-err-dot{width:4px;height:4px;border-radius:50%;background:#f87171;flex-shrink:0;}
+  .lx-err-text{font-size:11px;color:#fca5a5;font-family:'DM Mono',monospace;}
+
+  /* Diviner glow & heaven */
+  @keyframes divineGlow{
+    0%,100%{filter:drop-shadow(0 0 8px rgba(180,220,255,0.4)) brightness(1.05)}
+    50%{filter:drop-shadow(0 0 22px rgba(200,230,255,0.75)) brightness(1.2)}
+  }
+  @keyframes heavenPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+  @keyframes heavenDrift{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(10px)}}
+  @keyframes aureoleSpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+  @keyframes aureoleSpinRev{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(-360deg)}}
 `;
 
 // ── Sparkline ─────────────────────────────────────────────────────────────────
@@ -524,167 +446,184 @@ function LoginScreen({onLogin}) {
     onLogin();
   };
 
-  const TICKER = [
-    {label:"CLIENTS",val:"08"},
-    {label:"ACTIVE USERS",val:"15"},
-    {label:"MFA ENFORCED",val:"100%"},
-    {label:"UPTIME",val:"99.9%"},
-    {label:"ENCRYPTION",val:"AES-256"},
-    {label:"ACCESS LEVEL",val:"GOD"},
-    {label:"PROJECTS",val:"02"},
-    {label:"PROTOCOL",val:"TLS 1.3"},
-  ];
+  const [entering, setEntering] = useState(false);
 
-  const STATUS = [
-    {label:"Active Clients",   val:"08",    sub:"portfolios monitored",   green:false},
-    {label:"Portal Users",     val:"15",    sub:"registered accounts",    green:false},
-    {label:"System Status",    val:"LIVE",  sub:"all systems operational", green:true},
-    {label:"Security Level",   val:"AAL2",  sub:"MFA enforced",           green:true},
+  const handleLogin = async () => {
+    setEntering(true);
+    // short pause for animation then proceed
+    await new Promise(r => setTimeout(r, 600));
+    await login();
+    setEntering(false);
+  };
+
+  // Particles
+  const PARTICLES = Array.from({length:12},(_,i)=>({
+    left: `${8 + i*7.5}%`,
+    bottom: `${4 + (i%4)*6}%`,
+    size: `${1 + (i%3)*0.8}px`,
+    dur:  `${8 + (i%5)*2.5}s`,
+    delay:`${(i*1.3)%7}s`,
+    dx:   `${(i%2===0?1:-1)*(8+i%12)}px`,
+    op:   0.3 + (i%4)*0.15,
+  }));
+
+  // Halo ring defs
+  const HALOS = [
+    {w:220, h:220, border:"1px solid rgba(255,255,255,0.12)", anim:"haloSpin 60s linear infinite",         blur:0},
+    {w:300, h:300, border:"1px dashed rgba(255,255,255,0.06)", anim:"haloSpinRev 45s linear infinite 5s",  blur:0},
+    {w:390, h:390, border:"1px solid rgba(200,220,255,0.04)", anim:"haloSpin 80s linear infinite 10s",     blur:0},
+    {w:500, h:500, border:"1px dashed rgba(180,210,255,0.025)",anim:"haloSpinRev 110s linear infinite 3s", blur:0},
   ];
 
   return (
-    <div className="lx-root">
-      <div className="lx-grid"/>
-      <div className="lx-diag"/>
+    <div style={{minHeight:"100vh",position:"relative",background:"#05060f",overflow:"hidden"}}>
 
-      {/* ══════════════════════════════
-          LEFT — branding + status
-      ══════════════════════════════ */}
-      <div className="lx-left">
+      {/* ── Background ── */}
+      <div className="lx-bg"/>
+      <div className="lx-glow"/>
 
-        {/* Top */}
-        <div>
-          <img src={TF_LOGO} alt="Targetflow" className="lx-logo"
-            style={{marginBottom:56,filter:"brightness(1.1) drop-shadow(0 0 8px rgba(0,200,100,0.2))"}}/>
-        </div>
+      {/* ── Floating particles ── */}
+      {PARTICLES.map((p,i)=>(
+        <div key={i} style={{
+          position:"fixed",bottom:p.bottom,left:p.left,
+          width:p.size,height:p.size,borderRadius:"50%",
+          background:"rgba(200,225,255,0.9)",
+          boxShadow:"0 0 4px rgba(200,225,255,0.6)",
+          "--dx":p.dx,"--op":p.op,
+          animation:`float ${p.dur} ease-in-out infinite ${p.delay}`,
+          pointerEvents:"none",zIndex:1,
+        }}/>
+      ))}
 
-        {/* Headline */}
-        <div>
-          <div className="lx-headline">
-            <div>Portfolio</div>
-            <div>Intelligence</div>
-            <div><em>Command.</em></div>
-          </div>
-          <div className="lx-sub">
-            Superuser · Restricted System · Internal Use Only
-          </div>
-        </div>
-
-        {/* Status grid */}
-        <div>
-          <div style={{fontSize:8,letterSpacing:"0.25em",color:"rgba(0,200,100,0.35)",
-            textTransform:"uppercase",marginBottom:12}}>// System Status</div>
-          <div className="lx-status-grid">
-            {STATUS.map((s,i)=>(
-              <div key={i} className="lx-status-cell" style={{position:"relative"}}>
-                <div className="lx-bracket tl"/>
-                <div className="lx-bracket br"/>
-                <div className="lx-status-label">{s.label}</div>
-                <div className={`lx-status-val${s.green?" green":""}`}>{s.val}</div>
-                <div className="lx-status-meta">{s.sub}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Ticker */}
-        <div className="lx-ticker">
-          <div className="lx-ticker-inner">
-            {[...TICKER,...TICKER].map((t,i)=>(
-              <div key={i} className="lx-ticker-item">
-                <span>{t.label}</span>{t.val}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom label */}
-        <div style={{fontSize:8,color:"rgba(0,200,100,0.2)",letterSpacing:"0.2em",textTransform:"uppercase"}}>
-          © TARGETFLOW OY · INTERNAL SYSTEM · UNAUTHORISED ACCESS PROHIBITED
-        </div>
+      {/* ── Centered logo + halo ── */}
+      <div style={{
+        position:"fixed",
+        top:"50%",left:"38%",
+        transform:"translate(-50%,-50%)",
+        display:"flex",flexDirection:"column",alignItems:"center",
+        pointerEvents:"none",zIndex:2,
+        animation:"fadeIn 1.4s ease both 0.2s",
+      }}>
+        {/* Halo rings */}
+        {HALOS.map((h,i)=>(
+          <div key={i} style={{
+            position:"absolute",top:"50%",left:"50%",
+            width:h.w,height:h.h,borderRadius:"50%",
+            border:h.border,
+            animation:h.anim,
+            filter:h.blur?`blur(${h.blur}px)`:"none",
+          }}/>
+        ))}
+        {/* Soft bloom */}
+        <div style={{
+          position:"absolute",top:"50%",left:"50%",
+          width:480,height:280,borderRadius:"50%",
+          transform:"translate(-50%,-50%)",
+          background:"radial-gradient(ellipse,rgba(200,220,255,0.09) 0%,transparent 70%)",
+          filter:"blur(30px)",
+          animation:"haloPulse 6s ease-in-out infinite",
+        }}/>
+        {/* Logo */}
+        <img src={TF_LOGO} alt="Targetflow"
+          style={{
+            width:240,height:"auto",position:"relative",zIndex:3,
+            animation:"logoGlow 5s ease-in-out infinite",
+            display:"block",
+          }}/>
       </div>
 
-      {/* ══════════════════════════════
-          RIGHT — auth form
-      ══════════════════════════════ */}
-      <div className="lx-right">
+      {/* ── Right panel ── */}
+      <div className="lx-panel">
 
-        {/* Corner brackets */}
-        <div style={{position:"absolute",top:32,left:32,right:32}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{width:12,height:12,borderTop:"1px solid rgba(0,200,100,0.4)",borderLeft:"1px solid rgba(0,200,100,0.4)"}}/>
-            <div style={{fontSize:8,color:"rgba(0,200,100,0.3)",letterSpacing:"0.25em",fontFamily:"'JetBrains Mono',monospace"}}>
-              AUTH_MODULE v2.4
-            </div>
-            <div style={{width:12,height:12,borderTop:"1px solid rgba(0,200,100,0.4)",borderRight:"1px solid rgba(0,200,100,0.4)"}}/>
-          </div>
-        </div>
-
-        {/* Form header */}
-        <div className="lx-form-header">Authentication Required</div>
-
-        {/* Terminal prompt line */}
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,
-          color:"rgba(0,200,100,0.4)",marginBottom:32,lineHeight:1.6}}>
-          <div>$ auth --level=god --mfa=required</div>
-          <div style={{marginTop:2}}>
-            <span style={{color:"rgba(0,200,100,0.25)"}}>›</span>
-            <span style={{color:"rgba(255,255,255,0.3)",marginLeft:6}}>Awaiting credentials</span>
-            <span className="cursor"/>
-          </div>
+        {/* Tag */}
+        <div style={{
+          fontFamily:"'DM Mono',monospace",fontSize:8,
+          letterSpacing:"0.3em",color:"rgba(180,210,255,0.3)",
+          textTransform:"uppercase",marginBottom:44,
+        }}>
+          Targetflow · Internal System
         </div>
 
         {/* Fields */}
-        <div style={{display:"flex",flexDirection:"column",gap:28,marginBottom:10}}>
+        <div style={{display:"flex",flexDirection:"column",gap:22,marginBottom:12}}>
           <div>
-            <div className="lx-field-label">Email Address</div>
-            <input className="login-input" type="email" placeholder="user@domain.com"
+            <div className="lx-label">Email</div>
+            <input className="login-input" type="email" placeholder="name@domain.com"
               value={email} onChange={e=>setEmail(e.target.value)}
-              onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="email"/>
+              onKeyDown={e=>e.key==="Enter"&&handleLogin()} autoComplete="email"/>
           </div>
           <div>
-            <div className="lx-field-label">Passphrase</div>
-            <input className="login-input" type="password" placeholder="••••••••••••••"
+            <div className="lx-label">Password</div>
+            <input className="login-input" type="password" placeholder="••••••••••••"
               value={pw} onChange={e=>setPw(e.target.value)}
-              onKeyDown={e=>e.key==="Enter"&&login()} autoComplete="current-password"/>
+              onKeyDown={e=>e.key==="Enter"&&handleLogin()} autoComplete="current-password"/>
           </div>
         </div>
 
         {err && (
-          <div className="lx-err" style={{marginBottom:16}}>
+          <div className="lx-err">
             <div className="lx-err-dot"/>
-            <div className="lx-err-text">ERROR: {err}</div>
+            <div className="lx-err-text">{err}</div>
           </div>
         )}
 
-        <button className="god-btn" onClick={login} disabled={loading||!email||!pw}
-          style={{marginBottom:24,marginTop:8}}>
+        {/* CTA */}
+        <button
+          className={`god-btn${entering?" entering":""}`}
+          onClick={handleLogin}
+          disabled={loading||!email||!pw}
+          style={{marginTop:10,marginBottom:32}}
+        >
           <div className="btn-text">
             {loading ? (
               <>
-                <span style={{width:11,height:11,border:"1px solid rgba(0,200,100,0.3)",borderTopColor:"#00dc7a",
-                  borderRadius:"50%",display:"inline-block",animation:"spin 0.8s linear infinite"}}/>
-                <span>Verifying credentials…</span>
+                <span style={{
+                  width:11,height:11,flexShrink:0,
+                  border:"1.5px solid rgba(255,255,255,0.2)",
+                  borderTopColor:"rgba(255,255,255,0.8)",
+                  borderRadius:"50%",display:"inline-block",
+                  animation:"spin 0.7s linear infinite, spinnerIn 0.3s ease both",
+                }}/>
+                <span style={{color:"rgba(255,255,255,0.6)",fontSize:10}}>Authenticating…</span>
               </>
             ) : (
-              <span>_ Enter God Mode</span>
+              <span style={{animation:entering?"btnTextFade 0.4s ease forwards":"none"}}>
+                Enter God Mode
+              </span>
             )}
           </div>
         </button>
 
-        <div className="lx-divider"><span>security</span></div>
+        {/* Divider */}
+        <div style={{
+          height:1,marginBottom:24,
+          background:"linear-gradient(90deg,transparent,rgba(180,210,255,0.1),transparent)",
+        }}/>
 
-        <div className="lx-mfa">
-          <div className="lx-mfa-dot"/>
-          <div className="lx-mfa-text">MFA — TOTP required on next step</div>
+        {/* MFA notice */}
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{
+            width:4,height:4,borderRadius:"50%",flexShrink:0,
+            background:"rgba(160,200,255,0.5)",
+            boxShadow:"0 0 6px rgba(160,200,255,0.4)",
+          }}/>
+          <div style={{
+            fontFamily:"'DM Mono',monospace",fontSize:9,
+            color:"rgba(160,200,255,0.35)",letterSpacing:"0.1em",
+          }}>
+            Two-factor authentication required
+          </div>
         </div>
 
-        {/* Bottom corner brackets */}
-        <div style={{position:"absolute",bottom:32,left:32,right:32}}>
-          <div style={{display:"flex",justifyContent:"space-between"}}>
-            <div style={{width:12,height:12,borderBottom:"1px solid rgba(0,200,100,0.4)",borderLeft:"1px solid rgba(0,200,100,0.4)"}}/>
-            <div style={{width:12,height:12,borderBottom:"1px solid rgba(0,200,100,0.4)",borderRight:"1px solid rgba(0,200,100,0.4)"}}/>
-          </div>
+        {/* Bottom label */}
+        <div style={{
+          marginTop:"auto",paddingTop:48,
+          fontFamily:"'DM Mono',monospace",fontSize:7,
+          color:"rgba(140,170,220,0.2)",letterSpacing:"0.15em",
+          lineHeight:1.9,
+        }}>
+          RESTRICTED ACCESS ONLY<br/>
+          UNAUTHORISED USE PROHIBITED
         </div>
       </div>
 
