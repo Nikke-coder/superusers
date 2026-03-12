@@ -506,8 +506,7 @@ function LoginScreen({onLogin}) {
             letterSpacing:"-0.02em",
             color:"#ffffff",
           }}>
-            <div style={{display:"block"}}>God</div>
-            <div style={{
+  <div style={{
               display:"block",fontStyle:"italic",fontWeight:300,
               background:"linear-gradient(135deg,#a8d0ff 0%,#ffffff 40%,#c8e8ff 100%)",
               WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
@@ -579,17 +578,11 @@ function LoginScreen({onLogin}) {
 
         {/* Form header */}
         <div style={{marginBottom:40}}>
-          <div style={{fontSize:9,color:"rgba(140,190,255,0.4)",fontFamily:"'DM Mono',monospace",
-            letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:14}}>
+          <div style={{fontSize:9,color:"rgba(140,190,255,0.35)",fontFamily:"'DM Mono',monospace",
+            letterSpacing:"0.3em",textTransform:"uppercase",marginBottom:16}}>
             Restricted access
           </div>
-          <div style={{
-            fontFamily:"'Cormorant Garamond',serif",fontSize:36,fontWeight:400,
-            color:"#e8f4ff",lineHeight:1.15,letterSpacing:"-0.01em",
-          }}>
-            Sign in to<br/>
-            <span style={{fontStyle:"italic",color:"rgba(160,210,255,0.8)"}}>God Mode</span>
-          </div>
+          <div style={{height:1,background:"linear-gradient(90deg,rgba(100,160,255,0.2),transparent)"}}/>
         </div>
 
         {/* Inputs */}
