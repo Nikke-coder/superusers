@@ -182,7 +182,7 @@ const STYLE = `
     border-color:rgba(180,210,255,0.4);
     background:rgba(255,255,255,0.07);
   }
-  .login-input::placeholder{color:rgba(255,255,255,0.18);}
+  .login-input::placeholder{color:rgba(255,255,255,0.35);}
 
   /* Enter God Mode button */
   .god-btn{
@@ -192,7 +192,7 @@ const STYLE = `
     font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
     letter-spacing:0.18em;text-transform:uppercase;
     color:#ffffff;
-    background:rgba(255,255,255,0.07);
+    background:rgba(255,255,255,0.09);
     border:1px solid rgba(200,220,255,0.25);
     transition:background 0.2s,border-color 0.2s,box-shadow 0.2s;
   }
@@ -474,20 +474,7 @@ function LoginScreen({onLogin}) {
     op:    0.25 + (i%5)*0.12,
   }));
 
-  // Constellation nodes around logo
-  const NODES = Array.from({length:8},(_,i)=>{
-    const angle = (i/8)*Math.PI*2 - Math.PI/2;
-    const r = 155;
-    return {
-      x: Math.cos(angle)*r,
-      y: Math.sin(angle)*r,
-      size: i%3===0 ? 3 : i%3===1 ? 2 : 1.5,
-      delay: `${i*0.4}s`,
-      dur: `${2.8+i*0.35}s`,
-    };
-  });
-  // Constellation lines — connect some nodes
-  const LINES = [[0,2],[2,4],[4,6],[6,0],[1,5],[3,7]];
+
 
   return (
     <div style={{minHeight:"100vh",position:"relative",background:"#05060f",overflow:"hidden"}}>
@@ -518,32 +505,7 @@ function LoginScreen({onLogin}) {
         pointerEvents:"none",zIndex:2,
         animation:"fadeIn 1.4s ease both 0.2s",
       }}>
-        {/* Constellation */}
-        <svg style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
-          overflow:"visible",pointerEvents:"none",opacity:0.55}} width="400" height="400">
-          {/* Lines between nodes */}
-          {LINES.map(([a,b],i)=>(
-            <line key={i}
-              x1={200+NODES[a].x} y1={200+NODES[a].y}
-              x2={200+NODES[b].x} y2={200+NODES[b].y}
-              stroke="rgba(180,210,255,0.12)" strokeWidth="0.5"/>
-          ))}
-          {/* Outer faint circle */}
-          <circle cx="200" cy="200" r="155" fill="none"
-            stroke="rgba(180,210,255,0.06)" strokeWidth="1" strokeDasharray="2 8"/>
-          <circle cx="200" cy="200" r="105" fill="none"
-            stroke="rgba(180,210,255,0.04)" strokeWidth="1" strokeDasharray="1 12"/>
-          {/* Nodes */}
-          {NODES.map((n,i)=>(
-            <g key={i}>
-              <circle cx={200+n.x} cy={200+n.y} r={n.size+3}
-                fill="rgba(160,200,255,0.04)"/>
-              <circle cx={200+n.x} cy={200+n.y} r={n.size}
-                fill="rgba(200,225,255,0.7)"
-                style={{animation:`tw${(i%3)+1} ${n.dur} ease-in-out infinite ${n.delay}`}}/>
-            </g>
-          ))}
-        </svg>
+
         {/* Soft bloom */}
         <div style={{
           position:"absolute",top:"50%",left:"50%",
@@ -568,7 +530,7 @@ function LoginScreen({onLogin}) {
         {/* Tag */}
         <div style={{
           fontFamily:"'DM Mono',monospace",fontSize:8,
-          letterSpacing:"0.3em",color:"rgba(220,235,255,0.55)",
+          letterSpacing:"0.3em",color:"rgba(240,248,255,0.75)",
           textTransform:"uppercase",marginBottom:44,
         }}>
           Targetflow · Internal System
@@ -649,7 +611,7 @@ function LoginScreen({onLogin}) {
         <div style={{
           marginTop:"auto",paddingTop:48,
           fontFamily:"'DM Mono',monospace",fontSize:7,
-          color:"rgba(180,210,255,0.35)",letterSpacing:"0.15em",
+          color:"rgba(200,225,255,0.5)",letterSpacing:"0.15em",
           lineHeight:1.9,
         }}>
           RESTRICTED ACCESS ONLY<br/>
