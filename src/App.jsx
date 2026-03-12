@@ -20,7 +20,7 @@ const CLIENTS = [
   { name:"Stremet Oy",       accent:"#818cf8", url:"https://stremet-dashboard.vercel.app"     },
   { name:"Manutec Oy",       accent:"#38bdf8", url:"https://manutec-dashboard.vercel.app"     },
   { name:"Accrease Oy",      accent:"#86efac", url:"https://accrease-dashboard.vercel.app"    },
-  { name:"Drop Design Pool", accent:"#38bdf8", url:"https://droppool-dashboard.vercel.app"    },
+  { name:"Drop Design Pool", accent:"#38bdf8", url:"https://drop-dashboard-blue.vercel.app"   },
   { name:"Niittysiemen Oy",  accent:"#4ade80", url:"https://niittysiemen-dashboard.vercel.app"},
   { name:"Strand Group",     accent:"#60a5fa", url:"https://strand-dashboard.vercel.app"      },
   { name:"Cuuma",            accent:"#60a5fa", url:"https://cuuma-dashboard.vercel.app"       },
@@ -59,6 +59,9 @@ const STYLE = `
   .open-btn:hover{border-color:#60a5fa;color:#bde0ff;background:rgba(30,70,160,0.35);}
 
   /* ══════════ KEYFRAMES ══════════ */
+  @keyframes tw1{0%,100%{opacity:0.2;r:1}50%{opacity:1;r:2}}
+  @keyframes tw2{0%,100%{opacity:0.3}50%{opacity:0.9}}
+  @keyframes tw3{0%,100%{opacity:0.15}50%{opacity:0.7}}
   @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -467,13 +470,20 @@ function LoginScreen({onLogin}) {
     op:   0.3 + (i%4)*0.15,
   }));
 
-  // Halo ring defs
-  const HALOS = [
-    {w:220, h:220, border:"1px solid rgba(255,255,255,0.12)", anim:"haloSpin 60s linear infinite",         blur:0},
-    {w:300, h:300, border:"1px dashed rgba(255,255,255,0.06)", anim:"haloSpinRev 45s linear infinite 5s",  blur:0},
-    {w:390, h:390, border:"1px solid rgba(200,220,255,0.04)", anim:"haloSpin 80s linear infinite 10s",     blur:0},
-    {w:500, h:500, border:"1px dashed rgba(180,210,255,0.025)",anim:"haloSpinRev 110s linear infinite 3s", blur:0},
-  ];
+  // Constellation nodes around logo
+  const NODES = Array.from({length:8},(_,i)=>{
+    const angle = (i/8)*Math.PI*2 - Math.PI/2;
+    const r = 155;
+    return {
+      x: Math.cos(angle)*r,
+      y: Math.sin(angle)*r,
+      size: i%3===0 ? 3 : i%3===1 ? 2 : 1.5,
+      delay: `${i*0.4}s`,
+      dur: `${2.8+i*0.35}s`,
+    };
+  });
+  // Constellation lines — connect some nodes
+  const LINES = [[0,2],[2,4],[4,6],[6,0],[1,5],[3,7]];
 
   return (
     <div style={{minHeight:"100vh",position:"relative",background:"#05060f",overflow:"hidden"}}>
@@ -504,16 +514,32 @@ function LoginScreen({onLogin}) {
         pointerEvents:"none",zIndex:2,
         animation:"fadeIn 1.4s ease both 0.2s",
       }}>
-        {/* Halo rings */}
-        {HALOS.map((h,i)=>(
-          <div key={i} style={{
-            position:"absolute",top:"50%",left:"50%",
-            width:h.w,height:h.h,borderRadius:"50%",
-            border:h.border,
-            animation:h.anim,
-            filter:h.blur?`blur(${h.blur}px)`:"none",
-          }}/>
-        ))}
+        {/* Constellation */}
+        <svg style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
+          overflow:"visible",pointerEvents:"none",opacity:0.55}} width="400" height="400">
+          {/* Lines between nodes */}
+          {LINES.map(([a,b],i)=>(
+            <line key={i}
+              x1={200+NODES[a].x} y1={200+NODES[a].y}
+              x2={200+NODES[b].x} y2={200+NODES[b].y}
+              stroke="rgba(180,210,255,0.12)" strokeWidth="0.5"/>
+          ))}
+          {/* Outer faint circle */}
+          <circle cx="200" cy="200" r="155" fill="none"
+            stroke="rgba(180,210,255,0.06)" strokeWidth="1" strokeDasharray="2 8"/>
+          <circle cx="200" cy="200" r="105" fill="none"
+            stroke="rgba(180,210,255,0.04)" strokeWidth="1" strokeDasharray="1 12"/>
+          {/* Nodes */}
+          {NODES.map((n,i)=>(
+            <g key={i}>
+              <circle cx={200+n.x} cy={200+n.y} r={n.size+3}
+                fill="rgba(160,200,255,0.04)"/>
+              <circle cx={200+n.x} cy={200+n.y} r={n.size}
+                fill="rgba(200,225,255,0.7)"
+                style={{animation:`tw${(i%3)+1} ${n.dur} ease-in-out infinite ${n.delay}`}}/>
+            </g>
+          ))}
+        </svg>
         {/* Soft bloom */}
         <div style={{
           position:"absolute",top:"50%",left:"50%",
@@ -657,13 +683,18 @@ function SuperDashboard({userEmail, onSignOut}) {
   const [lastRefresh,setLastRefresh]= useState(null);
   const [activity,   setActivity]   = useState([]);
   const [users,      setUsers]      = useState([]);
-  const [userTab,    setUserTab]    = useState("overview"); // overview | detail
+  const [userTab,    setUserTab]    = useState("overview");
+  const [aiUsage,    setAiUsage]    = useState([]);
+  const [comments,   setComments]   = useState([]);
+  const [dash,       setDash]       = useState("portfolio"); // portfolio | health | users | activity | errors
 
   const load = useCallback(async () => {
-    const [snapRes, userRes, errRes] = await Promise.all([
+    const [snapRes, userRes, errRes, aiRes, commRes] = await Promise.all([
       supabase.from("client_snapshots").select("*"),
       supabase.rpc("get_user_stats"),
       supabase.from("error_logs").select("*").order("created_at",{ascending:false}).limit(50),
+      supabase.from("ai_usage").select("client,tokens,created_at").order("created_at",{ascending:false}).limit(200),
+      supabase.from("comments").select("client,author,created_at").order("created_at",{ascending:false}).limit(200),
     ]);
     if(snapRes.data){
       const map = {};
@@ -682,6 +713,8 @@ function SuperDashboard({userEmail, onSignOut}) {
         errors: errRes.data?.filter(e=>e.user_email===u.email)||[],
       })));
     }
+    setAiUsage(aiRes.data||[]);
+    setComments(commRes.data||[]);
     setLastRefresh(new Date());
     setLoading(false);
   },[]);
@@ -740,268 +773,434 @@ function SuperDashboard({userEmail, onSignOut}) {
         </div>
       </div>
 
-      {/* Summary bar */}
-      <div style={{borderBottom:"1px solid rgba(255,255,255,0.03)",background:"rgba(2,4,8,0.7)",backdropFilter:"blur(8px)",padding:"12px 32px",
-        display:"flex",gap:32,alignItems:"center"}}>
-        <div>
-          <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Portfolio Revenue</div>
-          <div style={{fontSize:20,fontWeight:600,color:"#e2e8f0",fontFamily:"'DM Mono',monospace"}}>{fmt(totalRevenue)}</div>
-        </div>
-        <div style={{width:1,height:32,background:"#0f1e30"}}/>
-        <div>
-          <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Portfolio EBITDA</div>
-          <div style={{fontSize:20,fontWeight:600,color:"#2dd4bf",fontFamily:"'DM Mono',monospace"}}>{fmt(totalEBITDA)}</div>
-        </div>
-        <div style={{width:1,height:32,background:"#0f1e30"}}/>
-        <div>
-          <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:2}}>Clients with data</div>
-          <div style={{fontSize:20,fontWeight:600,color:"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>{clientsWithData}/{CLIENTS.length}</div>
-        </div>
-        <div style={{marginLeft:"auto"}}>
-          <button onClick={load}
-            style={{background:"rgba(45,212,191,0.06)",border:"1px solid #0d9488",borderRadius:8,
-              color:"#2dd4bf",fontFamily:"'DM Mono',monospace",fontSize:10,padding:"6px 14px",cursor:"pointer"}}>
-            ↻ Refresh
-          </button>
+      {/* ── Top nav tabs ── */}
+      <div style={{borderBottom:"1px solid rgba(255,255,255,0.04)",background:"rgba(2,4,8,0.8)",
+        backdropFilter:"blur(8px)",padding:"0 32px",display:"flex",alignItems:"center",gap:0}}>
+        {[
+          ["portfolio","Portfolio"],
+          ["health","Health Scores"],
+          ["users","Users & Access"],
+          ["activity","Activity"],
+          ["errors","Error Log"],
+        ].map(([id,label])=>(
+          <button key={id} onClick={()=>setDash(id)} style={{
+            background:"none",border:"none",
+            borderBottom:`2px solid ${dash===id?"#60a5fa":"transparent"}`,
+            color:dash===id?"#93c5fd":"rgba(160,200,255,0.4)",
+            fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.1em",
+            textTransform:"uppercase",padding:"12px 16px",cursor:"pointer",
+            transition:"all 0.15s",whiteSpace:"nowrap",
+          }}>{label}</button>
+        ))}
+        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:20}}>
+          {lastRefresh && <div style={{fontSize:9,color:"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace"}}>
+            ↻ {lastRefresh.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+          </div>}
+          <button onClick={load} style={{background:"none",border:"1px solid rgba(100,160,255,0.12)",
+            borderRadius:5,color:"rgba(100,160,255,0.4)",fontFamily:"'DM Mono',monospace",
+            fontSize:9,padding:"4px 10px",cursor:"pointer",letterSpacing:"0.08em"}}>Refresh</button>
         </div>
       </div>
 
-      {/* Grid */}
-      <div style={{padding:"28px 32px 0 32px",position:"relative",zIndex:1}}>
+      <div style={{padding:"24px 32px 48px",position:"relative",zIndex:1}}>
+
+      {/* ════════════════════════════
+          PORTFOLIO TAB
+      ════════════════════════════ */}
+      {dash==="portfolio" && (<>
+
+        {/* KPI strip */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+          {[
+            {label:"Portfolio Revenue",   val:fmt(totalRevenue),      sub:"ACT YTD",         color:"#c0d8f0"},
+            {label:"Portfolio EBITDA",    val:fmt(totalEBITDA),       sub:"ACT YTD",         color:"#2dd4bf"},
+            {label:"EBITDA Margin",       val:totalRevenue>0?fmtPct(totalEBITDA/totalRevenue*100):"—", sub:"blended", color:totalEBITDA>=0?"#4ade80":"#f87171"},
+            {label:"Clients with Data",   val:`${clientsWithData}/${CLIENTS.length}`, sub:"have uploaded ACT", color:"#60a5fa"},
+          ].map((k,i)=>(
+            <div key={i} style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.08)",
+              borderRadius:10,padding:"16px 20px",backdropFilter:"blur(12px)"}}>
+              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+                textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:6}}>{k.label}</div>
+              <div style={{fontSize:22,fontWeight:600,color:k.color,fontFamily:"'DM Mono',monospace",lineHeight:1}}>{k.val}</div>
+              <div style={{fontSize:9,color:"rgba(100,140,200,0.35)",marginTop:4}}>{k.sub}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Client grid */}
         {loading ? (
-          <div style={{textAlign:"center",color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",fontSize:12,marginTop:60}}>Loading snapshots…</div>
+          <div style={{textAlign:"center",color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace",
+            fontSize:11,paddingTop:60}}>Loading…</div>
         ) : (
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:16}}>
-            {CLIENTS.map(c => (
-              <ClientCard key={c.name} client={c} snap={snaps[c.name]||null}/>
-            ))}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:14}}>
+            {CLIENTS.map(c=><ClientCard key={c.name} client={c} snap={snaps[c.name]||null}/>)}
           </div>
         )}
-      </div>
+      </>)}
 
-      {/* ── User Intelligence Panel ── */}
-      <div style={{padding:"0 32px 48px",position:"relative",zIndex:1,marginTop:8}}>
-
-        {/* Section header with tabs */}
-        <div style={{display:"flex",alignItems:"center",gap:0,marginBottom:16,borderBottom:"1px solid rgba(100,150,255,0.08)"}}>
-          {[["overview","👥 Users"],["activity","⚡ Activity"],["errors","🔴 Errors"]].map(([id,label])=>(
-            <button key={id} onClick={()=>setUserTab(id)}
-              style={{background:"none",border:"none",borderBottom:`2px solid ${userTab===id?"#60a5fa":"transparent"}`,
-                color:userTab===id?"#93c5fd":"rgba(160,200,255,0.45)",
-                fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:"0.12em",textTransform:"uppercase",
-                padding:"8px 18px",cursor:"pointer",transition:"all 0.2s"}}>
-              {label}
-            </button>
-          ))}
-          <div style={{marginLeft:"auto",fontSize:9,color:"rgba(100,140,200,0.35)",fontFamily:"'DM Mono',monospace"}}>
-            {users.length} registered · auto-refresh 60s
-          </div>
-        </div>
-
-        {/* ── OVERVIEW TAB ── */}
-        {userTab==="overview" && (
+      {/* ════════════════════════════
+          HEALTH SCORES TAB
+      ════════════════════════════ */}
+      {dash==="health" && (() => {
+        // Compute health score per client: 0-100
+        const scored = CLIENTS.map(c=>{
+          const snap = snaps[c.name];
+          const hasData   = snap?.last_month ? 25 : 0;
+          const daysAgo   = snap?.updated_at ? Math.floor((Date.now()-new Date(snap.updated_at))/86400000) : 999;
+          const freshness = daysAgo<=7?25:daysAgo<=30?15:daysAgo<=90?5:0;
+          const clientUsers = USER_REGISTRY.filter(u=>u.role===c.name||u.role==="God Mode");
+          const usersData = clientUsers.map(u=>users.find(x=>x.email===u.email)).filter(Boolean);
+          const mfaScore  = usersData.length>0 ? Math.round((usersData.filter(u=>u.mfa_enabled).length/usersData.length)*25) : 0;
+          const hasLogin  = usersData.some(u=>u.last_sign_in_at) ? 15 : 0;
+          const aiTokens  = aiUsage.filter(a=>a.client===c.name).reduce((s,a)=>s+(a.tokens||0),0);
+          const aiScore   = aiTokens>5000?10:aiTokens>1000?6:aiTokens>0?3:0;
+          const score     = hasData+freshness+mfaScore+hasLogin+aiScore;
+          return {c, score, hasData:!!snap?.last_month, daysAgo, mfaScore, aiTokens, usersData};
+        }).sort((a,b)=>b.score-a.score);
+        return (
           <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {/* Column headers */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 100px 80px 90px 90px 100px 120px",
-              gap:8,padding:"6px 16px",fontSize:9,color:"rgba(120,160,220,0.5)",
-              fontFamily:"'DM Mono',monospace",letterSpacing:"0.1em",textTransform:"uppercase"}}>
-              <div>User</div><div>Email</div><div>Client</div><div>Sessions</div>
-              <div>MFA</div><div>Status</div><div>Registered</div><div>Last Login</div>
+            <div style={{display:"grid",gridTemplateColumns:"200px 1fr 80px 80px 80px 80px 80px",
+              gap:8,padding:"6px 16px",fontSize:8,color:"rgba(120,160,220,0.4)",
+              fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em"}}>
+              <div>Client</div><div>Health Score</div>
+              <div>Data</div><div>Freshness</div><div>MFA</div><div>Login</div><div>AI Usage</div>
             </div>
-            {USER_REGISTRY.map(reg=>{
-              const live = users.find(u=>u.email===reg.email);
-              const lastLogin = live?.last_sign_in_at ? new Date(live.last_sign_in_at) : null;
-              const registered = live?.created_at ? new Date(live.created_at) : null;
-              const sessions = live?.sign_in_count ?? 0;
-              const mfa = live?.mfa_enabled ?? false;
-              const confirmed = live?.email_confirmed_at != null;
-              const neverLoggedIn = !lastLogin;
-              const daysSince = lastLogin ? Math.floor((Date.now()-lastLogin)/86400000) : null;
-              const stale = daysSince !== null && daysSince > 30;
-              const statusColor = !confirmed?"#f87171":neverLoggedIn?"#f59e0b":stale?"#fb923c":"#4ade80";
-              const statusLabel = !confirmed?"Unconfirmed":neverLoggedIn?"Never logged in":stale?"Inactive":"Active";
-              const agoStr = lastLogin ? (()=>{
-                if(daysSince===0) return "Today";
-                if(daysSince===1) return "Yesterday";
-                if(daysSince<7)   return daysSince+"d ago";
-                if(daysSince<30)  return Math.floor(daysSince/7)+"w ago";
-                return Math.floor(daysSince/30)+"mo ago";
-              })() : "—";
+            {scored.map(({c,score,hasData,daysAgo,mfaScore,aiTokens,usersData})=>{
+              const col = score>=70?"#4ade80":score>=45?"#facc15":"#f87171";
+              const freshCol = daysAgo<=7?"#4ade80":daysAgo<=30?"#facc15":daysAgo<=90?"#fb923c":"#f87171";
+              const freshLabel = daysAgo===0?"Today":daysAgo<=1?"1d":daysAgo<=7?daysAgo+"d":daysAgo<=30?Math.floor(daysAgo/7)+"w":daysAgo<999?Math.floor(daysAgo/30)+"mo":"—";
               return (
-                <div key={reg.email}
-                  style={{display:"grid",gridTemplateColumns:"1fr 1fr 100px 80px 90px 90px 100px 120px",
-                    gap:8,padding:"10px 16px",
-                    background:neverLoggedIn?"rgba(245,158,11,0.04)":stale?"rgba(251,146,60,0.03)":"rgba(6,12,30,0.5)",
-                    border:`1px solid ${neverLoggedIn?"rgba(245,158,11,0.12)":stale?"rgba(251,146,60,0.08)":"rgba(100,150,255,0.06)"}`,
-                    borderRadius:10,backdropFilter:"blur(8px)",alignItems:"center"}}>
-
-                  {/* Name + avatar */}
-                  <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
-                    <div style={{width:26,height:26,borderRadius:"50%",flexShrink:0,
-                      background:`${reg.color}18`,border:`1px solid ${reg.color}30`,
-                      display:"flex",alignItems:"center",justifyContent:"center"}}>
-                      <span style={{fontSize:10,fontWeight:700,color:reg.color}}>{reg.name.charAt(0)}</span>
+                <div key={c.name} style={{display:"grid",gridTemplateColumns:"200px 1fr 80px 80px 80px 80px 80px",
+                  gap:8,padding:"12px 16px",alignItems:"center",
+                  background:"rgba(6,10,24,0.6)",border:`1px solid ${col}14`,
+                  borderRadius:8,backdropFilter:"blur(8px)"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{width:6,height:6,borderRadius:"50%",background:c.accent,flexShrink:0}}/>
+                    <span style={{fontSize:12,color:"#d0e8ff",fontWeight:500}}>{c.name}</span>
+                  </div>
+                  {/* Bar */}
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{flex:1,height:5,background:"rgba(255,255,255,0.05)",borderRadius:3}}>
+                      <div style={{height:"100%",width:`${score}%`,background:`linear-gradient(90deg,${col}88,${col})`,
+                        borderRadius:3,transition:"width 0.6s"}}/>
                     </div>
-                    <span style={{fontSize:12,color:"#d0e8ff",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg.name}</span>
+                    <span style={{fontSize:13,fontWeight:700,color:col,fontFamily:"'DM Mono',monospace",
+                      minWidth:28,textAlign:"right"}}>{score}</span>
                   </div>
-
-                  {/* Email */}
-                  <div style={{fontSize:10,color:"rgba(160,200,255,0.5)",fontFamily:"'DM Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg.email}</div>
-
-                  {/* Client badge */}
-                  <div style={{fontSize:9,color:reg.color,fontFamily:"'DM Mono',monospace",
-                    background:`${reg.color}12`,border:`1px solid ${reg.color}25`,
-                    borderRadius:5,padding:"2px 7px",textAlign:"center",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{reg.role}</div>
-
-                  {/* Sessions */}
-                  <div style={{fontSize:12,color:sessions>0?"#93c5fd":"rgba(100,140,200,0.35)",fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
-                    {live ? sessions : <span style={{color:"rgba(100,140,200,0.3)"}}>—</span>}
-                  </div>
-
-                  {/* MFA */}
+                  {/* Data */}
                   <div style={{textAlign:"center"}}>
-                    {live ? (
-                      <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",padding:"2px 8px",borderRadius:5,
-                        background:mfa?"rgba(74,222,128,0.08)":"rgba(248,113,113,0.08)",
-                        border:`1px solid ${mfa?"rgba(74,222,128,0.2)":"rgba(248,113,113,0.2)"}`,
-                        color:mfa?"#4ade80":"#f87171"}}>
-                        {mfa?"✓ ON":"✗ OFF"}
-                      </span>
-                    ) : <span style={{color:"rgba(100,140,200,0.3)",fontSize:10}}>—</span>}
+                    <span style={{fontSize:10,color:hasData?"#4ade80":"#f87171",fontFamily:"'DM Mono',monospace"}}>
+                      {hasData?"✓":"✗"}
+                    </span>
                   </div>
-
-                  {/* Status */}
-                  <div style={{display:"flex",alignItems:"center",gap:5}}>
-                    <div style={{width:6,height:6,borderRadius:"50%",background:statusColor,
-                      boxShadow:`0 0 5px ${statusColor}88`,flexShrink:0}}/>
-                    <span style={{fontSize:10,color:statusColor,fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap"}}>{statusLabel}</span>
+                  {/* Freshness */}
+                  <div style={{textAlign:"center",fontSize:10,color:freshCol,fontFamily:"'DM Mono',monospace"}}>{freshLabel}</div>
+                  {/* MFA */}
+                  <div style={{textAlign:"center",fontSize:10,color:mfaScore>=25?"#4ade80":mfaScore>0?"#facc15":"#f87171",fontFamily:"'DM Mono',monospace"}}>
+                    {usersData.length>0?`${usersData.filter(u=>u.mfa_enabled).length}/${usersData.length}`:"—"}
                   </div>
-
-                  {/* Registered */}
-                  <div style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>
-                    {registered ? registered.toLocaleDateString("fi-FI",{day:"2-digit",month:"2-digit",year:"2-digit"}) : "—"}
+                  {/* Login */}
+                  <div style={{textAlign:"center",fontSize:10,fontFamily:"'DM Mono',monospace",
+                    color:usersData.some(u=>u.last_sign_in_at)?"#4ade80":"rgba(200,100,100,0.7)"}}>
+                    {usersData.some(u=>u.last_sign_in_at)?"✓":"✗"}
                   </div>
+                  {/* AI */}
+                  <div style={{textAlign:"center",fontSize:10,color:"rgba(160,200,255,0.6)",fontFamily:"'DM Mono',monospace"}}>
+                    {aiTokens>0?aiTokens.toLocaleString():"—"}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{marginTop:12,padding:"10px 16px",background:"rgba(6,10,24,0.5)",
+              border:"1px solid rgba(100,150,255,0.06)",borderRadius:8,
+              fontSize:9,color:"rgba(120,160,220,0.4)",fontFamily:"'DM Mono',monospace",lineHeight:1.8}}>
+              Score breakdown: Data uploaded (25pt) · Freshness 0-7d (25pt) / 8-30d (15pt) / 31-90d (5pt) · MFA compliance (25pt) · Has logged in (15pt) · AI usage (10pt)
+            </div>
+          </div>
+        );
+      })()}
 
-                  {/* Last login */}
-                  <div style={{fontSize:11,color:neverLoggedIn?"#f59e0b":stale?"#fb923c":"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>
-                    {agoStr}
-                    {lastLogin && daysSince===0 && (
-                      <div style={{fontSize:9,color:"rgba(160,200,255,0.4)",marginTop:1}}>
-                        {lastLogin.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}
-                      </div>
-                    )}
+      {/* ════════════════════════════
+          USERS & ACCESS TAB
+      ════════════════════════════ */}
+      {dash==="users" && (<>
+        {/* MFA compliance banner */}
+        {(() => {
+          const total = users.length;
+          const mfaOn = users.filter(u=>u.mfa_enabled).length;
+          const neverIn = users.filter(u=>!u.last_sign_in_at).length;
+          const pct = total>0?Math.round(mfaOn/total*100):0;
+          return (
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+              {[
+                {label:"MFA Compliant",    val:`${mfaOn}/${total}`, sub:`${pct}% enforced`, color:pct===100?"#4ade80":pct>=70?"#facc15":"#f87171"},
+                {label:"Never Logged In",  val:neverIn,             sub:"accounts dormant", color:neverIn>0?"#f59e0b":"#4ade80"},
+                {label:"Inactive (>30d)",  val:users.filter(u=>u.last_sign_in_at&&(Date.now()-new Date(u.last_sign_in_at))/86400000>30).length, sub:"last login >30 days", color:"#fb923c"},
+                {label:"Active Today",     val:users.filter(u=>u.last_sign_in_at&&(Date.now()-new Date(u.last_sign_in_at))/86400000<1).length,  sub:"signed in today",   color:"#4ade80"},
+              ].map((k,i)=>(
+                <div key={i} style={{background:"rgba(6,10,24,0.7)",border:`1px solid ${k.color}18`,
+                  borderRadius:10,padding:"14px 18px",backdropFilter:"blur(12px)"}}>
+                  <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+                    textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:6}}>{k.label}</div>
+                  <div style={{fontSize:24,fontWeight:700,color:k.color,fontFamily:"'DM Mono',monospace",lineHeight:1}}>{k.val}</div>
+                  <div style={{fontSize:9,color:"rgba(100,140,200,0.35)",marginTop:4}}>{k.sub}</div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+        {/* User table */}
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 110px 70px 90px 90px 110px 130px",
+            gap:8,padding:"6px 16px",fontSize:8,color:"rgba(120,160,220,0.4)",
+            fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.1em"}}>
+            <div>Name</div><div>Email</div><div>Client</div>
+            <div>Sessions</div><div>MFA</div><div>Status</div><div>Registered</div><div>Last Login</div>
+          </div>
+          {USER_REGISTRY.map(reg=>{
+            const live = users.find(u=>u.email===reg.email);
+            const lastLogin  = live?.last_sign_in_at ? new Date(live.last_sign_in_at) : null;
+            const registered = live?.created_at      ? new Date(live.created_at)      : null;
+            const sessions   = live?.sign_in_count??0;
+            const mfa        = live?.mfa_enabled??false;
+            const confirmed  = live?.email_confirmed_at!=null;
+            const daysSince  = lastLogin?Math.floor((Date.now()-lastLogin)/86400000):null;
+            const stale      = daysSince!==null&&daysSince>30;
+            const statusColor= !confirmed?"#f87171":!lastLogin?"#f59e0b":stale?"#fb923c":"#4ade80";
+            const statusLabel= !confirmed?"Unconfirmed":!lastLogin?"Never":stale?"Inactive":"Active";
+            const agoStr     = !lastLogin?"—":daysSince===0?"Today":daysSince===1?"Yesterday":daysSince<7?daysSince+"d ago":daysSince<30?Math.floor(daysSince/7)+"w ago":Math.floor(daysSince/30)+"mo ago";
+            return (
+              <div key={reg.email} style={{display:"grid",gridTemplateColumns:"1fr 1fr 110px 70px 90px 90px 110px 130px",
+                gap:8,padding:"10px 16px",
+                background:!lastLogin?"rgba(245,158,11,0.03)":stale?"rgba(251,146,60,0.02)":"rgba(6,10,24,0.55)",
+                border:`1px solid ${!lastLogin?"rgba(245,158,11,0.1)":stale?"rgba(251,146,60,0.07)":"rgba(100,150,255,0.05)"}`,
+                borderRadius:8,alignItems:"center"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                  <div style={{width:24,height:24,borderRadius:"50%",flexShrink:0,
+                    background:`${reg.color}16`,border:`1px solid ${reg.color}28`,
+                    display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <span style={{fontSize:9,fontWeight:700,color:reg.color}}>{reg.name.charAt(0)}</span>
+                  </div>
+                  <span style={{fontSize:12,color:"#d0e8ff",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg.name}</span>
+                </div>
+                <div style={{fontSize:10,color:"rgba(160,200,255,0.45)",fontFamily:"'DM Mono',monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg.email}</div>
+                <div style={{fontSize:9,color:reg.color,fontFamily:"'DM Mono',monospace",
+                  background:`${reg.color}10`,border:`1px solid ${reg.color}20`,
+                  borderRadius:4,padding:"2px 6px",textAlign:"center",overflow:"hidden",textOverflow:"ellipsis"}}>{reg.role}</div>
+                <div style={{fontSize:12,color:sessions>0?"#93c5fd":"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace",textAlign:"center"}}>{live?sessions:"—"}</div>
+                <div style={{textAlign:"center"}}>
+                  {live?<span style={{fontSize:9,fontFamily:"'DM Mono',monospace",padding:"2px 7px",borderRadius:4,
+                    background:mfa?"rgba(74,222,128,0.08)":"rgba(248,113,113,0.08)",
+                    border:`1px solid ${mfa?"rgba(74,222,128,0.2)":"rgba(248,113,113,0.2)"}`,
+                    color:mfa?"#4ade80":"#f87171"}}>{mfa?"✓ ON":"✗ OFF"}</span>
+                  :<span style={{color:"rgba(100,140,200,0.3)",fontSize:10}}>—</span>}
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                  <div style={{width:5,height:5,borderRadius:"50%",background:statusColor,boxShadow:`0 0 4px ${statusColor}88`,flexShrink:0}}/>
+                  <span style={{fontSize:9,color:statusColor,fontFamily:"'DM Mono',monospace"}}>{statusLabel}</span>
+                </div>
+                <div style={{fontSize:9,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>
+                  {registered?registered.toLocaleDateString("fi-FI",{day:"2-digit",month:"2-digit",year:"2-digit"}):"—"}
+                </div>
+                <div style={{fontSize:11,color:!lastLogin?"#f59e0b":stale?"#fb923c":"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>{agoStr}</div>
+              </div>
+            );
+          })}
+        </div>
+      </>)}
+
+      {/* ════════════════════════════
+          ACTIVITY TAB
+      ════════════════════════════ */}
+      {dash==="activity" && (
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+          {/* Data imports */}
+          <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
+            borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+            <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Data Imports</div>
+            {activity.length===0?(
+              <div style={{fontSize:11,color:"rgba(100,150,220,0.3)",textAlign:"center",paddingTop:24}}>No imports yet</div>
+            ):activity.map((a,i)=>{
+              const cl = CLIENTS.find(c=>c.name===a.client);
+              const color = cl?.accent||"#64748b";
+              const diff=(Date.now()-a.at)/1000;
+              const ago=diff<60?"just now":diff<3600?Math.floor(diff/60)+"min ago":diff<86400?Math.floor(diff/3600)+"h ago":Math.floor(diff/86400)+"d ago";
+              return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,
+                  padding:"8px 10px",background:"rgba(8,14,35,0.5)",borderRadius:7}}>
+                  <div style={{width:6,height:6,borderRadius:"50%",background:color,flexShrink:0,boxShadow:`0 0 5px ${color}88`}}/>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"#d0e8ff"}}><span style={{color,fontWeight:600}}>{a.client}</span>
+                      <span style={{color:"rgba(160,200,255,0.45)"}}> → {a.month}</span></div>
+                    <div style={{fontSize:9,color:"rgba(120,160,220,0.4)",fontFamily:"'DM Mono',monospace",marginTop:1}}>
+                      {a.at.toLocaleString("fi-FI",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})} · {ago}</div>
                   </div>
                 </div>
               );
             })}
           </div>
-        )}
 
-        {/* ── ACTIVITY TAB ── */}
-        {userTab==="activity" && (
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-            {/* Import activity */}
-            <div style={{background:"rgba(4,8,22,0.7)",border:"1px solid rgba(100,150,255,0.07)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
-              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Data Imports</div>
-              {activity.length===0 ? (
-                <div style={{fontSize:11,color:"rgba(100,150,220,0.3)",fontFamily:"'DM Mono',monospace",textAlign:"center",marginTop:30}}>No imports yet</div>
-              ) : activity.map((a,i)=>{
-                const client = CLIENTS.find(c=>c.name===a.client);
-                const color = client?.accent||"#64748b";
-                const diff = (Date.now()-a.at)/1000;
-                const ago = diff<60?"just now":diff<3600?Math.floor(diff/60)+"min ago":diff<86400?Math.floor(diff/3600)+"h ago":Math.floor(diff/86400)+"d ago";
-                return (
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,padding:"8px 10px",background:"rgba(8,14,35,0.5)",borderRadius:8}}>
-                    <div style={{width:7,height:7,borderRadius:"50%",background:color,flexShrink:0,boxShadow:`0 0 6px ${color}88`}}/>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:12,color:"#d0e8ff"}}><span style={{color,fontWeight:600}}>{a.client}</span><span style={{color:"rgba(160,200,255,0.5)"}}> → {a.month}</span></div>
-                      <div style={{fontSize:9,color:"rgba(120,160,220,0.4)",fontFamily:"'DM Mono',monospace",marginTop:1}}>{a.at.toLocaleString("fi-FI",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})} · {ago}</div>
-                    </div>
-                    <div style={{fontSize:9,color:"rgba(100,200,100,0.6)",fontFamily:"'DM Mono',monospace",background:"rgba(74,222,128,0.06)",border:"1px solid rgba(74,222,128,0.1)",borderRadius:4,padding:"2px 6px"}}>IMPORT</div>
+          {/* Comments activity */}
+          <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
+            borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+            <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>
+              Comment Activity <span style={{color:"rgba(100,140,200,0.3)",marginLeft:6}}>{comments.length} total</span>
+            </div>
+            {comments.length===0?(
+              <div style={{fontSize:11,color:"rgba(100,150,220,0.3)",textAlign:"center",paddingTop:24}}>No comments yet</div>
+            ):comments.slice(0,10).map((cm,i)=>{
+              const cl = CLIENTS.find(c=>c.name===cm.client);
+              const color = cl?.accent||"#64748b";
+              const diff=(Date.now()-new Date(cm.created_at))/1000;
+              const ago=diff<60?"just now":diff<3600?Math.floor(diff/60)+"min ago":diff<86400?Math.floor(diff/3600)+"h ago":Math.floor(diff/86400)+"d ago";
+              return (
+                <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:8,
+                  padding:"8px 10px",background:"rgba(8,14,35,0.5)",borderRadius:7}}>
+                  <div style={{width:22,height:22,borderRadius:"50%",flexShrink:0,marginTop:1,
+                    background:`${color}18`,border:`1px solid ${color}28`,
+                    display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <span style={{fontSize:8,fontWeight:700,color}}>{(cm.author||"?").charAt(0)}</span>
                   </div>
-                );
-              })}
-            </div>
-            {/* Login stats summary */}
-            <div style={{background:"rgba(4,8,22,0.7)",border:"1px solid rgba(100,150,255,0.07)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
-              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Login Summary</div>
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {[...users].sort((a,b)=>(b.sign_in_count||0)-(a.sign_in_count||0)).slice(0,10).map(u=>{
-                  const reg = USER_REGISTRY.find(r=>r.email===u.email);
-                  const color = reg?.color||"#64748b";
-                  const maxSessions = Math.max(...users.map(x=>x.sign_in_count||0),1);
-                  const pct = Math.round(((u.sign_in_count||0)/maxSessions)*100);
-                  const lastLogin = u.last_sign_in_at ? new Date(u.last_sign_in_at) : null;
-                  return (
-                    <div key={u.email} style={{display:"flex",alignItems:"center",gap:8}}>
-                      <div style={{width:22,height:22,borderRadius:"50%",background:`${color}18`,border:`1px solid ${color}25`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                        <span style={{fontSize:8,fontWeight:700,color}}>{(reg?.name||u.email).charAt(0)}</span>
-                      </div>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:3}}>
-                          <span style={{fontSize:11,color:"#c0d8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg?.name||u.email.split("@")[0]}</span>
-                          <span style={{fontSize:10,color:"rgba(160,200,255,0.5)",fontFamily:"'DM Mono',monospace",flexShrink:0,marginLeft:8}}>{u.sign_in_count||0} sessions</span>
-                        </div>
-                        <div style={{height:3,background:"rgba(100,140,200,0.1)",borderRadius:2}}>
-                          <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${color},${color}88)`,borderRadius:2,transition:"width 0.5s"}}/>
-                        </div>
-                        <div style={{fontSize:9,color:"rgba(120,160,220,0.4)",fontFamily:"'DM Mono',monospace",marginTop:2}}>
-                          Last: {lastLogin?lastLogin.toLocaleDateString("fi-FI"):"Never"}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {users.length===0&&<div style={{fontSize:11,color:"rgba(100,150,220,0.3)",fontFamily:"'DM Mono',monospace",textAlign:"center",marginTop:20}}>Run SQL setup first</div>}
-              </div>
-            </div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:11,color:"#c0d8f0"}}><span style={{color,fontWeight:500}}>{cm.client}</span></div>
+                    <div style={{fontSize:9,color:"rgba(120,160,220,0.35)",fontFamily:"'DM Mono',monospace",marginTop:1}}>
+                      {cm.author||"unknown"} · {ago}</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
 
-        {/* ── ERRORS TAB ── */}
-        {userTab==="errors" && (
-          <div style={{background:"rgba(4,8,22,0.7)",border:"1px solid rgba(100,150,255,0.07)",borderRadius:14,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
-              <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.15em",textTransform:"uppercase"}}>Error Log</div>
-              <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>last 50 events</div>
-            </div>
-            {users.flatMap(u=>u.errors||[]).length===0 ? (
-              <div style={{textAlign:"center",padding:"40px 0"}}>
-                <div style={{fontSize:28,marginBottom:8}}>✓</div>
-                <div style={{fontSize:12,color:"#4ade80",fontFamily:"'DM Mono',monospace"}}>No errors recorded</div>
-                <div style={{fontSize:10,color:"rgba(100,150,220,0.35)",marginTop:6}}>Errors from client dashboards will appear here once error_logs table is set up</div>
-              </div>
-            ) : (
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {users.flatMap(u=>(u.errors||[]).map(e=>({...e,userName:USER_REGISTRY.find(r=>r.email===u.email)?.name||u.email})))
-                  .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
-                  .map((e,i)=>(
-                    <div key={i} style={{padding:"10px 14px",background:"rgba(248,113,113,0.04)",border:"1px solid rgba(248,113,113,0.1)",borderRadius:8,display:"flex",alignItems:"flex-start",gap:10}}>
-                      <div style={{width:6,height:6,borderRadius:"50%",background:"#f87171",marginTop:4,flexShrink:0,boxShadow:"0 0 5px #f8717188"}}/>
-                      <div style={{flex:1}}>
-                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
-                          <span style={{fontSize:11,color:"#fca5a5",fontWeight:600}}>{e.error_type||"Error"}</span>
-                          <span style={{fontSize:9,color:"rgba(160,140,180,0.5)",fontFamily:"'DM Mono',monospace"}}>{e.client}</span>
-                          <span style={{fontSize:9,color:"rgba(140,160,200,0.4)",fontFamily:"'DM Mono',monospace",marginLeft:"auto"}}>{new Date(e.created_at).toLocaleString("fi-FI",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
-                        </div>
-                        <div style={{fontSize:11,color:"rgba(200,180,200,0.7)"}}>{e.error_message}</div>
-                        <div style={{fontSize:9,color:"rgba(140,160,200,0.4)",fontFamily:"'DM Mono',monospace",marginTop:2}}>{e.userName} · {e.user_email}</div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            )}
+          {/* AI usage breakdown */}
+          <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
+            borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+            <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>AI Usage (EBITDA-9000)</div>
+            {aiUsage.length===0?(
+              <div style={{fontSize:11,color:"rgba(100,150,220,0.3)",textAlign:"center",paddingTop:24}}>No AI usage recorded</div>
+            ):(()=>{
+              const byClient = CLIENTS.map(c=>({
+                name:c.name,accent:c.accent,
+                tokens:aiUsage.filter(a=>a.client===c.name).reduce((s,a)=>s+(a.tokens||0),0),
+                calls:aiUsage.filter(a=>a.client===c.name).length,
+              })).filter(c=>c.tokens>0).sort((a,b)=>b.tokens-a.tokens);
+              const maxTok = Math.max(...byClient.map(c=>c.tokens),1);
+              return byClient.map((c,i)=>(
+                <div key={i} style={{marginBottom:12}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                    <span style={{fontSize:11,color:"#c0d8f0"}}>{c.name}</span>
+                    <span style={{fontSize:10,color:"rgba(160,200,255,0.5)",fontFamily:"'DM Mono',monospace"}}>
+                      {c.tokens.toLocaleString()} tok · {c.calls} calls</span>
+                  </div>
+                  <div style={{height:4,background:"rgba(255,255,255,0.05)",borderRadius:2}}>
+                    <div style={{height:"100%",width:`${(c.tokens/maxTok)*100}%`,
+                      background:`linear-gradient(90deg,${c.accent}88,${c.accent})`,borderRadius:2}}/>
+                  </div>
+                </div>
+              ));
+            })()}
           </div>
-        )}
 
-        {/* Current session bar */}
-        <div style={{marginTop:16,padding:"10px 16px",background:"rgba(4,8,22,0.6)",border:"1px solid rgba(74,222,128,0.12)",borderRadius:10,backdropFilter:"blur(8px)",display:"flex",alignItems:"center",gap:10}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:"#4ade80",boxShadow:"0 0 8px #4ade8088"}}/>
-          <span style={{fontSize:11,color:"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>{userEmail}</span>
-          <span style={{fontSize:9,color:"#4ade80",fontFamily:"'DM Mono',monospace",background:"rgba(74,222,128,0.07)",border:"1px solid rgba(74,222,128,0.15)",borderRadius:4,padding:"2px 7px"}}>ONLINE · GOD MODE</span>
-          {lastRefresh && <span style={{marginLeft:"auto",fontSize:9,color:"rgba(100,140,200,0.35)",fontFamily:"'DM Mono',monospace"}}>Updated {lastRefresh.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}</span>}
+          {/* Login frequency heatmap-style */}
+          <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
+            borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+            <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:16}}>Login Frequency</div>
+            {[...users].sort((a,b)=>(b.sign_in_count||0)-(a.sign_in_count||0)).slice(0,8).map((u,i)=>{
+              const reg=USER_REGISTRY.find(r=>r.email===u.email);
+              const color=reg?.color||"#64748b";
+              const max=Math.max(...users.map(x=>x.sign_in_count||0),1);
+              const pct=Math.round(((u.sign_in_count||0)/max)*100);
+              const lastLogin=u.last_sign_in_at?new Date(u.last_sign_in_at):null;
+              const days=lastLogin?Math.floor((Date.now()-lastLogin)/86400000):null;
+              return (
+                <div key={u.email} style={{display:"flex",alignItems:"center",gap:8,marginBottom:9}}>
+                  <div style={{width:20,height:20,borderRadius:"50%",background:`${color}18`,
+                    border:`1px solid ${color}25`,display:"flex",alignItems:"center",
+                    justifyContent:"center",flexShrink:0}}>
+                    <span style={{fontSize:7,fontWeight:700,color}}>{(reg?.name||u.email).charAt(0)}</span>
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                      <span style={{fontSize:11,color:"#c0d8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{reg?.name||u.email.split("@")[0]}</span>
+                      <span style={{fontSize:9,color:"rgba(160,200,255,0.4)",fontFamily:"'DM Mono',monospace",flexShrink:0,marginLeft:6}}>
+                        {u.sign_in_count||0}× · {days===null?"never":days===0?"today":days+"d ago"}
+                      </span>
+                    </div>
+                    <div style={{height:3,background:"rgba(255,255,255,0.05)",borderRadius:2}}>
+                      <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${color}88,${color})`,borderRadius:2}}/>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>    </div>
+      )}
+
+      {/* ════════════════════════════
+          ERROR LOG TAB
+      ════════════════════════════ */}
+      {dash==="errors" && (
+        <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
+          borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase"}}>Error Log</div>
+            <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>last 50 events</div>
+          </div>
+          {users.flatMap(u=>u.errors||[]).length===0?(
+            <div style={{textAlign:"center",padding:"40px 0"}}>
+              <div style={{fontSize:28,marginBottom:8}}>✓</div>
+              <div style={{fontSize:12,color:"#4ade80",fontFamily:"'DM Mono',monospace"}}>No errors recorded</div>
+              <div style={{fontSize:10,color:"rgba(100,150,220,0.3)",marginTop:6}}>Client dashboard errors will appear here once error_logs is set up</div>
+            </div>
+          ):(
+            <div style={{display:"flex",flexDirection:"column",gap:7}}>
+              {users.flatMap(u=>(u.errors||[]).map(e=>({...e,userName:USER_REGISTRY.find(r=>r.email===u.email)?.name||u.email})))
+                .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+                .map((e,i)=>(
+                  <div key={i} style={{padding:"10px 14px",background:"rgba(248,113,113,0.03)",
+                    border:"1px solid rgba(248,113,113,0.1)",borderRadius:7,
+                    display:"flex",alignItems:"flex-start",gap:10}}>
+                    <div style={{width:5,height:5,borderRadius:"50%",background:"#f87171",
+                      marginTop:4,flexShrink:0,boxShadow:"0 0 4px #f8717188"}}/>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",gap:8,marginBottom:3,alignItems:"center"}}>
+                        <span style={{fontSize:11,color:"#fca5a5",fontWeight:600}}>{e.error_type||"Error"}</span>
+                        <span style={{fontSize:9,color:"rgba(160,140,180,0.5)",fontFamily:"'DM Mono',monospace"}}>{e.client}</span>
+                        <span style={{fontSize:9,color:"rgba(140,160,200,0.35)",fontFamily:"'DM Mono',monospace",marginLeft:"auto"}}>
+                          {new Date(e.created_at).toLocaleString("fi-FI",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}
+                        </span>
+                      </div>
+                      <div style={{fontSize:11,color:"rgba(200,180,200,0.65)"}}>{e.error_message}</div>
+                      <div style={{fontSize:9,color:"rgba(140,160,200,0.35)",fontFamily:"'DM Mono',monospace",marginTop:2}}>
+                        {e.userName} · {e.user_email}</div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Session footer */}
+      <div style={{marginTop:24,padding:"10px 16px",background:"rgba(6,10,24,0.55)",
+        border:"1px solid rgba(74,222,128,0.1)",borderRadius:9,backdropFilter:"blur(8px)",
+        display:"flex",alignItems:"center",gap:10}}>
+        <div style={{width:6,height:6,borderRadius:"50%",background:"#4ade80",boxShadow:"0 0 6px #4ade8088"}}/>
+        <span style={{fontSize:11,color:"#c0d8f0",fontFamily:"'DM Mono',monospace"}}>{userEmail}</span>
+        <span style={{fontSize:9,color:"#4ade80",fontFamily:"'DM Mono',monospace",
+          background:"rgba(74,222,128,0.07)",border:"1px solid rgba(74,222,128,0.14)",
+          borderRadius:4,padding:"2px 7px"}}>ONLINE · GOD MODE</span>
+        {lastRefresh&&<span style={{marginLeft:"auto",fontSize:9,color:"rgba(100,140,200,0.3)",
+          fontFamily:"'DM Mono',monospace"}}>
+          Updated {lastRefresh.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+        </span>}
+      </div>
+      </div>
   );
 }
 
