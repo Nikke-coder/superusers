@@ -1219,14 +1219,16 @@ function SuperDashboard({userEmail, onSignOut}) {
       {dash==="credits" && (
         <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
           borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
             <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
               letterSpacing:"0.15em",textTransform:"uppercase"}}>Credits Manager</div>
             <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>1 credit = 1 question = €0.05</div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
-            {CLIENTS.map(c=>{
-              const cr = credits.find(x=>x.client===c.name);
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12,marginBottom:24}}>
+            {CLIENTS.map(c => {
+              const cr  = credits.find(x => x.client === c.name);
               const bal = cr?.balance ?? 0;
               const amt = creditAmt[c.name] ?? 100;
               return (
@@ -1234,75 +1236,71 @@ function SuperDashboard({userEmail, onSignOut}) {
                   borderRadius:10,padding:"14px 16px"}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
                     <div style={{fontSize:12,fontWeight:600,color:"#e2e8f0"}}>{c.name}</div>
-                    <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",
-                      color:bal>20?"#4ade80":bal>0?"#fbbf24":"#f87171",fontWeight:700}}>
-                      {bal} cr
-                    </div>
+                    <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:700,
+                      color:bal>20?"#4ade80":bal>0?"#fbbf24":"#f87171"}}>{bal} cr</div>
                   </div>
                   <div style={{display:"flex",gap:6,alignItems:"center"}}>
                     <input type="number" min="1" max="9999" value={amt}
-                      onChange={e=>setCreditAmt(prev=>({...prev,[c.name]:parseInt(e.target.value)||0}))}
+                      onChange={e => setCreditAmt(prev => ({...prev,[c.name]:parseInt(e.target.value)||0}))}
                       style={{width:70,background:"#070d1e",border:"1px solid #1e2d45",borderRadius:7,
                         padding:"5px 8px",color:"#e2e8f0",fontSize:11,outline:"none",
                         fontFamily:"'DM Mono',monospace",textAlign:"center"}}/>
                     <span style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>credits</span>
-                    <button onClick={async()=>{
-                      const newBal = bal + amt;
-                      await supabase.from("ai_credits").upsert(
-                        {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
-                        {onConflict:"client"}
-                      );
-                      await supabase.from("ai_transactions").insert({
-                        client:c.name, credits:amt, type:"purchase", package:"manual",
-                        granted_by: userEmail,
-                      });
-                      setCredits(prev=>{
-                        const updated = prev.filter(x=>x.client!==c.name);
-                        return [...updated,{client:c.name,balance:newBal,updated_at:new Date().toISOString()}];
-                      });
-                    }} style={{marginLeft:"auto",padding:"5px 12px",background:"rgba(99,102,241,0.15)",
-                      border:"1px solid rgba(99,102,241,0.35)",borderRadius:7,color:"#a5b4fc",
-                      fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:600,
-                      transition:"all 0.15s"}}
-                      onMouseEnter={e=>e.currentTarget.style.background="rgba(99,102,241,0.3)"}
-                      onMouseLeave={e=>e.currentTarget.style.background="rgba(99,102,241,0.15)"}>
+                    <button
+                      onMouseEnter={e => e.currentTarget.style.background="rgba(99,102,241,0.3)"}
+                      onMouseLeave={e => e.currentTarget.style.background="rgba(99,102,241,0.15)"}
+                      onClick={async () => {
+                        const newBal = bal + amt;
+                        await supabase.from("ai_credits").upsert(
+                          {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
+                          {onConflict:"client"}
+                        );
+                        await supabase.from("ai_transactions").insert({
+                          client:c.name, credits:amt, type:"purchase", package:"manual", granted_by:userEmail
+                        });
+                        setCredits(prev => [...prev.filter(x=>x.client!==c.name),
+                          {client:c.name,balance:newBal,updated_at:new Date().toISOString()}]);
+                      }}
+                      style={{marginLeft:"auto",padding:"5px 12px",background:"rgba(99,102,241,0.15)",
+                        border:"1px solid rgba(99,102,241,0.35)",borderRadius:7,color:"#a5b4fc",
+                        fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:600}}>
                       + Add
                     </button>
-                    <button onClick={async()=>{
-                      if(!window.confirm(`Reset ${c.name} credits to 0?`)) return;
-                      await supabase.from("ai_credits").upsert(
-                        {client:c.name, balance:0, updated_at:new Date().toISOString()},
-                        {onConflict:"client"}
-                      );
-                      setCredits(prev=>{
-                        const updated = prev.filter(x=>x.client!==c.name);
-                        return [...updated,{client:c.name,balance:0,updated_at:new Date().toISOString()}];
-                      });
-                    }} style={{padding:"5px 10px",background:"rgba(248,113,113,0.08)",
-                      border:"1px solid rgba(248,113,113,0.2)",borderRadius:7,color:"#fca5a5",
-                      fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace"}}>
+                    <button
+                      onClick={async () => {
+                        if(!window.confirm("Reset " + c.name + " credits to 0?")) return;
+                        await supabase.from("ai_credits").upsert(
+                          {client:c.name, balance:0, updated_at:new Date().toISOString()},
+                          {onConflict:"client"}
+                        );
+                        setCredits(prev => [...prev.filter(x=>x.client!==c.name),
+                          {client:c.name,balance:0,updated_at:new Date().toISOString()}]);
+                      }}
+                      style={{padding:"5px 10px",background:"rgba(248,113,113,0.08)",
+                        border:"1px solid rgba(248,113,113,0.2)",borderRadius:7,color:"#fca5a5",
+                        fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace"}}>
                       Reset
                     </button>
                   </div>
-                  {cr?.updated_at&&<div style={{fontSize:9,color:"rgba(100,140,200,0.3)",
-                    fontFamily:"'DM Mono',monospace",marginTop:7}}>
-                    Last updated {new Date(cr.updated_at).toLocaleDateString("fi-FI")}
-                  </div>}
+                  {cr?.updated_at && (
+                    <div style={{fontSize:9,color:"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace",marginTop:7}}>
+                      Last updated {new Date(cr.updated_at).toLocaleDateString("fi-FI")}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
-        </div>
 
-        {/* Audit trail */}
-        <div style={{marginTop:20}}>
           <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
-            letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:12}}>Audit Trail — Manual Credit Grants</div>
+            letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:12}}>
+            Audit Trail — Manual Credit Grants
+          </div>
           <AuditTrail />
-        </div>
-        </div>
+
         </div>
       )}
+
       {/* Session footer */}
       <div style={{marginTop:24,padding:"10px 16px",background:"rgba(6,10,24,0.55)",
         border:"1px solid rgba(74,222,128,0.1)",borderRadius:9,backdropFilter:"blur(8px)",
