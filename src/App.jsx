@@ -712,6 +712,7 @@ function SuperDashboard({userEmail, onSignOut}) {
   const [aiUsage,    setAiUsage]    = useState([]);
   const [credits,    setCredits]    = useState([]);
   const [creditAmt,  setCreditAmt]  = useState({});
+  const [confirming, setConfirming] = useState(null); // client name being confirmed
   const [comments,   setComments]   = useState([]);
   const [dash,       setDash]       = useState("portfolio"); // portfolio | health | users | activity | errors
 
@@ -1227,69 +1228,86 @@ function SuperDashboard({userEmail, onSignOut}) {
             <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>1 credit = 1 question = €0.05</div>
           </div>
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12,marginBottom:24}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:12,marginBottom:24}}>
             {CLIENTS.map(c => {
               const cr  = credits.find(x => x.client === c.name);
               const bal = cr?.balance ?? 0;
               const amt = creditAmt[c.name] ?? 100;
+              const isConfirming = confirming === c.name;
               return (
-                <div key={c.name} style={{background:"rgba(10,18,40,0.8)",border:"1px solid rgba(100,150,255,0.08)",
-                  borderRadius:10,padding:"14px 16px"}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                <div key={c.name} style={{background:"rgba(10,18,40,0.8)",
+                  border:"1px solid " + (isConfirming?"rgba(99,102,241,0.5)":"rgba(100,150,255,0.08)"),
+                  borderRadius:10,padding:"14px 16px",transition:"border-color 0.2s"}}>
+
+                  {/* Header */}
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
                     <div style={{fontSize:12,fontWeight:600,color:"#e2e8f0"}}>{c.name}</div>
-                    <div style={{fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:700,
+                    <div style={{fontSize:13,fontFamily:"'DM Mono',monospace",fontWeight:700,
                       color:bal>20?"#4ade80":bal>0?"#fbbf24":"#f87171"}}>{bal} cr</div>
                   </div>
-                  <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                    <input type="number" min="1" max="9999" value={amt}
-                      onChange={e => setCreditAmt(prev => ({...prev,[c.name]:parseInt(e.target.value)||0}))}
-                      style={{width:70,background:"#070d1e",border:"1px solid #1e2d45",borderRadius:7,
-                        padding:"5px 8px",color:"#e2e8f0",fontSize:11,outline:"none",
-                        fontFamily:"'DM Mono',monospace",textAlign:"center"}}/>
-                    <span style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>credits</span>
-                    <button
-                      onMouseEnter={e => e.currentTarget.style.background="rgba(99,102,241,0.3)"}
-                      onMouseLeave={e => e.currentTarget.style.background="rgba(99,102,241,0.15)"}
-                      onClick={async () => {
-                        if(!window.confirm(
-                          `Add ${amt} credits to ${c.name}?\n\nCurrent balance: ${bal} cr\nNew balance: ${bal + amt} cr\n\nThis will be logged in the audit trail.`
-                        )) return;
-                        const newBal = bal + amt;
-                        const {error: credErr} = await supabase.from("ai_credits").upsert(
-                          {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
-                          {onConflict:"client"}
-                        );
-                        if(credErr) { alert("Error saving credits: " + credErr.message); return; }
-                        const {error: txErr} = await supabase.from("ai_transactions").insert({
-                          client:c.name, credits:amt, type:"purchase", package:"manual", granted_by:userEmail
-                        });
-                        if(txErr) { alert("Error logging transaction: " + txErr.message); return; }
-                        setCredits(prev => [...prev.filter(x=>x.client!==c.name),
-                          {client:c.name,balance:newBal,updated_at:new Date().toISOString()}]);
-                      }}
-                      style={{marginLeft:"auto",padding:"5px 12px",background:"rgba(99,102,241,0.15)",
-                        border:"1px solid rgba(99,102,241,0.35)",borderRadius:7,color:"#a5b4fc",
-                        fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:600}}>
-                      + Add
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if(!window.confirm("Reset " + c.name + " credits to 0?")) return;
-                        await supabase.from("ai_credits").upsert(
-                          {client:c.name, balance:0, updated_at:new Date().toISOString()},
-                          {onConflict:"client"}
-                        );
-                        setCredits(prev => [...prev.filter(x=>x.client!==c.name),
-                          {client:c.name,balance:0,updated_at:new Date().toISOString()}]);
-                      }}
-                      style={{padding:"5px 10px",background:"rgba(248,113,113,0.08)",
-                        border:"1px solid rgba(248,113,113,0.2)",borderRadius:7,color:"#fca5a5",
-                        fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace"}}>
-                      Reset
-                    </button>
-                  </div>
-                  {cr?.updated_at && (
-                    <div style={{fontSize:9,color:"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace",marginTop:7}}>
+
+                  {/* Input row */}
+                  {!isConfirming && (
+                    <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                      <input type="number" min="1" max="9999" value={amt}
+                        onChange={e => setCreditAmt(prev => ({...prev,[c.name]:parseInt(e.target.value)||0}))}
+                        style={{width:72,background:"#070d1e",border:"1px solid #1e2d45",borderRadius:7,
+                          padding:"6px 8px",color:"#e2e8f0",fontSize:11,outline:"none",
+                          fontFamily:"'DM Mono',monospace",textAlign:"center"}}/>
+                      <span style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>credits</span>
+                      <button onClick={() => setConfirming(c.name)}
+                        style={{marginLeft:"auto",padding:"6px 14px",background:"rgba(99,102,241,0.15)",
+                          border:"1px solid rgba(99,102,241,0.35)",borderRadius:7,color:"#a5b4fc",
+                          fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:600}}>
+                        + Add
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Confirm row */}
+                  {isConfirming && (
+                    <div>
+                      <div style={{fontSize:11,color:"#c0d8f0",marginBottom:10,
+                        padding:"8px 10px",background:"rgba(99,102,241,0.08)",
+                        border:"1px solid rgba(99,102,241,0.2)",borderRadius:7}}>
+                        Add <span style={{color:"#a5b4fc",fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{amt} credits</span> to <span style={{color:"#e2e8f0",fontWeight:600}}>{c.name}</span>?
+                        <div style={{fontSize:10,color:"rgba(140,180,255,0.5)",marginTop:4,fontFamily:"'DM Mono',monospace"}}>
+                          {bal} cr → {bal + amt} cr
+                        </div>
+                      </div>
+                      <div style={{display:"flex",gap:6}}>
+                        <button onClick={async () => {
+                            const newBal = bal + amt;
+                            const {error: credErr} = await supabase.from("ai_credits").upsert(
+                              {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
+                              {onConflict:"client"}
+                            );
+                            if(credErr) { alert("Error: " + credErr.message); return; }
+                            const {error: txErr} = await supabase.from("ai_transactions").insert({
+                              client:c.name, credits:amt, type:"purchase", package:"manual", granted_by:userEmail
+                            });
+                            if(txErr) { alert("Transaction error: " + txErr.message); return; }
+                            setCredits(prev => [...prev.filter(x=>x.client!==c.name),
+                              {client:c.name,balance:newBal,updated_at:new Date().toISOString()}]);
+                            setConfirming(null);
+                          }}
+                          style={{flex:1,padding:"7px 0",background:"rgba(74,222,128,0.12)",
+                            border:"1px solid rgba(74,222,128,0.35)",borderRadius:7,color:"#4ade80",
+                            fontSize:12,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:700}}>
+                          ✓ Confirm
+                        </button>
+                        <button onClick={() => setConfirming(null)}
+                          style={{flex:1,padding:"7px 0",background:"rgba(100,116,139,0.1)",
+                            border:"1px solid rgba(100,116,139,0.2)",borderRadius:7,color:"#64748b",
+                            fontSize:12,cursor:"pointer",fontFamily:"'DM Mono',monospace"}}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {cr?.updated_at && !isConfirming && (
+                    <div style={{fontSize:9,color:"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace",marginTop:8}}>
                       Last updated {new Date(cr.updated_at).toLocaleDateString("fi-FI")}
                     </div>
                   )}
