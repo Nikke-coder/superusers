@@ -1300,6 +1300,8 @@ function SuperDashboard({userEmail, onSignOut}) {
             letterSpacing:"0.15em",textTransform:"uppercase",marginBottom:12}}>Audit Trail — Manual Credit Grants</div>
           <AuditTrail />
         </div>
+        </div>
+        </div>
       )}
       {/* Session footer */}
       <div style={{marginTop:24,padding:"10px 16px",background:"rgba(6,10,24,0.55)",
