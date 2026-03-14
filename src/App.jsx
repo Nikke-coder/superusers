@@ -9,8 +9,16 @@ const TF_LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVkAAABxCAYAAAB/e
 
 // ── Supabase (shared project) ─────────────────────────────────────────────────
 const SUPA_URL  = "https://jzqgndcrukggcwthxyrv.supabase.co";
-const SUPA_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cWduZGNydWtnZ2N3dGh4eXJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NTA3NDIsImV4cCI6MjA4ODUyNjc0Mn0.6nSM1D1P36Did6pT27IBvO-tSQ2ihSrxhlZLlaEhvEc";
+const SUPA_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cWduZGNydWtnZ2N3dGh4eXJ2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjk1MDc0MiwiZXhwIjoyMDg4NTI2NzQyfQ.9MN8k-RkBYskeAYDpBQAKWVEoT_L81-uy4ivV_b0L5w";
 const supabase  = createClient(SUPA_URL, SUPA_KEY);
+
+// Cuuma + Strand project
+const SUPA_URL2 = "https://wzooguqwbuxepwkffwpp.supabase.co";
+const SUPA_KEY2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6b29ndXF3YnV4ZXB3a2Zmd3BwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjg2ODg0NSwiZXhwIjoyMDg4NDQ0ODQ1fQ.BiW0Z34CG_cNsPNzyZtvuUn5ulCs149c-DYXncmu0MU";
+const supabase2 = createClient(SUPA_URL2, SUPA_KEY2);
+
+const CUUMA_CLIENTS = ["Strand Group", "Cuuma"];
+const getDb = (clientName) => CUUMA_CLIENTS.includes(clientName) ? supabase2 : supabase;
 
 // ── Access control ────────────────────────────────────────────────────────────
 const ALLOWED = ["niklas.isaksson@targetflow.fi","virpi.lamsa@targetflow.fi"];
@@ -724,8 +732,12 @@ function SuperDashboard({userEmail, onSignOut}) {
       supabase.from("ai_usage").select("client,tokens,created_at").order("created_at",{ascending:false}).limit(200),
       supabase.from("comments").select("client,author,created_at").order("created_at",{ascending:false}).limit(200),
     ]);
-    const credRes = await supabase.from("ai_credits").select("client,balance,updated_at").order("client");
-    if(credRes.data) setCredits(credRes.data);
+    const [credRes1, credRes2] = await Promise.all([
+      supabase.from("ai_credits").select("client,balance,updated_at").order("client"),
+      supabase2.from("ai_credits").select("client,balance,updated_at").order("client"),
+    ]);
+    const allCredits = [...(credRes1.data||[]), ...(credRes2.data||[])];
+    if(allCredits.length) setCredits(allCredits);
     if(snapRes.data){
       const map = {};
       snapRes.data.forEach(r => { map[r.client] = r; });
@@ -1278,12 +1290,13 @@ function SuperDashboard({userEmail, onSignOut}) {
                       <div style={{display:"flex",gap:6}}>
                         <button onClick={async () => {
                             const newBal = bal + amt;
-                            const {error: credErr} = await supabase.from("ai_credits").upsert(
+                            const db = getDb(c.name);
+                            const {error: credErr} = await db.from("ai_credits").upsert(
                               {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
                               {onConflict:"client"}
                             );
                             if(credErr) { alert("Error: " + credErr.message); return; }
-                            const {error: txErr} = await supabase.from("ai_transactions").insert({
+                            const {error: txErr} = await db.from("ai_transactions").insert({
                               client:c.name, credits:amt, type:"purchase", package:"manual", granted_by:userEmail
                             });
                             if(txErr) { alert("Transaction error: " + txErr.message); return; }
