@@ -812,6 +812,7 @@ function SuperDashboard({userEmail, onSignOut}) {
           ["activity","Activity"],
           ["errors","Error Log"],
           ["credits","💳 Credits"],
+          ["audit","Audit Trail"],
         ].map(([id,label])=>(
           <button key={id} onClick={()=>setDash(id)} style={{
             background:"none",border:"none",
@@ -1298,6 +1299,18 @@ function SuperDashboard({userEmail, onSignOut}) {
           </div>
           <AuditTrail />
 
+        </div>
+      )}
+
+      {dash==="audit" && (
+        <div style={{background:"rgba(6,10,24,0.7)",border:"1px solid rgba(100,150,255,0.07)",
+          borderRadius:12,padding:"20px 24px",backdropFilter:"blur(12px)"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.15em",textTransform:"uppercase"}}>Audit Trail — Manual Credit Grants</div>
+            <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>last 100 events</div>
+          </div>
+          <AuditTrail />
         </div>
       )}
 
