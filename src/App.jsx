@@ -1251,6 +1251,9 @@ function SuperDashboard({userEmail, onSignOut}) {
                       onMouseEnter={e => e.currentTarget.style.background="rgba(99,102,241,0.3)"}
                       onMouseLeave={e => e.currentTarget.style.background="rgba(99,102,241,0.15)"}
                       onClick={async () => {
+                        if(!window.confirm(
+                          `Add ${amt} credits to ${c.name}?\n\nCurrent balance: ${bal} cr\nNew balance: ${bal + amt} cr\n\nThis will be logged in the audit trail.`
+                        )) return;
                         const newBal = bal + amt;
                         await supabase.from("ai_credits").upsert(
                           {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
