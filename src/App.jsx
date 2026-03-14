@@ -1255,13 +1255,15 @@ function SuperDashboard({userEmail, onSignOut}) {
                           `Add ${amt} credits to ${c.name}?\n\nCurrent balance: ${bal} cr\nNew balance: ${bal + amt} cr\n\nThis will be logged in the audit trail.`
                         )) return;
                         const newBal = bal + amt;
-                        await supabase.from("ai_credits").upsert(
+                        const {error: credErr} = await supabase.from("ai_credits").upsert(
                           {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
                           {onConflict:"client"}
                         );
-                        await supabase.from("ai_transactions").insert({
+                        if(credErr) { alert("Error saving credits: " + credErr.message); return; }
+                        const {error: txErr} = await supabase.from("ai_transactions").insert({
                           client:c.name, credits:amt, type:"purchase", package:"manual", granted_by:userEmail
                         });
+                        if(txErr) { alert("Error logging transaction: " + txErr.message); return; }
                         setCredits(prev => [...prev.filter(x=>x.client!==c.name),
                           {client:c.name,balance:newBal,updated_at:new Date().toISOString()}]);
                       }}
