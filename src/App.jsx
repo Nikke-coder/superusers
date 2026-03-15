@@ -30,6 +30,7 @@ const ALLOWED = ["niklas.isaksson@targetflow.fi","virpi.lamsa@targetflow.fi"];
 
 // ── Client registry ───────────────────────────────────────────────────────────
 const CLIENTS = [
+  { name:"Targetflow",       accent:"#93c5fd", url:"https://superusers.targetflow.fi"          },
   { name:"Stremet Oy",       accent:"#818cf8", url:"https://stremet-dashboard.vercel.app"     },
   { name:"Manutec Oy",       accent:"#38bdf8", url:"https://manutec-dashboard.vercel.app"     },
   { name:"Accrease Oy",      accent:"#86efac", url:"https://accrease-dashboard.vercel.app"    },
@@ -639,8 +640,8 @@ function LoginScreen({onLogin}) {
 
 // ── User registry ────────────────────────────────────────────────────────────
 const USER_REGISTRY = [
-  {name:"Niklas Isaksson",   email:"niklas.isaksson@targetflow.fi", role:"God Mode",     color:"#93c5fd"},
-  {name:"Virpi Lämsa",       email:"virpi.lamsa@targetflow.fi",      role:"God Mode",     color:"#93c5fd"},
+  {name:"Niklas Isaksson",   email:"niklas.isaksson@targetflow.fi", role:"God Mode",     color:"#93c5fd", client:"Targetflow"},
+  {name:"Virpi Lämsa",       email:"virpi.lamsa@targetflow.fi",      role:"God Mode",     color:"#93c5fd", client:"Targetflow"},
   {name:"Matias Soini",      email:"matias.soini@stremet.fi",        role:"Stremet",      color:"#818cf8"},
   {name:"Carl Axel Schauman",email:"acke@niittysiemen.fi",           role:"Niittysiemen", color:"#4ade80"},
   {name:"Kristina Luhtala",  email:"kristina@niittysiemen.fi",       role:"Niittysiemen", color:"#4ade80"},
@@ -1268,7 +1269,11 @@ function SuperDashboard({userEmail, onSignOut}) {
           <div style={{marginBottom:16}}>
             {/* Group by client */}
             {CLIENTS.map(c => {
-              const clientUsers = USER_REGISTRY.filter(u => u.role === c.name.replace(" Oy","").replace(" Group",""));
+              const clientUsers = USER_REGISTRY.filter(u =>
+                u.client === c.name ||
+                u.role === c.name.replace(" Oy","").replace(" Group","") ||
+                (c.name === "Targetflow" && u.role === "God Mode")
+              );
               const userEmails = clientUsers.map(u => u.email);
               const clientCredits = credits.filter(cr => userEmails.includes(cr.user_email) || cr.client === c.name);
 
