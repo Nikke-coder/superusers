@@ -660,57 +660,76 @@ const USER_REGISTRY = [
 // ── AuditTrail ────────────────────────────────────────────────────────────────
 function AuditTrail() {
   const [log,     setLog]     = React.useState([]);
+  const [abuse,   setAbuse]   = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(()=>{
-    supabase
-      .from("ai_transactions")
-      .select("*")
-      .eq("type","purchase")
-      .eq("package","manual")
-      .order("created_at",{ascending:false})
-      .limit(100)
-      .then(({data})=>{ setLog(data||[]); setLoading(false); });
+    Promise.all([
+      supabase.from("ai_transactions").select("*")
+        .in("type",["purchase","adjustment"]).eq("package","manual")
+        .order("created_at",{ascending:false}).limit(100),
+      supabase.from("stripe_abuse_log").select("*")
+        .order("created_at",{ascending:false}).limit(50),
+    ]).then(([{data:tx},{data:ab}])=>{
+      setLog(tx||[]); setAbuse(ab||[]); setLoading(false);
+    });
   },[]);
 
   const fmt = (iso) => new Date(iso).toLocaleString("fi-FI",{
-    day:"2-digit",month:"2-digit",year:"numeric",
-    hour:"2-digit",minute:"2-digit"
+    day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"
   });
 
   if(loading) return <div style={{fontSize:10,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace",padding:"12px 0"}}>Loading…</div>;
-  if(!log.length) return <div style={{fontSize:10,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace",padding:"12px 0"}}>No manual grants yet.</div>;
 
   return (
-    <div style={{border:"1px solid rgba(100,150,255,0.08)",borderRadius:9,overflow:"hidden"}}>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 80px 140px",
-        padding:"7px 14px",borderBottom:"1px solid rgba(100,150,255,0.08)",
-        fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace",
-        letterSpacing:"0.08em",textTransform:"uppercase"}}>
-        <span>Client</span>
-        <span>Granted by</span>
-        <span>Credits</span>
-        <span style={{textAlign:"right"}}>When</span>
-      </div>
-      {log.map((tx,i)=>(
-        <div key={tx.id||i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 80px 140px",
-          padding:"9px 14px",
-          borderBottom:i<log.length-1?"1px solid rgba(100,150,255,0.05)":"none",
-          fontSize:11,alignItems:"center",
-          background:i%2===0?"transparent":"rgba(10,20,50,0.3)"}}>
-          <span style={{color:"#c0d8f0",fontWeight:500}}>{tx.client}</span>
-          <span style={{color:"rgba(160,200,255,0.55)",fontFamily:"'DM Mono',monospace",fontSize:10}}>
-            {tx.granted_by || "—"}
-          </span>
-          <span style={{color:"#4ade80",fontFamily:"'DM Mono',monospace",fontWeight:700}}>
-            +{tx.credits}
-          </span>
-          <span style={{color:"rgba(100,140,200,0.5)",fontFamily:"'DM Mono',monospace",
-            fontSize:10,textAlign:"right"}}>
-            {fmt(tx.created_at)}
-          </span>
-        </div>
-      ))}
+    <div>
+      {/* Manual grants */}
+      <div style={{fontSize:9,color:"rgba(140,180,255,0.5)",fontFamily:"'DM Mono',monospace",
+        letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>Manual credit changes</div>
+      {log.length===0
+        ? <div style={{fontSize:10,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace",padding:"8px 0",marginBottom:16}}>No entries yet.</div>
+        : <div style={{border:"1px solid rgba(100,150,255,0.08)",borderRadius:9,overflow:"hidden",marginBottom:20}}>
+            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1.5fr 1fr 70px 130px",
+              padding:"7px 14px",borderBottom:"1px solid rgba(100,150,255,0.08)",
+              fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace",
+              letterSpacing:"0.08em",textTransform:"uppercase"}}>
+              <span>User</span><span>Client</span><span>Granted by</span><span>Cr</span><span style={{textAlign:"right"}}>When</span>
+            </div>
+            {log.map((tx,i)=>(
+              <div key={tx.id||i} style={{display:"grid",gridTemplateColumns:"1.5fr 1.5fr 1fr 70px 130px",
+                padding:"8px 14px",borderBottom:i<log.length-1?"1px solid rgba(100,150,255,0.05)":"none",
+                fontSize:11,alignItems:"center",background:i%2===0?"transparent":"rgba(10,20,50,0.3)"}}>
+                <span style={{color:"#c0d8f0",fontSize:10,overflow:"hidden",textOverflow:"ellipsis"}}>{tx.user_email||"—"}</span>
+                <span style={{color:"rgba(160,200,255,0.6)",fontSize:10}}>{tx.client}</span>
+                <span style={{color:"rgba(160,200,255,0.4)",fontFamily:"'DM Mono',monospace",fontSize:10}}>{tx.granted_by||"—"}</span>
+                <span style={{color:tx.credits>0?"#4ade80":"#f87171",fontFamily:"'DM Mono',monospace",fontWeight:700}}>
+                  {tx.credits>0?"+":""}{tx.credits}
+                </span>
+                <span style={{color:"rgba(100,140,200,0.5)",fontFamily:"'DM Mono',monospace",fontSize:10,textAlign:"right"}}>{fmt(tx.created_at)}</span>
+              </div>
+            ))}
+          </div>
+      }
+
+      {/* Abuse log */}
+      {abuse.length>0&&(
+        <>
+          <div style={{fontSize:9,color:"rgba(248,113,113,0.7)",fontFamily:"'DM Mono',monospace",
+            letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>⚠ Stripe abuse attempts</div>
+          <div style={{border:"1px solid rgba(248,113,113,0.15)",borderRadius:9,overflow:"hidden"}}>
+            {abuse.map((a,i)=>(
+              <div key={a.id||i} style={{display:"grid",gridTemplateColumns:"1.5fr 1fr 1fr 1fr",
+                padding:"8px 14px",borderBottom:i<abuse.length-1?"1px solid rgba(248,113,113,0.08)":"none",
+                fontSize:11,background:"rgba(248,113,113,0.03)"}}>
+                <span style={{color:"#fca5a5",fontSize:10}}>{a.user_email||"—"}</span>
+                <span style={{color:"rgba(200,160,160,0.6)",fontSize:10}}>{a.client}</span>
+                <span style={{color:"rgba(200,160,160,0.5)",fontSize:10}}>{a.package}</span>
+                <span style={{color:"rgba(200,160,160,0.4)",fontFamily:"'DM Mono',monospace",fontSize:10,textAlign:"right"}}>{fmt(a.created_at)}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -738,8 +757,8 @@ function SuperDashboard({userEmail, onSignOut}) {
       supabase.from("comments").select("client,author,created_at").order("created_at",{ascending:false}).limit(200),
     ]);
     const [credRes1, credRes2] = await Promise.all([
-      supabase.from("ai_credits").select("client,balance,updated_at").order("client"),
-      supabase2.from("ai_credits").select("client,balance,updated_at").order("client"),
+      supabase.from("ai_credits").select("client,user_email,balance,updated_at").order("user_email"),
+      supabase2.from("ai_credits").select("client,user_email,balance,updated_at").order("user_email"),
     ]);
     const allCredits = [...(credRes1.data||[]), ...(credRes2.data||[])];
     if(allCredits.length) setCredits(allCredits);
@@ -1245,90 +1264,111 @@ function SuperDashboard({userEmail, onSignOut}) {
             <div style={{fontSize:9,color:"rgba(100,140,200,0.4)",fontFamily:"'DM Mono',monospace"}}>1 credit = 1 question = €0.05</div>
           </div>
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:12,marginBottom:24}}>
+          {/* User credit cards */}
+          <div style={{marginBottom:16}}>
+            {/* Group by client */}
             {CLIENTS.map(c => {
-              const cr  = credits.find(x => x.client === c.name);
-              const bal = cr?.balance ?? 0;
-              const amt = creditAmt[c.name] ?? 100;
-              const isConfirming = confirming === c.name;
+              const clientUsers = USER_REGISTRY.filter(u => u.role === c.name.replace(" Oy","").replace(" Group",""));
+              const userEmails = clientUsers.map(u => u.email);
+              const clientCredits = credits.filter(cr => userEmails.includes(cr.user_email) || cr.client === c.name);
+
+              if(clientCredits.length === 0 && clientUsers.length === 0) return null;
+
               return (
-                <div key={c.name} style={{background:"rgba(10,18,40,0.8)",
-                  border:"1px solid " + (isConfirming?"rgba(99,102,241,0.5)":"rgba(100,150,255,0.08)"),
-                  borderRadius:10,padding:"14px 16px",transition:"border-color 0.2s"}}>
-
-                  {/* Header */}
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                    <div style={{fontSize:12,fontWeight:600,color:"#e2e8f0"}}>{c.name}</div>
-                    <div style={{fontSize:13,fontFamily:"'DM Mono',monospace",fontWeight:700,
-                      color:bal>20?"#4ade80":bal>0?"#fbbf24":"#f87171"}}>{bal} cr</div>
+                <div key={c.name} style={{marginBottom:16}}>
+                  <div style={{fontSize:9,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace",
+                    letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8,
+                    paddingBottom:6,borderBottom:"1px solid rgba(100,150,255,0.06)"}}>
+                    {c.name}
                   </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
+                    {(clientUsers.length > 0 ? clientUsers : [{email: c.name, name: c.name}]).map(u => {
+                      const cr  = credits.find(x => x.user_email === u.email || (!u.email.includes("@") && x.client === u.email));
+                      const bal = cr?.balance ?? 0;
+                      const amt = creditAmt[u.email] ?? 100;
+                      const isConf = confirming === u.email;
+                      return (
+                        <div key={u.email} style={{background:"rgba(10,18,40,0.8)",
+                          border:"1px solid "+(isConf?"rgba(99,102,241,0.5)":"rgba(100,150,255,0.08)"),
+                          borderRadius:10,padding:"12px 14px"}}>
+                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                            <div>
+                              <div style={{fontSize:12,fontWeight:600,color:"#e2e8f0"}}>{u.name||u.email}</div>
+                              <div style={{fontSize:9,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>{u.email}</div>
+                            </div>
+                            <div style={{fontSize:13,fontFamily:"'DM Mono',monospace",fontWeight:700,
+                              color:bal>20?"#4ade80":bal>0?"#fbbf24":"#f87171"}}>{bal} cr</div>
+                          </div>
 
-                  {/* Input row */}
-                  {!isConfirming && (
-                    <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                      <input type="number" min="1" max="9999" value={amt}
-                        onChange={e => setCreditAmt(prev => ({...prev,[c.name]:parseInt(e.target.value)||0}))}
-                        style={{width:72,background:"#070d1e",border:"1px solid #1e2d45",borderRadius:7,
-                          padding:"6px 8px",color:"#e2e8f0",fontSize:11,outline:"none",
-                          fontFamily:"'DM Mono',monospace",textAlign:"center"}}/>
-                      <span style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>credits</span>
-                      <button onClick={() => setConfirming(c.name)}
-                        style={{marginLeft:"auto",padding:"6px 14px",background:"rgba(99,102,241,0.15)",
-                          border:"1px solid rgba(99,102,241,0.35)",borderRadius:7,color:"#a5b4fc",
-                          fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:600}}>
-                        + Add
-                      </button>
-                    </div>
-                  )}
+                          {!isConf && (
+                            <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                              <input type="number" min="-9999" max="9999" value={amt}
+                                onChange={e => setCreditAmt(prev => ({...prev,[u.email]:parseInt(e.target.value)||0}))}
+                                style={{width:72,background:"#070d1e",border:"1px solid #1e2d45",borderRadius:7,
+                                  padding:"5px 8px",color:"#e2e8f0",fontSize:11,outline:"none",
+                                  fontFamily:"'DM Mono',monospace",textAlign:"center"}}/>
+                              <span style={{fontSize:10,color:"rgba(140,180,255,0.4)",fontFamily:"'DM Mono',monospace"}}>cr</span>
+                              <button onClick={() => setConfirming(u.email)}
+                                style={{marginLeft:"auto",padding:"5px 12px",background:amt>=0?"rgba(99,102,241,0.15)":"rgba(248,113,113,0.1)",
+                                  border:"1px solid "+(amt>=0?"rgba(99,102,241,0.35)":"rgba(248,113,113,0.3)"),
+                                  borderRadius:7,color:amt>=0?"#a5b4fc":"#fca5a5",
+                                  fontSize:11,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:600}}>
+                                {amt >= 0 ? "+ Add" : "− Remove"}
+                              </button>
+                            </div>
+                          )}
 
-                  {/* Confirm row */}
-                  {isConfirming && (
-                    <div>
-                      <div style={{fontSize:11,color:"#c0d8f0",marginBottom:10,
-                        padding:"8px 10px",background:"rgba(99,102,241,0.08)",
-                        border:"1px solid rgba(99,102,241,0.2)",borderRadius:7}}>
-                        Add <span style={{color:"#a5b4fc",fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{amt} credits</span> to <span style={{color:"#e2e8f0",fontWeight:600}}>{c.name}</span>?
-                        <div style={{fontSize:10,color:"rgba(140,180,255,0.5)",marginTop:4,fontFamily:"'DM Mono',monospace"}}>
-                          {bal} cr → {bal + amt} cr
+                          {isConf && (
+                            <div>
+                              <div style={{fontSize:11,color:"#c0d8f0",marginBottom:8,
+                                padding:"7px 10px",background:amt>=0?"rgba(99,102,241,0.08)":"rgba(248,113,113,0.08)",
+                                border:"1px solid "+(amt>=0?"rgba(99,102,241,0.2)":"rgba(248,113,113,0.2)"),borderRadius:7}}>
+                                {amt >= 0 ? "Add" : "Remove"} <span style={{color:amt>=0?"#a5b4fc":"#fca5a5",fontWeight:700,fontFamily:"'DM Mono',monospace"}}>{Math.abs(amt)} cr</span> {amt>=0?"to":"from"} <span style={{color:"#e2e8f0",fontWeight:600}}>{u.name||u.email}</span>
+                                <div style={{fontSize:10,color:"rgba(140,180,255,0.5)",marginTop:3,fontFamily:"'DM Mono',monospace"}}>
+                                  {bal} cr → {Math.max(0, bal + amt)} cr
+                                </div>
+                              </div>
+                              <div style={{display:"flex",gap:6}}>
+                                <button onClick={async () => {
+                                    const db = getDbSvc(c.name);
+                                    const newBal = Math.max(0, bal + amt);
+                                    const {error: credErr} = await db.from("ai_credits").upsert(
+                                      {user_email: u.email, client: c.name, balance: newBal, updated_at: new Date().toISOString()},
+                                      {onConflict: "user_email"}
+                                    );
+                                    if(credErr) { alert("Error: " + credErr.message); return; }
+                                    await db.from("ai_transactions").insert({
+                                      client: c.name, user_email: u.email,
+                                      credits: amt, type: amt>=0?"purchase":"adjustment",
+                                      package: "manual", granted_by: userEmail
+                                    });
+                                    setCredits(prev => [...prev.filter(x=>x.user_email!==u.email),
+                                      {user_email:u.email, client:c.name, balance:newBal, updated_at:new Date().toISOString()}]);
+                                    setConfirming(null);
+                                  }}
+                                  style={{flex:1,padding:"6px 0",background:"rgba(74,222,128,0.12)",
+                                    border:"1px solid rgba(74,222,128,0.35)",borderRadius:7,color:"#4ade80",
+                                    fontSize:12,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:700}}>
+                                  ✓ Confirm
+                                </button>
+                                <button onClick={() => setConfirming(null)}
+                                  style={{flex:1,padding:"6px 0",background:"rgba(100,116,139,0.1)",
+                                    border:"1px solid rgba(100,116,139,0.2)",borderRadius:7,color:"#64748b",
+                                    fontSize:12,cursor:"pointer",fontFamily:"'DM Mono',monospace"}}>
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                          {cr?.updated_at && !isConf && (
+                            <div style={{fontSize:9,color:"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace",marginTop:6}}>
+                              Updated {new Date(cr.updated_at).toLocaleDateString("fi-FI")}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                      <div style={{display:"flex",gap:6}}>
-                        <button onClick={async () => {
-                            const newBal = bal + amt;
-                            const db = getDbSvc(c.name);
-                            const {error: credErr} = await db.from("ai_credits").upsert(
-                              {client:c.name, balance:newBal, updated_at:new Date().toISOString()},
-                              {onConflict:"client"}
-                            );
-                            if(credErr) { alert("Error: " + credErr.message); return; }
-                            const {error: txErr} = await db.from("ai_transactions").insert({
-                              client:c.name, credits:amt, type:"purchase", package:"manual", granted_by:userEmail
-                            });
-                            if(txErr) { alert("Transaction error: " + txErr.message); return; }
-                            setCredits(prev => [...prev.filter(x=>x.client!==c.name),
-                              {client:c.name,balance:newBal,updated_at:new Date().toISOString()}]);
-                            setConfirming(null);
-                          }}
-                          style={{flex:1,padding:"7px 0",background:"rgba(74,222,128,0.12)",
-                            border:"1px solid rgba(74,222,128,0.35)",borderRadius:7,color:"#4ade80",
-                            fontSize:12,cursor:"pointer",fontFamily:"'DM Mono',monospace",fontWeight:700}}>
-                          ✓ Confirm
-                        </button>
-                        <button onClick={() => setConfirming(null)}
-                          style={{flex:1,padding:"7px 0",background:"rgba(100,116,139,0.1)",
-                            border:"1px solid rgba(100,116,139,0.2)",borderRadius:7,color:"#64748b",
-                            fontSize:12,cursor:"pointer",fontFamily:"'DM Mono',monospace"}}>
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {cr?.updated_at && !isConfirming && (
-                    <div style={{fontSize:9,color:"rgba(100,140,200,0.3)",fontFamily:"'DM Mono',monospace",marginTop:8}}>
-                      Last updated {new Date(cr.updated_at).toLocaleDateString("fi-FI")}
-                    </div>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })}
