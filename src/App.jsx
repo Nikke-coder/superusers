@@ -139,13 +139,8 @@ const STYLE = `
     background:radial-gradient(ellipse 160% 120% at 38% 50%,#090d1f 0%,#05060f 60%);
     overflow:hidden;
   }
-  /* Very subtle dot grid */
-  .lx-bg::before{
-    content:'';position:absolute;inset:0;
-    background-image:radial-gradient(rgba(140,180,255,0.12) 1px,transparent 1px);
-    background-size:32px 32px;
-    mask-image:radial-gradient(ellipse 80% 80% at 38% 50%,black,transparent);
-  }
+  /* dot grid removed */
+  .lx-bg::before{ content:''; }
 
   /* Ambient glow behind logo */
   .lx-glow{
@@ -536,6 +531,9 @@ function LoginScreen({onLogin}) {
             width:240,height:"auto",position:"relative",zIndex:3,
             animation:"logoGlow 5s ease-in-out infinite",
             display:"block",
+            filter:"drop-shadow(0 0 18px rgba(160,200,255,0.18))",
+            imageRendering:"auto",
+            WebkitMaskImage:"-webkit-radial-gradient(white,black)",
           }}/>
       </div>
 
