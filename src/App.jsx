@@ -1462,12 +1462,6 @@ export default function App() {
     </>
   );
 }
-port React from "react";
-import { useState, useEffect, useCallback } from "react";
-import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
-import { createClient } from "@supabase/supabase-js";
-
-
 // ── Targetflow logo (base64) ─────────────────────────────────────────────────
 
 // ── Supabase (shared project) ─────────────────────────────────────────────────
